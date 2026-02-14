@@ -1,5 +1,6 @@
 import { fetchMatches, fetchSports } from '@/lib/api';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
+import SiteHeader from '@/components/SiteHeader';
 
 export const revalidate = 30;
 
@@ -22,12 +23,7 @@ export default async function Home() {
 
   return (
     <>
-      <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-white">Sports Streaming Mirror</h1>
-          <p className="text-sm text-gray-400 mt-1">Clean, reliable sports streaming</p>
-        </div>
-      </header>
+      <SiteHeader activeSection="matches" />
 
       <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
         <MatchListWithSearch
