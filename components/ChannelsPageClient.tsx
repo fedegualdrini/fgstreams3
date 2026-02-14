@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { Channel } from '@/types/channels';
 import ChannelPlayer from './ChannelPlayer';
 
@@ -9,8 +10,56 @@ interface ChannelsPageClientProps {
 }
 
 export default function ChannelsPageClient({ channels }: ChannelsPageClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [search, setSearch] = useState('');
+
+  // On mount: read URL params and auto-select channel + option
+  useEffect(() => {
+    const c = searchParams.get('c');
+    const o = parseInt(searchParams.get('o') ?? '0', 10);
+    if (c) {
+      const match = channels.find(ch => ch.name.toLowerCase() === decodeURIComponent(c).toLowerCase());
+      if (match) {
+        setSelectedChannel(match);
+        setSelectedOptionIndex(isNaN(o) ? 0 : o);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const syncURL = (channelName: string | null, optionIndex: number) => {
+    const params = new URLSearchParams();
+    if (channelName) {
+      params.set('c', channelName);
+      params.set('o', String(optionIndex));
+    }
+    const newUrl = params.size > 0 ? `?${params.toString()}` : window.location.pathname;
+    router.replace(newUrl, { scroll: false });
+  };
+
+  const handleSelectChannel = (channel: Channel) => {
+    if (selectedChannel?.name === channel.name) {
+      // Deselect
+      setSelectedChannel(null);
+      setSelectedOptionIndex(0);
+      syncURL(null, 0);
+    } else {
+      setSelectedChannel(channel);
+      setSelectedOptionIndex(0);
+      syncURL(channel.name, 0);
+    }
+  };
+
+  const handleOptionChange = (index: number) => {
+    setSelectedOptionIndex(index);
+    if (selectedChannel) {
+      syncURL(selectedChannel.name, index);
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!search.trim()) return channels;
@@ -35,14 +84,18 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
             <h2 className="text-xl font-bold">{selectedChannel.name}</h2>
             <button
               type="button"
-              onClick={() => setSelectedChannel(null)}
+              onClick={() => handleSelectChannel(selectedChannel)}
               className="ml-auto text-gray-400 hover:text-white text-sm px-3 py-1 bg-gray-800 rounded hover:bg-gray-700 transition-colors"
             >
               ✕ Close
             </button>
           </div>
           <div className="w-full max-w-4xl">
-            <ChannelPlayer channel={selectedChannel} />
+            <ChannelPlayer
+              channel={selectedChannel}
+              initialOptionIndex={selectedOptionIndex}
+              onOptionChange={handleOptionChange}
+            />
           </div>
         </div>
       )}
@@ -71,7 +124,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
             <button
               key={channel.name}
               type="button"
-              onClick={() => setSelectedChannel(isSelected ? null : channel)}
+              onClick={() => handleSelectChannel(channel)}
               className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors text-center ${
                 isSelected
                   ? 'border-blue-500 bg-blue-600/10 text-white'
