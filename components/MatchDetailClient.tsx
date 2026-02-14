@@ -133,7 +133,7 @@ export default function MatchDetailClient({
         <MultiMatchView currentMatch={match} />
       ) : (
         <>
-          <section className="mb-6">
+          <section className="mb-6 w-full max-w-4xl">
             <StreamPlayer
               stream={currentStream}
               streamId={currentStreamId ?? 'none'}

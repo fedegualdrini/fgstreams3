@@ -53,9 +53,4 @@ body {
     min-height: 44px;
     min-width: 44px;
   }
-
-  .video-container {
-    margin: 0 -1rem;
-    width: calc(100% + 2rem);
-  }
 }
