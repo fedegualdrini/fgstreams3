@@ -1,13 +1,26 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
 /**
- * Format a date for match display in the user's local timezone.
- * Only call this from client components to avoid SSR/hydration mismatches.
+ * Format a date in the user's local timezone and locale.
+ * Returns null until mounted on the client to avoid hydration mismatches.
  */
-export function formatMatchDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
+export function useLocalTime(date: Date | null): string | null {
+  const [formatted, setFormatted] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!date) return;
+    setFormatted(
+      date.toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+    );
+  }, [date]);
+
+  return formatted;
 }

@@ -2,7 +2,7 @@
 
 import type { Match } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
-import { formatMatchDate } from '@/lib/dateUtils';
+import { useLocalTime } from '@/lib/dateUtils';
 
 interface MatchCardProps {
   match: Match;
@@ -11,6 +11,7 @@ interface MatchCardProps {
 export default function MatchCard({ match }: MatchCardProps) {
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
+  const localTime = useLocalTime(startTime);
   const posterUrl = getPosterUrl(match.poster);
 
   return (
@@ -60,46 +61,59 @@ export default function MatchCard({ match }: MatchCardProps) {
         <span className="label" style={{ fontSize: '0.6rem' }}>{match.league || match.sport}</span>
 
         {/* Teams */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+        {match.team2 ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <span style={{
+              flex: 1,
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.1rem',
+              letterSpacing: '0.03em',
+              color: 'var(--text)',
+              lineHeight: 1.1,
+              textAlign: 'right',
+            }}>
+              {match.team1}
+            </span>
+            <span style={{
+              fontSize: '0.6rem',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              color: 'var(--muted)',
+              flexShrink: 0,
+              padding: '0.15rem 0.4rem',
+              border: '1px solid var(--line)',
+              borderRadius: '2px',
+            }}>
+              VS
+            </span>
+            <span style={{
+              flex: 1,
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.1rem',
+              letterSpacing: '0.03em',
+              color: 'var(--text)',
+              lineHeight: 1.1,
+            }}>
+              {match.team2}
+            </span>
+          </div>
+        ) : (
           <span style={{
-            flex: 1,
             fontFamily: 'var(--font-display)',
-            fontSize: '1.1rem',
+            fontSize: '1.2rem',
             letterSpacing: '0.03em',
             color: 'var(--text)',
-            lineHeight: 1.1,
-            textAlign: 'right',
+            lineHeight: 1.2,
+            textAlign: 'center',
           }}>
             {match.team1}
           </span>
-          <span style={{
-            fontSize: '0.6rem',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            color: 'var(--muted)',
-            flexShrink: 0,
-            padding: '0.15rem 0.4rem',
-            border: '1px solid var(--line)',
-            borderRadius: '2px',
-          }}>
-            VS
-          </span>
-          <span style={{
-            flex: 1,
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.1rem',
-            letterSpacing: '0.03em',
-            color: 'var(--text)',
-            lineHeight: 1.1,
-          }}>
-            {match.team2}
-          </span>
-        </div>
+        )}
 
         {/* Time */}
-        {startTime && !isLive && (
+        {localTime && !isLive && (
           <span style={{ fontSize: '0.7rem', color: 'var(--subtle)', marginTop: 'auto' }}>
-            {formatMatchDate(startTime)}
+            {localTime}
           </span>
         )}
       </div>
