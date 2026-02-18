@@ -1,12 +1,26 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
 /**
- * Format a date for match display. Uses UTC and manual formatting so output
- * is identical on server and client, avoiding hydration mismatches.
+ * Format a date in the user's local timezone and locale.
+ * Returns null until mounted on the client to avoid hydration mismatches.
  */
-export function formatMatchDate(date: Date): string {
-  const y = date.getUTCFullYear();
-  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const d = String(date.getUTCDate()).padStart(2, '0');
-  const h = String(date.getUTCHours()).padStart(2, '0');
-  const min = String(date.getUTCMinutes()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}`;
+export function useLocalTime(date: Date | null): string | null {
+  const [formatted, setFormatted] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!date) return;
+    setFormatted(
+      date.toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+    );
+  }, [date]);
+
+  return formatted;
 }

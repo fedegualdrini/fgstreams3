@@ -9,7 +9,7 @@ import MultiMatchView from './MultiMatchView';
 import { selectBestStream } from '@/lib/streamSelector';
 import { streamHealthMonitor } from '@/lib/streamHealth';
 import { getImageUrl } from '@/lib/api';
-import { formatMatchDate } from '@/lib/dateUtils';
+import { useLocalTime } from '@/lib/dateUtils';
 import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
 
@@ -85,6 +85,7 @@ export default function MatchDetailClient({
 
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
+  const localTime = useLocalTime(startTime);
 
   return (
     <>
@@ -143,8 +144,8 @@ export default function MatchDetailClient({
               </span>
             )}
 
-            {startTime && !isLive && (
-              <span style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>{formatMatchDate(startTime)}</span>
+            {localTime && !isLive && (
+              <span style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>{localTime}</span>
             )}
 
             {/* Multi-match toggle — pushed to the right */}
