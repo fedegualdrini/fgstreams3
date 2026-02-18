@@ -9,71 +9,114 @@ interface StreamListProps {
   onSelectStream: (stream: Stream, index: number) => void;
 }
 
-const statusColors: Record<StreamStatus, string> = {
-  working: 'bg-green-500',
-  unstable: 'bg-yellow-500',
-  offline: 'bg-red-500',
-  unknown: 'bg-gray-500',
+const statusDot: Record<StreamStatus, string> = {
+  working:  '#4ade80',
+  unstable: '#facc15',
+  offline:  '#f87171',
+  unknown:  '#6b6b6b',
 };
 
-const statusLabels: Record<StreamStatus, string> = {
-  working: '🟢 Working',
-  unstable: '🟡 Unstable',
-  offline: '🔴 Offline',
-  unknown: '⚪ Unknown',
+const statusLabel: Record<StreamStatus, string> = {
+  working:  'Working',
+  unstable: 'Unstable',
+  offline:  'Offline',
+  unknown:  'Unknown',
 };
 
-export default function StreamList({
-  streams,
-  currentStreamId,
-  onSelectStream,
-}: StreamListProps) {
+export default function StreamList({ streams, currentStreamId, onSelectStream }: StreamListProps) {
   if (!streams?.length) {
     return (
-      <div className="p-4 bg-gray-900 rounded-lg border border-gray-800 text-gray-400">
+      <div style={{
+        padding: '1rem',
+        background: 'var(--bg-2)',
+        border: '1px solid var(--line)',
+        borderRadius: '4px',
+        color: 'var(--subtle)',
+        fontSize: '0.8rem',
+        fontFamily: 'var(--font-body)',
+      }}>
         No streams available for this match
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium text-gray-400">Available Streams</h3>
-      <div className="flex flex-col gap-2">
+    <div>
+      <span className="label" style={{ display: 'block', marginBottom: '0.75rem' }}>Available Streams</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
         {streams.map((stream, index) => {
           const streamId = `${stream.source || 'unknown'}-${index}`;
           const isActive = currentStreamId === streamId;
           const health = streamHealthMonitor.getStatus(streamId);
-          const statusColor = statusColors[health.status];
-          const statusLabel = statusLabels[health.status];
 
           return (
             <button
               key={streamId}
               type="button"
               onClick={() => onSelectStream(stream, index)}
-              className={`w-full text-left p-3 md:p-4 rounded-lg border transition-colors touch-manipulation ${
-                isActive
-                  ? 'bg-blue-900 border-blue-600'
-                  : 'bg-gray-900 border-gray-800 hover:bg-gray-800 active:bg-gray-700'
-              }`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                width: '100%',
+                textAlign: 'left',
+                padding: '0.625rem 0.875rem',
+                background: isActive ? 'var(--bg-3)' : 'var(--bg-2)',
+                border: `1px solid ${isActive ? 'var(--accent)' : 'var(--line)'}`,
+                borderRadius: '3px',
+                cursor: 'pointer',
+                transition: 'all 0.12s',
+                borderLeft: isActive ? '3px solid var(--accent)' : '3px solid transparent',
+              }}
             >
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className={`w-2 h-2 rounded-full ${statusColor}`} />
-                <span className="text-sm">{statusLabel}</span>
-                {stream.language && (
-                  <span className="text-gray-400 text-xs">Language: {stream.language}</span>
-                )}
+              {/* Status dot */}
+              <span style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: statusDot[health.status],
+                flexShrink: 0,
+              }} />
+
+              {/* Info */}
+              <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.75rem', color: isActive ? 'var(--text)' : 'var(--text-dim)', fontFamily: 'var(--font-body)' }}>
+                  {statusLabel[health.status]}
+                </span>
                 {stream.quality && (
-                  <span className="text-gray-400 text-xs">Quality: {stream.quality}</span>
+                  <span style={{
+                    fontSize: '0.6rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    color: 'var(--subtle)',
+                    background: 'var(--bg-3)',
+                    padding: '0.1rem 0.35rem',
+                    borderRadius: '2px',
+                  }}>
+                    {stream.quality}
+                  </span>
+                )}
+                {stream.language && (
+                  <span style={{ fontSize: '0.7rem', color: 'var(--subtle)' }}>{stream.language}</span>
                 )}
                 {stream.source && (
-                  <span className="text-gray-500 text-xs">Source: {stream.source}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--muted)' }}>{stream.source}</span>
                 )}
-                {isActive && (
-                  <span className="ml-auto text-blue-400 text-xs font-medium">Playing</span>
-                )}
-              </div>
+              </span>
+
+              {isActive && (
+                <span style={{
+                  fontSize: '0.6rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'var(--accent)',
+                  flexShrink: 0,
+                }}>
+                  ▶ Playing
+                </span>
+              )}
             </button>
           );
         })}
