@@ -10,6 +10,7 @@ interface StreamPlayerProps {
   autoPlay?: boolean;
   muted?: boolean;
   onError?: () => void;
+  fillContainer?: boolean;
 }
 
 export default function StreamPlayer({
@@ -18,6 +19,7 @@ export default function StreamPlayer({
   autoPlay = true,
   muted = false,
   onError,
+  fillContainer = false,
 }: StreamPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState(false);
@@ -37,9 +39,12 @@ export default function StreamPlayer({
 
   const embedUrl = stream?.embedUrl || stream?.url;
 
+  const stateContainerClass = fillContainer ? undefined : 'video-container';
+  const stateContainerStyle = fillContainer ? { width: '100%', height: '100%' } : {};
+
   if (!embedUrl) {
     return (
-      <div className="video-container flex items-center justify-center text-gray-400">
+      <div className={stateContainerClass} style={{ ...stateContainerStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
         No stream available
       </div>
     );
@@ -47,25 +52,30 @@ export default function StreamPlayer({
 
   if (error) {
     return (
-      <div className="video-container flex flex-col items-center justify-center gap-4 bg-gray-900 text-gray-400">
-        <p>Failed to load stream</p>
+      <div className={stateContainerClass} style={{ ...stateContainerStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'var(--bg)' }}>
+        <p style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>Failed to load stream</p>
         {onError && (
           <button
             onClick={onError}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            style={{ padding: '0.5rem 1.25rem', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '3px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
           >
-            Try Next Stream
+            Try next stream
           </button>
         )}
       </div>
     );
   }
 
+  const containerStyle = fillContainer
+    ? { position: 'relative' as const, width: '100%', height: '100%' }
+    : { position: 'relative' as const };
+
   return (
-    <div className="video-container relative">
+    <div className={fillContainer ? undefined : 'video-container'} style={containerStyle}>
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black text-gray-400 z-10">
-          Loading stream...
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10, flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ width: '32px', height: '32px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Loading stream…</span>
         </div>
       )}
       <iframe
@@ -74,7 +84,7 @@ export default function StreamPlayer({
         title="Stream"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
-        className="absolute inset-0 w-full h-full border-none"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
         onLoad={() => {
           setIsLoading(false);
           streamHealthMonitor.updateStatus(streamId, 'working', true);

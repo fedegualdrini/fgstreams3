@@ -26,18 +26,15 @@ export default async function ChannelsPage() {
   return (
     <>
       <SiteHeader activeSection="channels" />
-      <main className="flex-1 bg-[var(--background)] text-[var(--foreground)]">
-        <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-gray-400">Loading...</div>}>
+      <main style={{ flex: 1 }}>
+        <Suspense fallback={
+          <div className="page-content" style={{ paddingTop: '2rem', color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
+            Loading…
+          </div>
+        }>
           <ChannelsPageClient channels={channels} />
         </Suspense>
       </main>
-      <footer className="bg-gray-900 border-t border-gray-800 mt-12">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <p className="text-sm text-gray-400 text-center">
-            Streams sourced from publicly available sources
-          </p>
-        </div>
-      </footer>
     </>
   );
 }

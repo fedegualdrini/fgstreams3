@@ -89,104 +89,117 @@ export default function MatchDetailClient({
   return (
     <>
       <SiteHeader activeSection="matches" />
-      <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-4 md:p-6">
-        <header className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4"
-          >
-            ← Back to Matches
-          </Link>
-          <h1 className="text-xl md:text-2xl font-bold">
-            {match.team1} vs {match.team2}
-          </h1>
-          <p className="text-gray-500 text-sm">{match.league}</p>
-          <div className="flex gap-2 mt-2">
+      <main style={{ flex: 1 }}>
+        {/* Match header — compact single row, same height as channels header */}
+        <div className="page-content" style={{ paddingTop: '1.5rem', paddingBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+
+            {/* Back */}
+            <Link
+              href="/"
+              style={{
+                fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em',
+                textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none',
+                fontFamily: 'var(--font-body)', transition: 'color 0.15s', flexShrink: 0,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; }}
+            >
+              ←
+            </Link>
+
+            {/* Divider */}
+            <span style={{ color: 'var(--line)', fontSize: '1rem', flexShrink: 0 }}>|</span>
+
+            {/* Team logos + names */}
+            {match.image1 && (
+              <img src={getImageUrl(match.image1)} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            )}
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
+              {match.team1}
+            </span>
+
+            <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: 'var(--muted)', padding: '0.15rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0 }}>
+              VS
+            </span>
+
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
+              {match.team2}
+            </span>
+            {match.image2 && (
+              <img src={getImageUrl(match.image2)} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            )}
+
+            {/* League */}
+            <span className="label" style={{ fontSize: '0.55rem', flexShrink: 0 }}>{match.league || match.sport}</span>
+
+            {/* Live badge */}
             {isLive && (
-              <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'var(--red)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', padding: '0.15rem 0.5rem', borderRadius: '2px', flexShrink: 0 }}>
+                <span className="live-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
                 LIVE
               </span>
             )}
-            {startTime && !isLive && (
-              <span className="text-gray-400 text-sm">Starts: {formatMatchDate(startTime)}</span>
-            )}
-          </div>
-        </header>
 
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={() => setMultiStreamMode(!multiStreamMode)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              multiStreamMode
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
-          >
-            {multiStreamMode ? '⬇️ Single Match' : '📹 Multi-Match View'}
-          </button>
-          {multiStreamMode && (
-            <p className="text-gray-400 text-sm mt-1">
-              Watch up to 4 different matches simultaneously
-            </p>
-          )}
+            {startTime && !isLive && (
+              <span style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>{formatMatchDate(startTime)}</span>
+            )}
+
+            {/* Multi-match toggle — pushed to the right */}
+            <button
+              type="button"
+              onClick={() => setMultiStreamMode(!multiStreamMode)}
+              style={{
+                marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                padding: '0.3rem 0.75rem',
+                background: multiStreamMode ? 'var(--accent)' : 'var(--bg-2)',
+                color: multiStreamMode ? '#000' : 'var(--text-dim)',
+                border: `1px solid ${multiStreamMode ? 'var(--accent)' : 'var(--line)'}`,
+                borderRadius: '3px', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em',
+                textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0,
+              }}
+            >
+              {multiStreamMode ? '▣ Single' : '▤ Multi'}
+            </button>
+          </div>
+
+          {multiStreamMode && <div style={{ marginTop: '1rem' }}><MultiMatchView currentMatch={match} /></div>}
         </div>
 
-        {multiStreamMode ? (
-          <MultiMatchView currentMatch={match} />
-        ) : (
+        {!multiStreamMode && (
           <>
-            <section className="mb-6 w-full max-w-4xl">
+            {/* Player — full width, fixed height to stay in viewport */}
+            <section style={{
+              width: '100%',
+              background: '#000',
+              height: 'calc(100vh - var(--header-h) - 9rem)',
+              minHeight: '320px',
+              maxHeight: '72vh',
+              position: 'relative',
+              marginBottom: '2rem',
+            }}>
               <StreamPlayer
                 stream={currentStream}
                 streamId={currentStreamId ?? 'none'}
                 onError={handleStreamError}
+                fillContainer
               />
             </section>
 
-            <section className="mb-8">
+            {/* Streams list — centered below */}
+            <div className="page-content" style={{ paddingBottom: '3rem' }}>
               <StreamList
                 streams={streams}
                 currentStreamId={currentStreamId}
                 onSelectStream={handleSelectStream}
               />
-            </section>
-
-            <section className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-500 mb-1">Team 1</p>
-                <div className="flex items-center gap-2">
-                  {match.image1 && (
-                    <img
-                      src={getImageUrl(match.image1)}
-                      alt=""
-                      className="w-8 h-8 rounded-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  )}
-                  <span>{match.team1}</span>
-                </div>
-              </div>
-              <div>
-                <p className="text-gray-500 mb-1">Team 2</p>
-                <div className="flex items-center gap-2">
-                  {match.image2 && (
-                    <img
-                      src={getImageUrl(match.image2)}
-                      alt=""
-                      className="w-8 h-8 rounded-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  )}
-                  <span>{match.team2}</span>
-                </div>
-              </div>
-            </section>
+            </div>
           </>
         )}
-
-        {ToastComponent}
       </main>
+      {ToastComponent}
     </>
   );
 }

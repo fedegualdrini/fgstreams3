@@ -17,7 +17,6 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [search, setSearch] = useState('');
 
-  // On mount: read URL params and auto-select channel + option
   useEffect(() => {
     const c = searchParams.get('c');
     const o = parseInt(searchParams.get('o') ?? '0', 10);
@@ -43,7 +42,6 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
 
   const handleSelectChannel = (channel: Channel) => {
     if (selectedChannel?.name === channel.name) {
-      // Deselect
       setSelectedChannel(null);
       setSelectedOptionIndex(0);
       syncURL(null, 0);
@@ -68,95 +66,254 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
   }, [channels, search]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
-      {/* Player area - shows when a channel is selected */}
+    <div style={{ flex: 1 }}>
+      {/* Player panel — full width, same layout as match player */}
       {selectedChannel && (
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            {selectedChannel.logo && (
-              <img
-                src={selectedChannel.logo}
-                alt=""
-                className="w-8 h-8 object-contain"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
-            )}
-            <h2 className="text-xl font-bold">{selectedChannel.name}</h2>
-            <button
-              type="button"
-              onClick={() => handleSelectChannel(selectedChannel)}
-              className="ml-auto text-gray-400 hover:text-white text-sm px-3 py-1 bg-gray-800 rounded hover:bg-gray-700 transition-colors"
-            >
-              ✕ Close
-            </button>
+        <>
+          {/* Channel header — constrained */}
+          <div className="page-content" style={{ paddingTop: '1.5rem', paddingBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              {selectedChannel.logo && (
+                <img
+                  src={selectedChannel.logo}
+                  alt=""
+                  style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+              )}
+              <span style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '1.6rem',
+                letterSpacing: '0.04em',
+                color: 'var(--text)',
+                lineHeight: 1,
+              }}>
+                {selectedChannel.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleSelectChannel(selectedChannel)}
+                style={{
+                  marginLeft: 'auto',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  padding: '0.3rem 0.75rem',
+                  background: 'var(--bg-2)',
+                  color: 'var(--muted)',
+                  border: '1px solid var(--line)',
+                  borderRadius: '3px',
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  fontFamily: 'var(--font-body)',
+                  cursor: 'pointer',
+                  transition: 'all 0.12s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'var(--muted)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.borderColor = 'var(--line)'; }}
+              >
+                ✕ Close
+              </button>
+            </div>
           </div>
-          <div className="w-full max-w-4xl">
+
+          {/* Player — full viewport width, fixed height */}
+          <section style={{
+            width: '100%',
+            background: '#000',
+            height: 'calc(100vh - var(--header-h) - 9rem)',
+            minHeight: '320px',
+            maxHeight: '72vh',
+            position: 'relative',
+            marginBottom: '1rem',
+            overflow: 'hidden',
+          }}>
             <ChannelPlayer
               channel={selectedChannel}
               initialOptionIndex={selectedOptionIndex}
               onOptionChange={handleOptionChange}
+              fillContainer
+              hideTabs
+            />
+          </section>
+
+          {/* Option tabs + controls below player */}
+          {(() => {
+            const validOptions = selectedChannel.options.filter(o => o.iframe && o.iframe !== 'undefined');
+            return validOptions.length > 1 ? (
+              <div className="page-content" style={{ paddingTop: '0.75rem', paddingBottom: '1rem', borderBottom: '1px solid var(--line)', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {validOptions.map((option, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleOptionChange(i)}
+                      style={{
+                        padding: '0.3rem 0.75rem',
+                        background: i === selectedOptionIndex ? 'var(--accent)' : 'var(--bg-2)',
+                        color: i === selectedOptionIndex ? '#000' : 'var(--text-dim)',
+                        border: `1px solid ${i === selectedOptionIndex ? 'var(--accent)' : 'var(--line)'}`,
+                        borderRadius: '3px',
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        fontFamily: 'var(--font-body)',
+                        cursor: 'pointer',
+                        transition: 'all 0.12s',
+                      }}
+                    >
+                      {option.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div style={{ borderBottom: '1px solid var(--line)', marginBottom: '2rem' }} />
+            );
+          })()}
+        </>
+      )}
+
+      {/* Main content */}
+      <div className="page-content" style={{ paddingTop: '2rem', paddingBottom: '3rem' }}>
+        {/* Search + count */}
+        <div style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', maxWidth: '380px', flex: 1 }}>
+            <span style={{
+              position: 'absolute',
+              left: '0.875rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'var(--muted)',
+              fontSize: '0.85rem',
+              pointerEvents: 'none',
+            }}>
+              ⌕
+            </span>
+            <input
+              type="text"
+              placeholder="Search channels…"
+              autoComplete="off"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.5rem 1rem 0.5rem 2.25rem',
+                background: 'var(--bg-2)',
+                border: '1px solid var(--line)',
+                borderRadius: '4px',
+                color: 'var(--text)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.875rem',
+                outline: 'none',
+                transition: 'border-color 0.15s',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
             />
           </div>
+          <span style={{ fontSize: '0.7rem', color: 'var(--muted)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>
+            {filtered.length} channel{filtered.length !== 1 ? 's' : ''}
+          </span>
         </div>
-      )}
 
-      {/* Search */}
-      <div className="mb-6">
-        <input
-          type="search"
-          placeholder="Search channels..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-        />
-        <p className="text-gray-500 text-sm mt-2">
-          {filtered.length} channel{filtered.length !== 1 ? 's' : ''}
-        </p>
-      </div>
+        {/* Channel grid */}
+        {filtered.length > 0 ? (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+            gap: '1px',
+            background: 'var(--line)',
+            border: '1px solid var(--line)',
+            borderRadius: '6px',
+            overflow: 'hidden',
+          }}>
+            {filtered.map(channel => {
+              const validCount = channel.options.filter(o => o.iframe && o.iframe !== 'undefined').length;
+              const isSelected = selectedChannel?.name === channel.name;
 
-      {/* Channel grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-        {filtered.map(channel => {
-          const validCount = channel.options.filter(o => o.iframe && o.iframe !== 'undefined').length;
-          const isSelected = selectedChannel?.name === channel.name;
-
-          return (
-            <button
-              key={channel.name}
-              type="button"
-              onClick={() => handleSelectChannel(channel)}
-              className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors text-center ${
-                isSelected
-                  ? 'border-blue-500 bg-blue-600/10 text-white'
-                  : 'border-gray-800 bg-gray-900 hover:border-gray-600 hover:bg-gray-800 text-gray-300'
-              }`}
-            >
-              {channel.logo ? (
-                <img
-                  src={channel.logo}
-                  alt=""
-                  className="w-10 h-10 object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
+              return (
+                <button
+                  key={channel.name}
+                  type="button"
+                  onClick={() => handleSelectChannel(channel)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '1rem 0.75rem',
+                    background: isSelected ? 'var(--bg-2)' : 'var(--bg-1)',
+                    borderTop: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'background 0.12s',
                   }}
-                />
-              ) : (
-                <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center text-lg">
-                  📺
-                </div>
-              )}
-              <span className="text-xs font-medium leading-tight">{channel.name}</span>
-              <span className="text-xs text-gray-500">{validCount} stream{validCount !== 1 ? 's' : ''}</span>
-            </button>
-          );
-        })}
+                  onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-2)'; }}
+                  onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-1)'; }}
+                >
+                  {channel.logo ? (
+                    <img
+                      src={channel.logo}
+                      alt=""
+                      style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      background: 'var(--bg-3)',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1rem',
+                    }}>
+                      ▶
+                    </div>
+                  )}
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.04em',
+                    color: isSelected ? 'var(--text)' : 'var(--text-dim)',
+                    fontFamily: 'var(--font-body)',
+                    lineHeight: 1.3,
+                    maxWidth: '90px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {channel.name}
+                  </span>
+                  <span style={{
+                    fontSize: '0.55rem',
+                    color: 'var(--muted)',
+                    fontFamily: 'var(--font-body)',
+                  }}>
+                    {validCount} stream{validCount !== 1 ? 's' : ''}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{
+            padding: '4rem 1rem',
+            textAlign: 'center',
+            color: 'var(--subtle)',
+            fontSize: '0.875rem',
+            fontFamily: 'var(--font-body)',
+          }}>
+            No channels for &ldquo;{search}&rdquo;
+          </div>
+        )}
       </div>
-
-      {filtered.length === 0 && (
-        <div className="text-center py-16 text-gray-500">
-          No channels found for &ldquo;{search}&rdquo;
-        </div>
-      )}
     </div>
   );
 }

@@ -7,9 +7,11 @@ interface ChannelPlayerProps {
   channel: Channel;
   initialOptionIndex?: number;
   onOptionChange?: (index: number) => void;
+  fillContainer?: boolean;
+  hideTabs?: boolean;
 }
 
-export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptionChange }: ChannelPlayerProps) {
+export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptionChange, fillContainer = false, hideTabs = false }: ChannelPlayerProps) {
   const validOptions = channel.options.filter(o => o.iframe && o.iframe !== 'undefined');
   const [selectedIndex, setSelectedIndex] = useState(
     Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0))
@@ -21,19 +23,21 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
 
-  // Clear and restart timeout whenever option or reloadKey changes
+  // Sync internal index when parent drives the selection (e.g. external tabs)
+  useEffect(() => {
+    const clamped = Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0));
+    setSelectedIndex(clamped);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialOptionIndex]);
+
   useEffect(() => {
     setIsLoading(true);
     setTimedOut(false);
-
     timeoutRef.current = setTimeout(() => {
       setTimedOut(true);
       setIsLoading(false);
     }, 15000);
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, [selectedIndex, reloadKey]);
 
   const selectOption = (index: number) => {
@@ -43,77 +47,89 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
 
   const tryNextOption = () => {
     if (validOptions.length < 2) return;
-    const nextIndex = (selectedIndex + 1) % validOptions.length;
-    selectOption(nextIndex);
+    selectOption((selectedIndex + 1) % validOptions.length);
   };
 
-  const reloadPlayer = () => {
-    setReloadKey(k => k + 1);
-  };
+  const reloadPlayer = () => setReloadKey(k => k + 1);
 
   if (validOptions.length === 0) {
     return (
-      <div className="video-container flex items-center justify-center text-gray-400">
+      <div
+        className={fillContainer ? undefined : 'video-container'}
+        style={{
+          ...(fillContainer ? { width: '100%', height: '100%' } : {}),
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--muted)', fontSize: '0.875rem', fontFamily: 'var(--font-body)',
+        }}
+      >
         No streams available for this channel
       </div>
     );
   }
 
+  const tabBtnStyle = (active: boolean) => ({
+    padding: '0.3rem 0.75rem',
+    background: active ? 'var(--accent)' : 'rgba(15,15,15,0.85)',
+    color: active ? '#000' : 'var(--text-dim)',
+    border: `1px solid ${active ? 'var(--accent)' : 'var(--line)'}`,
+    borderRadius: '3px',
+    fontSize: '0.65rem',
+    fontWeight: 700 as const,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase' as const,
+    fontFamily: 'var(--font-body)',
+    cursor: 'pointer',
+    transition: 'all 0.12s',
+  });
   return (
-    <div className="w-full">
-      {/* Option tabs */}
-      {validOptions.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+    <div style={fillContainer
+      ? { width: '100%', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }
+      : { width: '100%' }
+    }>
+      {!fillContainer && !hideTabs && validOptions.length > 1 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '0.75rem' }}>
           {validOptions.map((option, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => selectOption(i)}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                i === selectedIndex
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
+            <button key={i} type="button" onClick={() => selectOption(i)} style={tabBtnStyle(i === selectedIndex)}>
               {option.name}
             </button>
           ))}
         </div>
       )}
-
-      {/* Player */}
-      <div className="video-container relative">
-        {/* Loading overlay */}
+      <div
+        className={fillContainer ? undefined : 'video-container'}
+        style={fillContainer ? { position: 'relative' as const, width: '100%', flex: 1, minHeight: 0 } : { position: 'relative' as const }}
+      >
         {isLoading && !timedOut && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black text-gray-400 z-10">
-            Loading stream...
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10, gap: '0.75rem' }}>
+            <div style={{ width: '32px', height: '32px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Loading stream...</span>
           </div>
         )}
-
-        {/* Timeout overlay */}
         {timedOut && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10 gap-4">
-            <p className="text-gray-300 font-medium">Stream not responding</p>
-            <p className="text-gray-500 text-sm">Try a different option</p>
-            {validOptions.length > 1 && (
-              <button
-                type="button"
-                onClick={tryNextOption}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-              >
-                Try next option →
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', zIndex: 10, gap: '1rem' }}>
+            <p style={{ color: 'var(--text)', fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 600 }}>Stream not responding</p>
+            <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.75rem', marginTop: '-0.5rem' }}>Try a different option</p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {validOptions.length > 1 && (
+                <button type="button" onClick={tryNextOption} style={{ padding: '0.5rem 1.25rem', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '3px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
+                  Try next
+                </button>
+              )}
+              <button type="button" onClick={reloadPlayer} style={{ padding: '0.5rem 1.25rem', background: 'var(--bg-2)', color: 'var(--text-dim)', border: '1px solid var(--line)', borderRadius: '3px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
+                Retry
               </button>
-            )}
-            <button
-              type="button"
-              onClick={reloadPlayer}
-              className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors text-sm"
-            >
-              ↺ Retry this stream
-            </button>
+            </div>
           </div>
         )}
-
+        {fillContainer && !hideTabs && validOptions.length > 1 && (
+          <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', zIndex: 20, display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {validOptions.map((option, i) => (
+              <button key={i} type="button" onClick={() => selectOption(i)} style={tabBtnStyle(i === selectedIndex)}>
+                {option.name}
+              </button>
+            ))}
+          </div>
+        )}
         {currentOption && (
           <iframe
             key={`${channel.name}-${selectedIndex}-${reloadKey}`}
@@ -121,7 +137,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
             title={`${channel.name} - ${currentOption.name}`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
             allowFullScreen
-            className="absolute inset-0 w-full h-full border-none"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
             onLoad={() => {
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
               setIsLoading(false);
@@ -130,29 +146,31 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
           />
         )}
       </div>
-
-      {/* Controls below player */}
-      <div className="flex items-center gap-3 mt-2">
-        <button
-          type="button"
-          onClick={reloadPlayer}
-          className="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1"
-        >
-          ↺ Reload stream
-        </button>
-        {validOptions.length > 1 && (
-          <button
-            type="button"
-            onClick={tryNextOption}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1"
+      {!fillContainer && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.625rem' }}>
+          <button type="button" onClick={reloadPlayer}
+            style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', padding: 0, transition: 'color 0.12s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; }}
           >
-            → Try next option
+            Reload
           </button>
-        )}
-        {currentOption && (
-          <span className="text-xs text-gray-600 ml-auto">{currentOption.name}</span>
-        )}
-      </div>
+          {validOptions.length > 1 && (
+            <button type="button" onClick={tryNextOption}
+              style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', padding: 0, transition: 'color 0.12s' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; }}
+            >
+              Next option
+            </button>
+          )}
+          {currentOption && (
+            <span style={{ fontSize: '0.65rem', color: 'var(--muted)', marginLeft: 'auto', fontFamily: 'var(--font-body)' }}>
+              {currentOption.name}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
