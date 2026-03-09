@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { Match } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
-import AdBanner from '@/components/AdBanner';
 
 function matchesSearch(match: Match, q: string): boolean {
   const normalized = q.trim().toLowerCase();
@@ -68,11 +67,6 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
         </div>
       </div>
 
-      {/* Leaderboard ad — between search and match grid */}
-      <div style={{ marginBottom: '2rem' }}>
-        <AdBanner size="leaderboard" />
-      </div>
-
       {/* Live section */}
       {filteredLive.length > 0 && (
         <section style={{ marginBottom: '3rem' }}>
@@ -132,18 +126,7 @@ function SectionHeader({ children, count, live }: { children: React.ReactNode; c
   );
 }
 
-const AD_EVERY = 12; // inject a 300×250 ad after every N match cards
-
 function MatchGrid({ matches }: { matches: Match[] }) {
-  // Build items list, inserting ad slots after every AD_EVERY matches
-  const items: Array<{ type: 'match'; match: Match } | { type: 'ad'; key: string }> = [];
-  matches.forEach((match, i) => {
-    items.push({ type: 'match', match });
-    if ((i + 1) % AD_EVERY === 0 && i + 1 < matches.length) {
-      items.push({ type: 'ad', key: `ad-${i}` });
-    }
-  });
-
   return (
     <div style={{
       display: 'grid',
@@ -154,43 +137,23 @@ function MatchGrid({ matches }: { matches: Match[] }) {
       borderRadius: '6px',
       overflow: 'hidden',
     }}>
-      {items.map((item) => {
-        if (item.type === 'ad') {
-          return (
-            <div
-              key={item.key}
-              style={{
-                background: 'var(--bg-1)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '1rem',
-                // Span all columns so the ad sits as a full-width break row
-                gridColumn: '1 / -1',
-              }}
-            >
-              <AdBanner size="rectangle" />
-            </div>
-          );
-        }
-        return (
-          <Link
-            key={item.match.id}
-            href={`/match/${item.match.id}`}
-            style={{
-              display: 'block',
-              background: 'var(--bg-1)',
-              textDecoration: 'none',
-              color: 'inherit',
-              transition: 'background 0.12s',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
-          >
-            <MatchCard match={item.match} />
-          </Link>
-        );
-      })}
+      {matches.map((match) => (
+        <Link
+          key={match.id}
+          href={`/match/${match.id}`}
+          style={{
+            display: 'block',
+            background: 'var(--bg-1)',
+            textDecoration: 'none',
+            color: 'inherit',
+            transition: 'background 0.12s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
+        >
+          <MatchCard match={match} />
+        </Link>
+      ))}
     </div>
   );
 }
