@@ -4,8 +4,24 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sports Streaming Mirror",
-  description: "Clean, reliable sports streaming - fast, stable, and mobile-first",
+  title: {
+    default: 'FGStreams — Live Sports Streaming',
+    template: '%s | FGStreams',
+  },
+  description: 'Clean, reliable live sports streaming — football, basketball, tennis and more.',
+  metadataBase: new URL('https://fgstreams3.vercel.app'),
+  openGraph: {
+    siteName: 'FGStreams',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

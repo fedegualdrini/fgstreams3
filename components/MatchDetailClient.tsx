@@ -12,6 +12,7 @@ import { getImageUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
+import MatchJsonLd from './MatchJsonLd';
 
 interface MatchDetailClientProps {
   match: Match;
@@ -88,6 +89,7 @@ export default function MatchDetailClient({
 
   return (
     <>
+      <MatchJsonLd match={match} />
       <SiteHeader activeSection="matches" />
       <main style={{ flex: 1 }}>
         {/* Match header — compact single row, same height as channels header */}
