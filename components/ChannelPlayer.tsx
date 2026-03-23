@@ -20,6 +20,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
   );
   const [isLoading, setIsLoading] = useState(true);
   const [timedOut, setTimedOut] = useState(false);
+  const [loadingSeconds, setLoadingSeconds] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -35,11 +36,17 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
   useEffect(() => {
     setIsLoading(true);
     setTimedOut(false);
+    setLoadingSeconds(0);
+    const ticker = setInterval(() => setLoadingSeconds(s => s + 1), 1000);
     timeoutRef.current = setTimeout(() => {
+      clearInterval(ticker);
       setTimedOut(true);
       setIsLoading(false);
     }, 15000);
-    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    return () => {
+      clearInterval(ticker);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [selectedIndex, reloadKey]);
 
   const selectOption = (index: number) => {
@@ -89,7 +96,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
       >
         {isLoading && !timedOut && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10 }}>
-            <Spinner label="Loading stream..." />
+            <Spinner label={`Connecting to stream… (${loadingSeconds}s)`} />
           </div>
         )}
         {timedOut && (

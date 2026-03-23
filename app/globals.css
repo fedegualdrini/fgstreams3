@@ -115,6 +115,11 @@ body::before {
   to { transform: rotate(360deg); }
 }
 
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
 .live-dot {
   animation: live-pulse 1.5s ease-in-out infinite;
 }
