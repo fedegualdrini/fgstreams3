@@ -1,10 +1,27 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sports Streaming Mirror",
-  description: "Clean, reliable sports streaming - fast, stable, and mobile-first",
+  title: {
+    default: 'FGStreams — Live Sports Streaming',
+    template: '%s | FGStreams',
+  },
+  description: 'Clean, reliable live sports streaming — football, basketball, tennis and more.',
+  metadataBase: new URL('https://fgstreams3.vercel.app'),
+  openGraph: {
+    siteName: 'FGStreams',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +33,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="site-container">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </div>
         <Analytics />
       </body>

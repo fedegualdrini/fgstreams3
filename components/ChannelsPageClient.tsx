@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Channel } from '@/types/channels';
 import ChannelPlayer from './ChannelPlayer';
+import { tabButtonStyle } from '@/lib/styles';
 
 interface ChannelsPageClientProps {
   channels: Channel[];
@@ -150,20 +151,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
                       key={i}
                       type="button"
                       onClick={() => handleOptionChange(i)}
-                      style={{
-                        padding: '0.3rem 0.75rem',
-                        background: i === selectedOptionIndex ? 'var(--accent)' : 'var(--bg-2)',
-                        color: i === selectedOptionIndex ? '#000' : 'var(--text-dim)',
-                        border: `1px solid ${i === selectedOptionIndex ? 'var(--accent)' : 'var(--line)'}`,
-                        borderRadius: '3px',
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                        fontFamily: 'var(--font-body)',
-                        cursor: 'pointer',
-                        transition: 'all 0.12s',
-                      }}
+                      style={tabButtonStyle(i === selectedOptionIndex)}
                     >
                       {option.name}
                     </button>

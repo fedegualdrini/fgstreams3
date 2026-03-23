@@ -1,4 +1,4 @@
-import type { Match } from '@/types/api';
+import type { Match, RawMatch } from '@/types/api';
 
 export function generateMatchId(match: Partial<Match>): string {
   if (match.id) return String(match.id);
@@ -39,7 +39,7 @@ function parseTeamsFromTitle(title: string): { team1: string; team2: string } {
   return { team1: title, team2: '' };
 }
 
-export function normalizeMatches(matches: any[]): Match[] {
+export function normalizeMatches(matches: RawMatch[]): Match[] {
   return matches.map(match => {
     const id = match.id ? String(match.id) : generateMatchId(match);
     const { team1, team2 } = match.title
@@ -62,6 +62,8 @@ export function normalizeMatches(matches: any[]): Match[] {
       const matchDate = new Date(match.date);
       const now = new Date();
       const hoursDiff = (now.getTime() - matchDate.getTime()) / (1000 * 60 * 60);
+      // A match is considered "live" if it started within the past 3 hours.
+      // streamed.pk doesn't provide an explicit live flag so we infer from startTime.
       isLive = hoursDiff >= 0 && hoursDiff <= 3;
     } else {
       isLive = match.isLive !== undefined ? match.isLive : (match.is_live || match.live || false);

@@ -1,4 +1,5 @@
 import type { StreamStatus, StreamHealth } from '@/types/api';
+import { HEALTH_OFFLINE_ERROR_THRESHOLD } from './constants';
 
 export class StreamHealthMonitor {
   private healthMap: Map<string, StreamHealth> = new Map();
@@ -34,20 +35,13 @@ export class StreamHealthMonitor {
       this.updateStatus(streamId, 'offline', false);
       return 'offline';
     }
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      await fetch(url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' });
-      clearTimeout(timeoutId);
-      this.updateStatus(streamId, 'working', true);
-      return 'working';
-    } catch {
-      const existing = this.getStatus(streamId);
-      const newStatus: StreamStatus =
-        existing.status === 'working' ? 'unstable' : existing.errorCount >= 2 ? 'offline' : 'unstable';
-      this.updateStatus(streamId, newStatus, false);
-      return newStatus;
-    }
+    // no-cors fetch cannot reliably detect server availability — it always "succeeds"
+    // with an opaque response even when the server is down. Instead, mark as "working"
+    // only when the iframe successfully fires onLoad. Here we check if it worked recently.
+    const existing = this.getStatus(streamId);
+    const recentlyWorked = existing.lastWorkingTime && (Date.now() - existing.lastWorkingTime) < 5 * 60_000;
+    if (recentlyWorked) return existing.status;
+    return existing.status === 'unknown' ? 'unknown' : existing.status;
   }
 
   async checkStreamRecovery(url: string, streamId: string): Promise<boolean> {

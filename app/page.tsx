@@ -1,8 +1,9 @@
 import { fetchMatches, fetchSports } from '@/lib/api';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
 import SiteHeader from '@/components/SiteHeader';
+import { REVALIDATE_MATCHES } from '@/lib/constants';
 
-export const revalidate = 30;
+export const revalidate = REVALIDATE_MATCHES;
 
 export default async function Home() {
   const [matches, sports] = await Promise.all([

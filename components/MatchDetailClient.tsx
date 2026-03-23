@@ -12,6 +12,7 @@ import { getImageUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
+import MatchJsonLd from './MatchJsonLd';
 
 interface MatchDetailClientProps {
   match: Match;
@@ -26,7 +27,7 @@ export default function MatchDetailClient({
 }: MatchDetailClientProps) {
   const [currentStream, setCurrentStream] = useState<Stream | null>(initialStream);
   const [currentStreamIndex, setCurrentStreamIndex] = useState(
-    initialStream ? streams.findIndex((s) => s.url === initialStream.url) : 0
+    initialStream ? Math.max(0, streams.findIndex((s) => s.url === initialStream.url)) : 0
   );
   const [streamErrorCount, setStreamErrorCount] = useState(0);
   const [multiStreamMode, setMultiStreamMode] = useState(false);
@@ -60,8 +61,8 @@ export default function MatchDetailClient({
       url: s.url || s.embedUrl || '',
     }));
 
-    streamHealthMonitor.startPeriodicCheck(streamIds, 30000);
-
+    // Health status is driven by onLoad/onError events from StreamPlayer.
+    // The recovery check below handles streams that went offline and may have recovered.
     const recoveryInterval = setInterval(() => {
       streamIds.forEach(async ({ id, url }) => {
         const health = streamHealthMonitor.getStatus(id);
@@ -72,7 +73,6 @@ export default function MatchDetailClient({
     }, 60000);
 
     return () => {
-      streamHealthMonitor.stopPeriodicCheck();
       clearInterval(recoveryInterval);
     };
   }, [streams]);
@@ -89,6 +89,7 @@ export default function MatchDetailClient({
 
   return (
     <>
+      <MatchJsonLd match={match} />
       <SiteHeader activeSection="matches" />
       <main style={{ flex: 1 }}>
         {/* Match header — compact single row, same height as channels header */}
@@ -185,7 +186,7 @@ export default function MatchDetailClient({
                 stream={currentStream}
                 streamId={currentStreamId ?? 'none'}
                 onError={handleStreamError}
-                fillContainer
+                fillParent
               />
             </section>
 

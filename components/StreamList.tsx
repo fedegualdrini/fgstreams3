@@ -2,26 +2,13 @@
 
 import type { Stream, StreamStatus } from '@/types/api';
 import { streamHealthMonitor } from '@/lib/streamHealth';
+import { STREAM_STATUS_CONFIG } from '@/lib/constants';
 
 interface StreamListProps {
   streams: Stream[];
   currentStreamId: string | null;
   onSelectStream: (stream: Stream, index: number) => void;
 }
-
-const statusDot: Record<StreamStatus, string> = {
-  working:  '#4ade80',
-  unstable: '#facc15',
-  offline:  '#f87171',
-  unknown:  '#6b6b6b',
-};
-
-const statusLabel: Record<StreamStatus, string> = {
-  working:  'Working',
-  unstable: 'Unstable',
-  offline:  'Offline',
-  unknown:  'Unknown',
-};
 
 export default function StreamList({ streams, currentStreamId, onSelectStream }: StreamListProps) {
   if (!streams?.length) {
@@ -74,14 +61,14 @@ export default function StreamList({ streams, currentStreamId, onSelectStream }:
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                background: statusDot[health.status],
+                background: STREAM_STATUS_CONFIG[health.status]?.color ?? '#6b7280',
                 flexShrink: 0,
               }} />
 
               {/* Info */}
               <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.75rem', color: isActive ? 'var(--text)' : 'var(--text-dim)', fontFamily: 'var(--font-body)' }}>
-                  {statusLabel[health.status]}
+                  {STREAM_STATUS_CONFIG[health.status]?.label ?? 'Unknown'}
                 </span>
                 {stream.quality && (
                   <span style={{
