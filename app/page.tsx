@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import { fetchMatches, fetchSports } from '@/lib/api';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
 import SiteHeader from '@/components/SiteHeader';
+import MatchListSkeleton from '@/components/MatchListSkeleton';
 import { REVALIDATE_MATCHES } from '@/lib/constants';
 
 export const revalidate = REVALIDATE_MATCHES;
@@ -27,10 +29,12 @@ export default async function Home() {
       <SiteHeader activeSection="matches" />
 
       <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
-        <MatchListWithSearch
-          liveMatches={liveMatches}
-          upcomingMatches={upcomingMatches}
-        />
+        <Suspense fallback={<MatchListSkeleton />}>
+          <MatchListWithSearch
+            liveMatches={liveMatches}
+            upcomingMatches={upcomingMatches}
+          />
+        </Suspense>
       </main>
 
       <footer className="bg-gray-900 border-t border-gray-800 mt-12">

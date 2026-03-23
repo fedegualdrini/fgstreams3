@@ -29,7 +29,7 @@ export default function SiteHeader({ activeSection }: SiteHeaderProps) {
         </Link>
 
         {/* Nav */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.125rem' }}>
+        <nav aria-label="Main navigation" style={{ display: 'flex', alignItems: 'center', gap: '0.125rem' }}>
           <NavLink href="/" active={activeSection === 'matches'}>Matches</NavLink>
           <NavLink href="/channels" active={activeSection === 'channels'}>Channels</NavLink>
         </nav>
@@ -42,6 +42,7 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
   return (
     <Link
       href={href}
+      aria-current={active ? 'page' : undefined}
       style={{
         fontFamily: 'var(--font-body)',
         fontSize: '0.75rem',

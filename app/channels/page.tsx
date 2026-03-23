@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import type { Channel } from '@/types/channels';
 import SiteHeader from '@/components/SiteHeader';
 import ChannelsPageClient from '@/components/ChannelsPageClient';
+import MatchListSkeleton from '@/components/MatchListSkeleton';
 
 export const metadata: Metadata = {
   title: 'Channels | Sports Streaming Mirror',
@@ -27,11 +28,7 @@ export default async function ChannelsPage() {
     <>
       <SiteHeader activeSection="channels" />
       <main style={{ flex: 1 }}>
-        <Suspense fallback={
-          <div className="page-content" style={{ paddingTop: '2rem', color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
-            Loading…
-          </div>
-        }>
+        <Suspense fallback={<MatchListSkeleton />}>
           <ChannelsPageClient channels={channels} />
         </Suspense>
       </main>

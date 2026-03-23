@@ -41,6 +41,8 @@ export default function StreamList({ streams, currentStreamId, onSelectStream }:
               key={streamId}
               type="button"
               onClick={() => onSelectStream(stream, index)}
+              aria-label={`Select ${stream.language || 'stream'} ${stream.quality || ''} from ${stream.source || 'source'}`}
+              aria-pressed={isActive}
               style={{
                 display: 'flex',
                 alignItems: 'center',

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Match, Stream } from '@/types/api';
 import StreamPlayer from './StreamPlayer';
 import StreamList from './StreamList';
@@ -16,19 +17,12 @@ import MatchJsonLd from './MatchJsonLd';
 
 interface MatchDetailClientProps {
   match: Match;
-  streams: Stream[];
-  initialStream: Stream | null;
 }
 
-export default function MatchDetailClient({
-  match,
-  streams,
-  initialStream,
-}: MatchDetailClientProps) {
-  const [currentStream, setCurrentStream] = useState<Stream | null>(initialStream);
-  const [currentStreamIndex, setCurrentStreamIndex] = useState(
-    initialStream ? Math.max(0, streams.findIndex((s) => s.url === initialStream.url)) : 0
-  );
+export default function MatchDetailClient({ match }: MatchDetailClientProps) {
+  const [streams, setStreams] = useState<Stream[]>([]);
+  const [currentStream, setCurrentStream] = useState<Stream | null>(null);
+  const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
   const [streamErrorCount, setStreamErrorCount] = useState(0);
   const [multiStreamMode, setMultiStreamMode] = useState(false);
   const { showToast, ToastComponent } = useToast();
@@ -53,6 +47,30 @@ export default function MatchDetailClient({
     }
   }, [streams, currentStreamIndex, showToast]);
 
+  // Fetch streams client-side on mount
+  useEffect(() => {
+    if (!match.sources?.length) return;
+    Promise.all(
+      match.sources.map(({ source, id }) =>
+        fetch(`/api/streams/${encodeURIComponent(source)}/${encodeURIComponent(id)}`)
+          .then(r => r.ok ? r.json() : [])
+          .catch(() => [])
+      )
+    ).then((arrays: Stream[][]) => {
+      const all: Stream[] = arrays.flat().map((s, i) => ({
+        ...s,
+        source: s.source || match.sources![i]?.source,
+      }));
+      setStreams(all);
+      const best = selectBestStream(all);
+      if (best) {
+        setCurrentStream(best);
+        setCurrentStreamIndex(Math.max(0, all.findIndex(s => s.url === best.url)));
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [match.id]);
+
   useEffect(() => {
     if (streams.length === 0) return;
 
@@ -72,9 +90,7 @@ export default function MatchDetailClient({
       });
     }, 60000);
 
-    return () => {
-      clearInterval(recoveryInterval);
-    };
+    return () => clearInterval(recoveryInterval);
   }, [streams]);
 
   const handleSelectStream = (stream: Stream, index: number) => {
@@ -115,8 +131,7 @@ export default function MatchDetailClient({
 
             {/* Team logos + names */}
             {match.image1 && (
-              <img src={getImageUrl(match.image1)} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <Image src={getImageUrl(match.image1)} alt={match.team1} width={48} height={48} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }} />
             )}
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
               {match.team1}
@@ -130,8 +145,7 @@ export default function MatchDetailClient({
               {match.team2}
             </span>
             {match.image2 && (
-              <img src={getImageUrl(match.image2)} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <Image src={getImageUrl(match.image2)} alt={match.team2} width={48} height={48} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }} />
             )}
 
             {/* League */}
@@ -152,6 +166,8 @@ export default function MatchDetailClient({
             {/* Multi-match toggle — pushed to the right */}
             <button
               type="button"
+              aria-label={multiStreamMode ? 'Switch to single stream view' : 'Switch to multi stream view'}
+              aria-pressed={multiStreamMode}
               onClick={() => setMultiStreamMode(!multiStreamMode)}
               style={{
                 marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
@@ -173,7 +189,7 @@ export default function MatchDetailClient({
         {!multiStreamMode && (
           <>
             {/* Player — full width, fixed height to stay in viewport */}
-            <section style={{
+            <section className="player-wrapper" style={{
               width: '100%',
               background: '#000',
               height: 'calc(100vh - var(--header-h) - 9rem)',

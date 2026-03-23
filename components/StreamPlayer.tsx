@@ -36,6 +36,12 @@ export default function StreamPlayer({
     setError(false);
     setIsLoading(true);
     streamHealthMonitor.updateStatus(streamId, 'unknown', false);
+    const loadTimeout = setTimeout(() => {
+      setError(true);
+      setIsLoading(false);
+      onError?.();
+    }, 10_000);
+    return () => clearTimeout(loadTimeout);
   }, [stream, streamId, onError]);
 
   const embedUrl = stream?.embedUrl || stream?.url;
@@ -54,9 +60,12 @@ export default function StreamPlayer({
   if (error) {
     return (
       <div className={stateContainerClass} style={{ ...stateContainerStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'var(--bg)' }}>
-        <p style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>Failed to load stream</p>
+        <p style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
+          {stream?.embedUrl ? 'Stream failed to load — the embed may be unavailable.' : 'No playable stream URL.'}
+        </p>
         {onError && (
           <button
+            aria-label="Try next stream"
             onClick={onError}
             style={{ padding: '0.5rem 1.25rem', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '3px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
           >
