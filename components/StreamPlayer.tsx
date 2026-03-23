@@ -26,6 +26,8 @@ export default function StreamPlayer({
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     if (!stream?.url && !stream?.embedUrl) {
       setError(true);
@@ -36,12 +38,14 @@ export default function StreamPlayer({
     setError(false);
     setIsLoading(true);
     streamHealthMonitor.updateStatus(streamId, 'unknown', false);
-    const loadTimeout = setTimeout(() => {
+    loadTimeoutRef.current = setTimeout(() => {
       setError(true);
       setIsLoading(false);
       onError?.();
     }, 10_000);
-    return () => clearTimeout(loadTimeout);
+    return () => {
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+    };
   }, [stream, streamId, onError]);
 
   const embedUrl = stream?.embedUrl || stream?.url;
@@ -96,6 +100,7 @@ export default function StreamPlayer({
         allowFullScreen
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
         onLoad={() => {
+          if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
           setIsLoading(false);
           streamHealthMonitor.updateStatus(streamId, 'working', true);
           if (muted && iframeRef.current?.contentWindow?.document) {
