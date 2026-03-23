@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
+import Spinner from '@/components/Spinner';
+import { tabButtonStyle } from '@/lib/styles';
 
 interface ChannelPlayerProps {
   channel: Channel;
@@ -67,20 +69,6 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
     );
   }
 
-  const tabBtnStyle = (active: boolean) => ({
-    padding: '0.3rem 0.75rem',
-    background: active ? 'var(--accent)' : 'rgba(15,15,15,0.85)',
-    color: active ? '#000' : 'var(--text-dim)',
-    border: `1px solid ${active ? 'var(--accent)' : 'var(--line)'}`,
-    borderRadius: '3px',
-    fontSize: '0.65rem',
-    fontWeight: 700 as const,
-    letterSpacing: '0.08em',
-    textTransform: 'uppercase' as const,
-    fontFamily: 'var(--font-body)',
-    cursor: 'pointer',
-    transition: 'all 0.12s',
-  });
   return (
     <div style={fillContainer
       ? { width: '100%', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }
@@ -89,7 +77,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
       {!fillContainer && !hideTabs && validOptions.length > 1 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '0.75rem' }}>
           {validOptions.map((option, i) => (
-            <button key={i} type="button" onClick={() => selectOption(i)} style={tabBtnStyle(i === selectedIndex)}>
+            <button key={i} type="button" onClick={() => selectOption(i)} style={tabButtonStyle(i === selectedIndex)}>
               {option.name}
             </button>
           ))}
@@ -100,9 +88,8 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
         style={fillContainer ? { position: 'relative' as const, width: '100%', flex: 1, minHeight: 0 } : { position: 'relative' as const }}
       >
         {isLoading && !timedOut && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10, gap: '0.75rem' }}>
-            <div style={{ width: '32px', height: '32px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-            <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Loading stream...</span>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10 }}>
+            <Spinner label="Loading stream..." />
           </div>
         )}
         {timedOut && (
@@ -124,7 +111,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
         {fillContainer && !hideTabs && validOptions.length > 1 && (
           <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', zIndex: 20, display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {validOptions.map((option, i) => (
-              <button key={i} type="button" onClick={() => selectOption(i)} style={tabBtnStyle(i === selectedIndex)}>
+              <button key={i} type="button" onClick={() => selectOption(i)} style={tabButtonStyle(i === selectedIndex)}>
                 {option.name}
               </button>
             ))}

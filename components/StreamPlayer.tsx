@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Stream } from '@/types/api';
 import { streamHealthMonitor } from '@/lib/streamHealth';
+import Spinner from '@/components/Spinner';
 
 interface StreamPlayerProps {
   stream: Stream | null;
@@ -73,9 +74,8 @@ export default function StreamPlayer({
   return (
     <div className={fillContainer ? undefined : 'video-container'} style={containerStyle}>
       {isLoading && (
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10, flexDirection: 'column', gap: '0.75rem' }}>
-          <div style={{ width: '32px', height: '32px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-          <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Loading stream…</span>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10 }}>
+          <Spinner label="Loading stream…" />
         </div>
       )}
       <iframe
