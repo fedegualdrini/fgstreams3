@@ -4,9 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import type { Stream } from '@/types/api';
 import { streamHealthMonitor } from '@/lib/streamHealth';
 
-const EMBED_REFRESH_INTERVAL = 3 * 60 * 1000; // 3 minutes — resets pooembed.eu session before JW Player's ~4-min refresh cycle triggers 403
-const VISIBILITY_REFRESH_MIN_GAP = 30 * 1000; // only refresh on tab-return if ≥30s since last load
-
 interface StreamPlayerProps {
   stream: Stream | null;
   streamId: string;
@@ -27,21 +24,6 @@ export default function StreamPlayer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [streamKey, setStreamKey] = useState(0); // increments only on stream prop change to force remount
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const lastLoadTime = useRef<number>(Date.now());
-  const embedUrlRef = useRef<string | undefined>(undefined);
-
-  // Soft reload: navigate the existing iframe element to the same URL.
-  // Avoids destroying/recreating the iframe DOM node so the browser preserves
-  // the user-activation context — critical for autoplay to work after refresh.
-  const triggerRefresh = () => {
-    if (document.hidden) return; // defer to visibilitychange handler when tab is not visible
-    const url = embedUrlRef.current;
-    if (!url || !iframeRef.current) return;
-    setIsRefreshing(true);
-    iframeRef.current.src = url;
-  };
 
   useEffect(() => {
     if (!stream?.url && !stream?.embedUrl) {
@@ -52,28 +34,10 @@ export default function StreamPlayer({
     }
     setError(false);
     setIsLoading(true);
-    setStreamKey(k => k + 1); // remount iframe on stream change
     streamHealthMonitor.updateStatus(streamId, 'unknown', false);
-
-    // Proactive token refresh — prevents pooembed.eu 403 before JW Player's ~4-min internal refresh
-    const interval = setInterval(triggerRefresh, EMBED_REFRESH_INTERVAL);
-
-    // Stall recovery — reload when user returns to tab after the stream may have stalled
-    const handleVisibilityChange = () => {
-      if (!document.hidden && Date.now() - lastLoadTime.current >= VISIBILITY_REFRESH_MIN_GAP) {
-        triggerRefresh();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
   }, [stream, streamId, onError]);
 
   const embedUrl = stream?.embedUrl || stream?.url;
-  embedUrlRef.current = embedUrl;
 
   const stateContainerClass = fillContainer ? undefined : 'video-container';
   const stateContainerStyle = fillContainer ? { width: '100%', height: '100%' } : {};
@@ -108,14 +72,14 @@ export default function StreamPlayer({
 
   return (
     <div className={fillContainer ? undefined : 'video-container'} style={containerStyle}>
-      {isLoading && !isRefreshing && (
+      {isLoading && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10, flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{ width: '32px', height: '32px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
           <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Loading stream…</span>
         </div>
       )}
       <iframe
-        key={streamKey}
+        key={embedUrl}
         ref={iframeRef}
         src={embedUrl}
         title="Stream"
@@ -124,8 +88,6 @@ export default function StreamPlayer({
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
         onLoad={() => {
           setIsLoading(false);
-          setIsRefreshing(false);
-          lastLoadTime.current = Date.now();
           streamHealthMonitor.updateStatus(streamId, 'working', true);
           if (muted && iframeRef.current?.contentWindow?.document) {
             try {
