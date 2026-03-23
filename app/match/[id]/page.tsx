@@ -3,12 +3,13 @@ import { selectBestStream } from '@/lib/streamSelector';
 import MatchDetailClient from '@/components/MatchDetailClient';
 import { notFound } from 'next/navigation';
 import type { Stream } from '@/types/api';
+import { REVALIDATE_MATCHES } from '@/lib/constants';
 
 interface MatchDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const revalidate = 30;
+export const revalidate = REVALIDATE_MATCHES;
 
 export default async function MatchDetailPage({ params }: MatchDetailPageProps) {
   const { id } = await params;

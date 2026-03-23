@@ -1,5 +1,6 @@
 import type { Match, Stream, Sport } from '@/types/api';
 import { normalizeMatches } from './matchUtils';
+import { REVALIDATE_MATCHES, REVALIDATE_STREAMS, REVALIDATE_SPORTS } from './constants';
 
 const API_BASE = 'https://streamed.pk/api';
 
@@ -7,7 +8,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
   if (sport) {
     try {
       const response = await fetch(`${API_BASE}/matches/${sport}`, {
-        next: { revalidate: 30 },
+        next: { revalidate: REVALIDATE_MATCHES },
         headers: { Accept: 'application/json' },
       });
       if (!response.ok) {
@@ -32,7 +33,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
 
     const matchPromises = sports.map(sportItem =>
       fetch(`${API_BASE}/matches/${sportItem.id}`, {
-        next: { revalidate: 30 },
+        next: { revalidate: REVALIDATE_MATCHES },
         headers: { Accept: 'application/json' },
       })
         .then(response => {
@@ -61,7 +62,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
 export async function fetchStreams(source: string, id: string): Promise<Stream[]> {
   try {
     const response = await fetch(`${API_BASE}/stream/${source}/${id}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: REVALIDATE_STREAMS },
       headers: { Accept: 'application/json' },
     });
     if (!response.ok) {
@@ -98,7 +99,7 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
 export async function fetchSports(): Promise<Sport[]> {
   try {
     const response = await fetch(`${API_BASE}/sports`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: REVALIDATE_SPORTS },
     });
     if (!response.ok) throw new Error(`Failed to fetch sports: ${response.statusText}`);
     return await response.json();

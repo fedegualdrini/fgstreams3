@@ -1,4 +1,5 @@
 import type { StreamStatus, StreamHealth } from '@/types/api';
+import { HEALTH_OFFLINE_ERROR_THRESHOLD } from './constants';
 
 export class StreamHealthMonitor {
   private healthMap: Map<string, StreamHealth> = new Map();
@@ -44,7 +45,7 @@ export class StreamHealthMonitor {
     } catch {
       const existing = this.getStatus(streamId);
       const newStatus: StreamStatus =
-        existing.status === 'working' ? 'unstable' : existing.errorCount >= 2 ? 'offline' : 'unstable';
+        existing.status === 'working' ? 'unstable' : existing.errorCount >= HEALTH_OFFLINE_ERROR_THRESHOLD ? 'offline' : 'unstable';
       this.updateStatus(streamId, newStatus, false);
       return newStatus;
     }
