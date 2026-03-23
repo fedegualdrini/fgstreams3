@@ -27,13 +27,20 @@ export default function StreamPlayer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [iframeKey, setIframeKey] = useState(0);
+  const [streamKey, setStreamKey] = useState(0); // increments only on stream prop change to force remount
   const [isRefreshing, setIsRefreshing] = useState(false);
   const lastLoadTime = useRef<number>(Date.now());
+  const embedUrlRef = useRef<string | undefined>(undefined);
 
+  // Soft reload: navigate the existing iframe element to the same URL.
+  // Avoids destroying/recreating the iframe DOM node so the browser preserves
+  // the user-activation context — critical for autoplay to work after refresh.
   const triggerRefresh = () => {
+    if (document.hidden) return; // defer to visibilitychange handler when tab is not visible
+    const url = embedUrlRef.current;
+    if (!url || !iframeRef.current) return;
     setIsRefreshing(true);
-    setIframeKey(k => k + 1);
+    iframeRef.current.src = url;
   };
 
   useEffect(() => {
@@ -45,7 +52,7 @@ export default function StreamPlayer({
     }
     setError(false);
     setIsLoading(true);
-    setIframeKey(0);
+    setStreamKey(k => k + 1); // remount iframe on stream change
     streamHealthMonitor.updateStatus(streamId, 'unknown', false);
 
     // Proactive token refresh — prevents pooembed.eu 403 before JW Player's ~4-min internal refresh
@@ -66,6 +73,7 @@ export default function StreamPlayer({
   }, [stream, streamId, onError]);
 
   const embedUrl = stream?.embedUrl || stream?.url;
+  embedUrlRef.current = embedUrl;
 
   const stateContainerClass = fillContainer ? undefined : 'video-container';
   const stateContainerStyle = fillContainer ? { width: '100%', height: '100%' } : {};
@@ -107,7 +115,7 @@ export default function StreamPlayer({
         </div>
       )}
       <iframe
-        key={iframeKey}
+        key={streamKey}
         ref={iframeRef}
         src={embedUrl}
         title="Stream"
