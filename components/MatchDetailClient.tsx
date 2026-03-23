@@ -17,19 +17,12 @@ import MatchJsonLd from './MatchJsonLd';
 
 interface MatchDetailClientProps {
   match: Match;
-  streams: Stream[];
-  initialStream: Stream | null;
 }
 
-export default function MatchDetailClient({
-  match,
-  streams,
-  initialStream,
-}: MatchDetailClientProps) {
-  const [currentStream, setCurrentStream] = useState<Stream | null>(initialStream);
-  const [currentStreamIndex, setCurrentStreamIndex] = useState(
-    initialStream ? Math.max(0, streams.findIndex((s) => s.url === initialStream.url)) : 0
-  );
+export default function MatchDetailClient({ match }: MatchDetailClientProps) {
+  const [streams, setStreams] = useState<Stream[]>([]);
+  const [currentStream, setCurrentStream] = useState<Stream | null>(null);
+  const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
   const [streamErrorCount, setStreamErrorCount] = useState(0);
   const [multiStreamMode, setMultiStreamMode] = useState(false);
   const { showToast, ToastComponent } = useToast();
@@ -54,6 +47,30 @@ export default function MatchDetailClient({
     }
   }, [streams, currentStreamIndex, showToast]);
 
+  // Fetch streams client-side on mount
+  useEffect(() => {
+    if (!match.sources?.length) return;
+    Promise.all(
+      match.sources.map(({ source, id }) =>
+        fetch(`/api/streams/${encodeURIComponent(source)}/${encodeURIComponent(id)}`)
+          .then(r => r.ok ? r.json() : [])
+          .catch(() => [])
+      )
+    ).then((arrays: Stream[][]) => {
+      const all: Stream[] = arrays.flat().map((s, i) => ({
+        ...s,
+        source: s.source || match.sources![i]?.source,
+      }));
+      setStreams(all);
+      const best = selectBestStream(all);
+      if (best) {
+        setCurrentStream(best);
+        setCurrentStreamIndex(Math.max(0, all.findIndex(s => s.url === best.url)));
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [match.id]);
+
   useEffect(() => {
     if (streams.length === 0) return;
 
@@ -73,9 +90,7 @@ export default function MatchDetailClient({
       });
     }, 60000);
 
-    return () => {
-      clearInterval(recoveryInterval);
-    };
+    return () => clearInterval(recoveryInterval);
   }, [streams]);
 
   const handleSelectStream = (stream: Stream, index: number) => {
