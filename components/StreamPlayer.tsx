@@ -5,6 +5,7 @@ import type { Stream } from '@/types/api';
 import { streamHealthMonitor } from '@/lib/streamHealth';
 
 const EMBED_REFRESH_INTERVAL = 3 * 60 * 1000; // 3 minutes — resets pooembed.eu session before JW Player's ~4-min refresh cycle triggers 403
+const VISIBILITY_REFRESH_MIN_GAP = 30 * 1000; // only refresh on tab-return if ≥30s since last load
 
 interface StreamPlayerProps {
   stream: Stream | null;
@@ -28,6 +29,12 @@ export default function StreamPlayer({
   const [isLoading, setIsLoading] = useState(true);
   const [iframeKey, setIframeKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const lastLoadTime = useRef<number>(Date.now());
+
+  const triggerRefresh = () => {
+    setIsRefreshing(true);
+    setIframeKey(k => k + 1);
+  };
 
   useEffect(() => {
     if (!stream?.url && !stream?.embedUrl) {
@@ -41,12 +48,21 @@ export default function StreamPlayer({
     setIframeKey(0);
     streamHealthMonitor.updateStatus(streamId, 'unknown', false);
 
-    const interval = setInterval(() => {
-      setIsRefreshing(true);
-      setIframeKey(k => k + 1);
-    }, EMBED_REFRESH_INTERVAL);
+    // Proactive token refresh — prevents pooembed.eu 403 before JW Player's ~4-min internal refresh
+    const interval = setInterval(triggerRefresh, EMBED_REFRESH_INTERVAL);
 
-    return () => clearInterval(interval);
+    // Stall recovery — reload when user returns to tab after the stream may have stalled
+    const handleVisibilityChange = () => {
+      if (!document.hidden && Date.now() - lastLoadTime.current >= VISIBILITY_REFRESH_MIN_GAP) {
+        triggerRefresh();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [stream, streamId, onError]);
 
   const embedUrl = stream?.embedUrl || stream?.url;
@@ -101,6 +117,7 @@ export default function StreamPlayer({
         onLoad={() => {
           setIsLoading(false);
           setIsRefreshing(false);
+          lastLoadTime.current = Date.now();
           streamHealthMonitor.updateStatus(streamId, 'working', true);
           if (muted && iframeRef.current?.contentWindow?.document) {
             try {
