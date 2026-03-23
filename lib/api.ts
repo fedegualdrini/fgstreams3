@@ -4,10 +4,26 @@ import { REVALIDATE_MATCHES, REVALIDATE_STREAMS, REVALIDATE_SPORTS } from './con
 
 const API_BASE = 'https://streamed.pk/api';
 
+async function fetchWithRetry(url: string, options: RequestInit, retries = 2): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok || attempt === retries) return res;
+      // Only retry on 5xx server errors, not 4xx client errors
+      if (res.status < 500) return res;
+      await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
+    } catch (err) {
+      if (attempt === retries) throw err;
+      await new Promise(r => setTimeout(r, 300 * (attempt + 1)));
+    }
+  }
+  throw new Error(`Failed after ${retries + 1} attempts: ${url}`);
+}
+
 export async function fetchMatches(sport?: string): Promise<Match[]> {
   if (sport) {
     try {
-      const response = await fetch(`${API_BASE}/matches/${sport}`, {
+      const response = await fetchWithRetry(`${API_BASE}/matches/${sport}`, {
         next: { revalidate: REVALIDATE_MATCHES },
         headers: { Accept: 'application/json' },
       });
@@ -32,7 +48,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
     }
 
     const matchPromises = sports.map(sportItem =>
-      fetch(`${API_BASE}/matches/${sportItem.id}`, {
+      fetchWithRetry(`${API_BASE}/matches/${sportItem.id}`, {
         next: { revalidate: REVALIDATE_MATCHES },
         headers: { Accept: 'application/json' },
       })
@@ -61,7 +77,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
 
 export async function fetchStreams(source: string, id: string): Promise<Stream[]> {
   try {
-    const response = await fetch(`${API_BASE}/stream/${source}/${id}`, {
+    const response = await fetchWithRetry(`${API_BASE}/stream/${source}/${id}`, {
       next: { revalidate: REVALIDATE_STREAMS },
       headers: { Accept: 'application/json' },
     });
@@ -98,7 +114,7 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
 
 export async function fetchSports(): Promise<Sport[]> {
   try {
-    const response = await fetch(`${API_BASE}/sports`, {
+    const response = await fetchWithRetry(`${API_BASE}/sports`, {
       next: { revalidate: REVALIDATE_SPORTS },
     });
     if (!response.ok) throw new Error(`Failed to fetch sports: ${response.statusText}`);

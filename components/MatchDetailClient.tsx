@@ -60,8 +60,8 @@ export default function MatchDetailClient({
       url: s.url || s.embedUrl || '',
     }));
 
-    streamHealthMonitor.startPeriodicCheck(streamIds, 30000);
-
+    // Health status is driven by onLoad/onError events from StreamPlayer.
+    // The recovery check below handles streams that went offline and may have recovered.
     const recoveryInterval = setInterval(() => {
       streamIds.forEach(async ({ id, url }) => {
         const health = streamHealthMonitor.getStatus(id);
@@ -72,7 +72,6 @@ export default function MatchDetailClient({
     }, 60000);
 
     return () => {
-      streamHealthMonitor.stopPeriodicCheck();
       clearInterval(recoveryInterval);
     };
   }, [streams]);
