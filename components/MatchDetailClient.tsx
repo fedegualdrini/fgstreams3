@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Match, Stream } from '@/types/api';
 import StreamPlayer from './StreamPlayer';
 import StreamList from './StreamList';
@@ -115,8 +116,7 @@ export default function MatchDetailClient({
 
             {/* Team logos + names */}
             {match.image1 && (
-              <img src={getImageUrl(match.image1)} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <Image src={getImageUrl(match.image1)} alt={match.team1} width={48} height={48} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }} />
             )}
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
               {match.team1}
@@ -130,8 +130,7 @@ export default function MatchDetailClient({
               {match.team2}
             </span>
             {match.image2 && (
-              <img src={getImageUrl(match.image2)} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <Image src={getImageUrl(match.image2)} alt={match.team2} width={48} height={48} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }} />
             )}
 
             {/* League */}
