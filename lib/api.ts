@@ -2,6 +2,8 @@ import type { Match, Stream, Sport } from '@/types/api';
 import { normalizeMatches } from './matchUtils';
 
 const API_BASE = 'https://streamed.pk/api';
+const SPORT_SRC_V2_BASE = 'https://api.sportsrc.org/v2/';
+const SPORT_SRC_API_KEY = process.env.SPORTSRC_API_KEY || 'cbcfaca83b2019eacf607dd3732bd305';
 
 export async function fetchMatches(sport?: string): Promise<Match[]> {
   if (sport) {
@@ -105,6 +107,57 @@ export async function fetchSports(): Promise<Sport[]> {
   } catch (error) {
     console.error('Error fetching sports:', error);
     return [];
+  }
+}
+
+export async function fetchRscMatches(): Promise<any | null> {
+  const today = new Date().toISOString().slice(0, 10);
+  const url = `${SPORT_SRC_V2_BASE}?type=matches&sport=football&status=inprogress&date=${today}`;
+
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+      headers: {
+        Accept: 'application/json',
+        'X-API-KEY': SPORT_SRC_API_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`SportSRC API Error: ${response.status} ${response.statusText} for ${url}`);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching SportSRC matches:', error);
+    return null;
+  }
+}
+
+export async function fetchRscDetail(id: string): Promise<any | null> {
+  if (!id) return null;
+
+  const url = `${SPORT_SRC_V2_BASE}?type=detail&id=${encodeURIComponent(id)}`;
+
+  try {
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+      headers: {
+        Accept: 'application/json',
+        'X-API-KEY': SPORT_SRC_API_KEY,
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`SportSRC detail API Error: ${response.status} ${response.statusText} for ${url}`);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching SportSRC detail:', error);
+    return null;
   }
 }
 
