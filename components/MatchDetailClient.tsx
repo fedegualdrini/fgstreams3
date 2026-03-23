@@ -151,6 +151,8 @@ export default function MatchDetailClient({
             {/* Multi-match toggle — pushed to the right */}
             <button
               type="button"
+              aria-label={multiStreamMode ? 'Switch to single stream view' : 'Switch to multi stream view'}
+              aria-pressed={multiStreamMode}
               onClick={() => setMultiStreamMode(!multiStreamMode)}
               style={{
                 marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
@@ -172,7 +174,7 @@ export default function MatchDetailClient({
         {!multiStreamMode && (
           <>
             {/* Player — full width, fixed height to stay in viewport */}
-            <section style={{
+            <section className="player-wrapper" style={{
               width: '100%',
               background: '#000',
               height: 'calc(100vh - var(--header-h) - 9rem)',

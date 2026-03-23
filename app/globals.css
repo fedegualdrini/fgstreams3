@@ -140,4 +140,8 @@ body::before {
 /* ── Mobile ── */
 @media (max-width: 768px) {
   .page-content { padding: 0 1rem; }
+  .player-wrapper {
+    height: 56vw; /* 16:9 aspect ratio on mobile */
+    max-height: 280px;
+  }
 }

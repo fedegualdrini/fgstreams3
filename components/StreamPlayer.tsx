@@ -65,6 +65,7 @@ export default function StreamPlayer({
         </p>
         {onError && (
           <button
+            aria-label="Try next stream"
             onClick={onError}
             style={{ padding: '0.5rem 1.25rem', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '3px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
           >

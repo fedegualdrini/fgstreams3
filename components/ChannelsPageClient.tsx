@@ -60,6 +60,15 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
     }
   };
 
+  useEffect(() => {
+    if (!selectedChannel) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedChannel(null);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedChannel]);
+
   const filtered = useMemo(() => {
     if (!search.trim()) return channels;
     const q = search.toLowerCase();
@@ -70,7 +79,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
     <div style={{ flex: 1 }}>
       {/* Player panel — full width, same layout as match player */}
       {selectedChannel && (
-        <>
+        <div role="dialog" aria-modal="true" aria-label="Channel player">
           {/* Channel header — constrained */}
           <div className="page-content" style={{ paddingTop: '1.5rem', paddingBottom: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -162,7 +171,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
               <div style={{ borderBottom: '1px solid var(--line)', marginBottom: '2rem' }} />
             );
           })()}
-        </>
+        </div>
       )}
 
       {/* Main content */}
