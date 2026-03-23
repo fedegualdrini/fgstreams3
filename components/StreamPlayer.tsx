@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { Stream } from '@/types/api';
 import { streamHealthMonitor } from '@/lib/streamHealth';
 
+const EMBED_REFRESH_INTERVAL = 3 * 60 * 1000; // 3 minutes — resets pooembed.eu session before JW Player's ~4-min refresh cycle triggers 403
+
 interface StreamPlayerProps {
   stream: Stream | null;
   streamId: string;
@@ -24,6 +26,8 @@ export default function StreamPlayer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if (!stream?.url && !stream?.embedUrl) {
@@ -34,7 +38,15 @@ export default function StreamPlayer({
     }
     setError(false);
     setIsLoading(true);
+    setIframeKey(0);
     streamHealthMonitor.updateStatus(streamId, 'unknown', false);
+
+    const interval = setInterval(() => {
+      setIsRefreshing(true);
+      setIframeKey(k => k + 1);
+    }, EMBED_REFRESH_INTERVAL);
+
+    return () => clearInterval(interval);
   }, [stream, streamId, onError]);
 
   const embedUrl = stream?.embedUrl || stream?.url;
@@ -72,13 +84,14 @@ export default function StreamPlayer({
 
   return (
     <div className={fillContainer ? undefined : 'video-container'} style={containerStyle}>
-      {isLoading && (
+      {isLoading && !isRefreshing && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10, flexDirection: 'column', gap: '0.75rem' }}>
           <div style={{ width: '32px', height: '32px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
           <span style={{ fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>Loading stream…</span>
         </div>
       )}
       <iframe
+        key={iframeKey}
         ref={iframeRef}
         src={embedUrl}
         title="Stream"
@@ -87,6 +100,7 @@ export default function StreamPlayer({
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
         onLoad={() => {
           setIsLoading(false);
+          setIsRefreshing(false);
           streamHealthMonitor.updateStatus(streamId, 'working', true);
           if (muted && iframeRef.current?.contentWindow?.document) {
             try {

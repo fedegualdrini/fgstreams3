@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 interface SiteHeaderProps {
-  activeSection?: 'matches' | 'channels';
+  activeSection?: 'matches' | 'channels' | 'rsc';
 }
 
 export default function SiteHeader({ activeSection }: SiteHeaderProps) {
@@ -32,6 +32,7 @@ export default function SiteHeader({ activeSection }: SiteHeaderProps) {
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.125rem' }}>
           <NavLink href="/" active={activeSection === 'matches'}>Matches</NavLink>
           <NavLink href="/channels" active={activeSection === 'channels'}>Channels</NavLink>
+          <NavLink href="/rsc" active={activeSection === 'rsc'}>RSC</NavLink>
         </nav>
       </div>
     </header>
