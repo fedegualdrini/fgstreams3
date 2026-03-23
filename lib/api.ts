@@ -87,6 +87,8 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
     }
     const data = await response.json();
 
+    // streamed.pk returns either an array of streams or a single stream object.
+    // Both shapes are normalized to Stream[] here.
     if (Array.isArray(data)) {
       return data.map((stream: RawStream) => ({
         url: stream.url || stream.embedUrl || '',
