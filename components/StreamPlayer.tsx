@@ -11,7 +11,7 @@ interface StreamPlayerProps {
   autoPlay?: boolean;
   muted?: boolean;
   onError?: () => void;
-  fillContainer?: boolean;
+  fillParent?: boolean;
 }
 
 export default function StreamPlayer({
@@ -20,7 +20,7 @@ export default function StreamPlayer({
   autoPlay = true,
   muted = false,
   onError,
-  fillContainer = false,
+  fillParent = false,
 }: StreamPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState(false);
@@ -40,8 +40,8 @@ export default function StreamPlayer({
 
   const embedUrl = stream?.embedUrl || stream?.url;
 
-  const stateContainerClass = fillContainer ? undefined : 'video-container';
-  const stateContainerStyle = fillContainer ? { width: '100%', height: '100%' } : {};
+  const stateContainerClass = fillParent ? undefined : 'video-container';
+  const stateContainerStyle = fillParent ? { width: '100%', height: '100%' } : {};
 
   if (!embedUrl) {
     return (
@@ -67,12 +67,12 @@ export default function StreamPlayer({
     );
   }
 
-  const containerStyle = fillContainer
+  const containerStyle = fillParent
     ? { position: 'relative' as const, width: '100%', height: '100%' }
     : { position: 'relative' as const };
 
   return (
-    <div className={fillContainer ? undefined : 'video-container'} style={containerStyle}>
+    <div className={fillParent ? undefined : 'video-container'} style={containerStyle}>
       {isLoading && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10 }}>
           <Spinner label="Loading stream…" />

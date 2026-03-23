@@ -26,7 +26,7 @@ export default function MatchDetailClient({
 }: MatchDetailClientProps) {
   const [currentStream, setCurrentStream] = useState<Stream | null>(initialStream);
   const [currentStreamIndex, setCurrentStreamIndex] = useState(
-    initialStream ? streams.findIndex((s) => s.url === initialStream.url) : 0
+    initialStream ? Math.max(0, streams.findIndex((s) => s.url === initialStream.url)) : 0
   );
   const [streamErrorCount, setStreamErrorCount] = useState(0);
   const [multiStreamMode, setMultiStreamMode] = useState(false);
@@ -185,7 +185,7 @@ export default function MatchDetailClient({
                 stream={currentStream}
                 streamId={currentStreamId ?? 'none'}
                 onError={handleStreamError}
-                fillContainer
+                fillParent
               />
             </section>
 

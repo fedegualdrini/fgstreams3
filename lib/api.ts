@@ -1,4 +1,4 @@
-import type { Match, Stream, Sport } from '@/types/api';
+import type { Match, Stream, Sport, RawStream, RawMatch } from '@/types/api';
 import { normalizeMatches } from './matchUtils';
 import { REVALIDATE_MATCHES, REVALIDATE_STREAMS, REVALIDATE_SPORTS } from './constants';
 
@@ -43,7 +43,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
           }
           return response.json();
         })
-        .then((data: any) => Array.isArray(data) ? data : [])
+        .then((data: RawMatch[]) => Array.isArray(data) ? data : [])
         .catch(error => {
           console.error(`Error fetching ${sportItem.name} matches:`, error);
           return [];
@@ -72,7 +72,7 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
     const data = await response.json();
 
     if (Array.isArray(data)) {
-      return data.map((stream: any) => ({
+      return data.map((stream: RawStream) => ({
         url: stream.url || stream.embedUrl || '',
         embedUrl: stream.embedUrl || stream.url || '',
         language: stream.language,
