@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import type { Match } from '@/types/api';
+import type { Match, FlashscoreEntry } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
+import { useLiveScores } from '@/lib/useLiveScores';
 
 function matchesSearch(match: Match, q: string): boolean {
   const normalized = q.trim().toLowerCase();
@@ -19,6 +20,7 @@ interface MatchListWithSearchProps {
 
 export default function MatchListWithSearch({ liveMatches, upcomingMatches }: MatchListWithSearchProps) {
   const [query, setQuery] = useState('');
+  const scoreMap = useLiveScores(liveMatches);
 
   const filteredLive = liveMatches.filter((m) => matchesSearch(m, query));
   const filteredUpcoming = upcomingMatches.filter((m) => matchesSearch(m, query));
@@ -71,7 +73,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
       {filteredLive.length > 0 && (
         <section style={{ marginBottom: '3rem' }}>
           <SectionHeader live count={filteredLive.length}>Live Now</SectionHeader>
-          <MatchGrid matches={filteredLive} />
+          <MatchGrid matches={filteredLive} scoreMap={scoreMap} />
         </section>
       )}
 
@@ -82,7 +84,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
             {filteredLive.length > 0 ? 'Upcoming' : 'All Matches'}
           </SectionHeader>
           {filteredUpcoming.length > 0 ? (
-            <MatchGrid matches={filteredUpcoming} />
+            <MatchGrid matches={filteredUpcoming} scoreMap={scoreMap} />
           ) : noMatchesAtAll ? (
             <EmptyState>No matches available right now. Check back soon.</EmptyState>
           ) : (
@@ -126,7 +128,7 @@ function SectionHeader({ children, count, live }: { children: React.ReactNode; c
   );
 }
 
-function MatchGrid({ matches }: { matches: Match[] }) {
+function MatchGrid({ matches, scoreMap }: { matches: Match[]; scoreMap: Map<string, FlashscoreEntry> }) {
   return (
     <div style={{
       display: 'grid',
@@ -137,23 +139,26 @@ function MatchGrid({ matches }: { matches: Match[] }) {
       borderRadius: '6px',
       overflow: 'hidden',
     }}>
-      {matches.map((match) => (
-        <Link
-          key={match.id}
-          href={`/match/${match.id}`}
-          style={{
-            display: 'block',
-            background: 'var(--bg-1)',
-            textDecoration: 'none',
-            color: 'inherit',
-            transition: 'background 0.12s',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
-        >
-          <MatchCard match={match} />
-        </Link>
-      ))}
+      {matches.map((match) => {
+        const entry = scoreMap.get(match.id);
+        return (
+          <Link
+            key={match.id}
+            href={`/match/${match.id}`}
+            style={{
+              display: 'block',
+              background: 'var(--bg-1)',
+              textDecoration: 'none',
+              color: 'inherit',
+              transition: 'background 0.12s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
+          >
+            <MatchCard match={match} score={entry?.score} scoreMinute={entry?.minute} />
+          </Link>
+        );
+      })}
     </div>
   );
 }

@@ -79,6 +79,62 @@ export interface Sport {
 
 export type StreamStatus = 'working' | 'unstable' | 'offline' | 'unknown';
 
+// Flashscore live score entry (one row from #score-data)
+export interface FlashscoreEntry {
+  flashscoreId: string;
+  league: string;
+  team1: string;
+  team2: string;
+  score: string | null;  // e.g. "2:1", null if match not started ("-:-")
+  status: string;        // "live" | "fin" | "sched"
+  minute: string;        // "25'" | "4th Quarter" | "FT" | ""
+}
+
+// Individual match event (goal, card, substitution)
+export interface FlashscoreEvent {
+  minute: string;
+  type: 'goal' | 'yellow_card' | 'red_card' | 'substitution' | 'other';
+  team: 'home' | 'away' | 'unknown';
+  player: string;
+}
+
+// One row in the match statistics table (e.g. Ball Possession, Shots on Goal)
+export interface FlashscoreStat {
+  label: string;
+  home: string;    // display value, e.g. "58%"
+  away: string;
+  homePct: number; // 0–100 for the bar width
+  awayPct: number;
+}
+
+// A single player in a lineup (starters or substitutes)
+export interface FlashscorePlayer {
+  number: string;
+  name: string;
+}
+
+// Lineups for both teams
+export interface FlashscoreLineups {
+  homeTeam: string;
+  awayTeam: string;
+  homePlayers: FlashscorePlayer[];
+  awayPlayers: FlashscorePlayer[];
+  homeSubs: FlashscorePlayer[];
+  awaySubs: FlashscorePlayer[];
+}
+
+// Full match detail from the match detail page
+export interface FlashscoreDetail {
+  flashscoreId: string;
+  score: string | null;
+  status: string;   // "live" | "fin" | "sched"
+  minute: string;
+  periods: string;  // e.g. "(1:0, 1:1)"
+  events: FlashscoreEvent[];
+  stats: FlashscoreStat[];
+  lineups: FlashscoreLineups | null;
+}
+
 export interface StreamHealth {
   streamId: string;
   status: StreamStatus;

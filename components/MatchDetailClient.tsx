@@ -14,6 +14,8 @@ import { useLocalTime } from '@/lib/dateUtils';
 import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
 import MatchJsonLd from './MatchJsonLd';
+import MatchStatsPanel from './MatchStatsPanel';
+import { useMatchStats } from '@/lib/useMatchStats';
 
 interface MatchDetailClientProps {
   match: Match;
@@ -102,6 +104,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
+  const matchStats = useMatchStats(match);
 
   return (
     <>
@@ -137,9 +140,22 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
               {match.team1}
             </span>
 
-            <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: 'var(--muted)', padding: '0.15rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0 }}>
-              VS
-            </span>
+            {matchStats?.score ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, padding: '0.15rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px', minWidth: '2.75rem', textAlign: 'center' }}>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', letterSpacing: '0.04em', color: 'var(--accent)', lineHeight: 1 }}>
+                  {matchStats.score}
+                </span>
+                {matchStats.minute && (
+                  <span style={{ fontSize: '0.5rem', color: 'var(--red)', letterSpacing: '0.05em', marginTop: '1px' }}>
+                    {matchStats.minute}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: 'var(--muted)', padding: '0.15rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0 }}>
+                VS
+              </span>
+            )}
 
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
               {match.team2}
@@ -206,13 +222,14 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
               />
             </section>
 
-            {/* Streams list — centered below */}
+            {/* Streams list + stats — centered below */}
             <div className="page-content" style={{ paddingBottom: '3rem' }}>
               <StreamList
                 streams={streams}
                 currentStreamId={currentStreamId}
                 onSelectStream={handleSelectStream}
               />
+              {matchStats && <MatchStatsPanel detail={matchStats} />}
             </div>
           </>
         )}

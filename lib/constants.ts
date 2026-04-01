@@ -8,6 +8,10 @@ export const HEALTH_CHECK_INTERVAL_MS = 30_000;
 export const HEALTH_RECOVERY_INTERVAL_MS = 60_000;
 export const HEALTH_OFFLINE_ERROR_THRESHOLD = 2;
 
+// Score polling intervals (ms)
+export const SCORES_POLL_INTERVAL_MS = 45_000;
+export const FIXTURE_POLL_INTERVAL_MS = 30_000;
+
 // Stream status display config
 export const STREAM_STATUS_CONFIG: Record<string, { color: string; label: string }> = {
   working:  { color: '#22c55e', label: 'Live'     },

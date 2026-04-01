@@ -27,12 +27,16 @@ export default function StreamPlayer({
   const [isLoading, setIsLoading] = useState(true);
 
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Keep a stable ref to onError so the load-timeout effect doesn't re-run
+  // (and restart the 10s countdown) whenever the callback reference changes.
+  const onErrorRef = useRef(onError);
+  useEffect(() => { onErrorRef.current = onError; });
 
   useEffect(() => {
     if (!stream?.url && !stream?.embedUrl) {
       setError(true);
       setIsLoading(false);
-      onError?.();
+      onErrorRef.current?.();
       return;
     }
     setError(false);
@@ -41,12 +45,12 @@ export default function StreamPlayer({
     loadTimeoutRef.current = setTimeout(() => {
       setError(true);
       setIsLoading(false);
-      onError?.();
+      onErrorRef.current?.();
     }, 10_000);
     return () => {
       if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
     };
-  }, [stream, streamId, onError]);
+  }, [stream, streamId]); // onError intentionally excluded — use onErrorRef instead
 
   const embedUrl = stream?.embedUrl || stream?.url;
 
@@ -116,7 +120,7 @@ export default function StreamPlayer({
           setError(true);
           setIsLoading(false);
           streamHealthMonitor.updateStatus(streamId, 'offline', false);
-          onError?.();
+          onErrorRef.current?.();
         }}
       />
     </div>

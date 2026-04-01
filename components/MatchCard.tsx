@@ -6,9 +6,11 @@ import { useLocalTime } from '@/lib/dateUtils';
 
 interface MatchCardProps {
   match: Match;
+  score?: string | null;
+  scoreMinute?: string;
 }
 
-export default function MatchCard({ match }: MatchCardProps) {
+export default function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
@@ -74,18 +76,47 @@ export default function MatchCard({ match }: MatchCardProps) {
             }}>
               {match.team1}
             </span>
-            <span style={{
-              fontSize: '0.6rem',
-              fontWeight: 700,
-              letterSpacing: '0.12em',
-              color: 'var(--muted)',
-              flexShrink: 0,
-              padding: '0.15rem 0.4rem',
-              border: '1px solid var(--line)',
-              borderRadius: '2px',
-            }}>
-              VS
-            </span>
+            {isLive && score ? (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flexShrink: 0,
+                padding: '0.15rem 0.5rem',
+                border: '1px solid var(--line)',
+                borderRadius: '2px',
+                minWidth: '2.5rem',
+                textAlign: 'center',
+              }}>
+                <span style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1rem',
+                  letterSpacing: '0.04em',
+                  color: 'var(--accent)',
+                  lineHeight: 1.1,
+                }}>
+                  {score}
+                </span>
+                {scoreMinute && (
+                  <span style={{ fontSize: '0.5rem', color: 'var(--red)', letterSpacing: '0.05em', marginTop: '1px' }}>
+                    {scoreMinute}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span style={{
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                color: 'var(--muted)',
+                flexShrink: 0,
+                padding: '0.15rem 0.4rem',
+                border: '1px solid var(--line)',
+                borderRadius: '2px',
+              }}>
+                VS
+              </span>
+            )}
             <span style={{
               flex: 1,
               fontFamily: 'var(--font-display)',
