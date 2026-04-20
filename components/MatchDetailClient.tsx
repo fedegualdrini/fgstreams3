@@ -292,7 +292,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
               </div>
 
               {/* Tab content */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '1rem' }}>
                 {sidebarTab === 'streams' && (
                   <StreamList
                     streams={streams}
