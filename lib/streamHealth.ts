@@ -1,5 +1,5 @@
 import type { StreamStatus, StreamHealth } from '@/types/api';
-import { HEALTH_OFFLINE_ERROR_THRESHOLD } from './constants';
+import { HEALTH_OFFLINE_ERROR_THRESHOLD, HEALTH_CHECK_INTERVAL_MS } from './constants';
 
 export class StreamHealthMonitor {
   private healthMap: Map<string, StreamHealth> = new Map();
@@ -53,7 +53,15 @@ export class StreamHealthMonitor {
     return status === 'working';
   }
 
-  startPeriodicCheck(streams: Array<{ id: string; url: string }>, intervalMs = 30000): void {
+  clearHealthEntry(streamId: string): void {
+    this.healthMap.delete(streamId);
+  }
+
+  clearAllEntries(): void {
+    this.healthMap.clear();
+  }
+
+  startPeriodicCheck(streams: Array<{ id: string; url: string }>, intervalMs = HEALTH_CHECK_INTERVAL_MS): void {
     if (this.checkInterval) clearInterval(this.checkInterval);
     this.checkInterval = setInterval(() => {
       streams.forEach(({ id, url }) => this.checkStreamHealth(url, id));

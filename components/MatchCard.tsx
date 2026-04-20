@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { Match } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
@@ -10,7 +11,7 @@ interface MatchCardProps {
   scoreMinute?: string;
 }
 
-export default function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
+function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
@@ -143,7 +144,7 @@ export default function MatchCard({ match, score, scoreMinute }: MatchCardProps)
 
         {/* Time */}
         {localTime && !isLive && (
-          <span style={{ fontSize: '0.7rem', color: 'var(--subtle)', marginTop: 'auto' }}>
+          <span suppressHydrationWarning style={{ fontSize: '0.7rem', color: 'var(--subtle)', marginTop: 'auto' }}>
             {localTime}
           </span>
         )}
@@ -151,3 +152,5 @@ export default function MatchCard({ match, score, scoreMinute }: MatchCardProps)
     </div>
   );
 }
+
+export default memo(MatchCard);

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Channel } from '@/types/channels';
 import ChannelPlayer from './ChannelPlayer';
 import { tabButtonStyle } from '@/lib/styles';
+import { isSafeIframeUrl } from '@/lib/urlValidation';
 
 interface ChannelsPageClientProps {
   channels: Channel[];
@@ -18,18 +19,24 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [search, setSearch] = useState('');
 
+  // Guard so URL → state init only runs once on mount, even though we list all
+  // deps to satisfy exhaustive-deps. Without this, router.replace() would
+  // update searchParams and re-trigger the effect, creating a feedback loop.
+  const initializedRef = useRef(false);
+
   useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
     const c = searchParams.get('c');
     const o = parseInt(searchParams.get('o') ?? '0', 10);
     if (c) {
-      const match = channels.find(ch => ch.name.toLowerCase() === decodeURIComponent(c).toLowerCase());
-      if (match) {
-        setSelectedChannel(match);
+      const found = channels.find(ch => ch.name.toLowerCase() === decodeURIComponent(c).toLowerCase());
+      if (found) {
+        setSelectedChannel(found);
         setSelectedOptionIndex(isNaN(o) ? 0 : o);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [channels, searchParams]);
 
   const syncURL = (channelName: string | null, optionIndex: number) => {
     const params = new URLSearchParams();
@@ -151,7 +158,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
 
           {/* Option tabs + controls below player */}
           {(() => {
-            const validOptions = selectedChannel.options.filter(o => o.iframe && o.iframe !== 'undefined');
+            const validOptions = selectedChannel.options.filter(o => isSafeIframeUrl(o.iframe));
             return validOptions.length > 1 ? (
               <div className="page-content" style={{ paddingTop: '0.75rem', paddingBottom: '1rem', borderBottom: '1px solid var(--line)', marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
@@ -229,7 +236,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
             overflow: 'hidden',
           }}>
             {filtered.map(channel => {
-              const validCount = channel.options.filter(o => o.iframe && o.iframe !== 'undefined').length;
+              const validCount = channel.options.filter(o => isSafeIframeUrl(o.iframe)).length;
               const isSelected = selectedChannel?.name === channel.name;
 
               return (

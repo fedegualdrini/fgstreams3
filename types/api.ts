@@ -74,7 +74,7 @@ export interface Stream {
 export interface Sport {
   id: string;
   name: string;
-  slug: string;
+  slug?: string;
 }
 
 export type StreamStatus = 'working' | 'unstable' | 'offline' | 'unknown';
@@ -86,7 +86,7 @@ export interface FlashscoreEntry {
   team1: string;
   team2: string;
   score: string | null;  // e.g. "2:1", null if match not started ("-:-")
-  status: string;        // "live" | "fin" | "sched"
+  status: 'live' | 'fin' | 'sched';
   minute: string;        // "25'" | "4th Quarter" | "FT" | ""
 }
 
@@ -127,7 +127,7 @@ export interface FlashscoreLineups {
 export interface FlashscoreDetail {
   flashscoreId: string;
   score: string | null;
-  status: string;   // "live" | "fin" | "sched"
+  status: 'live' | 'fin' | 'sched';
   minute: string;
   periods: string;  // e.g. "(1:0, 1:1)"
   events: FlashscoreEvent[];

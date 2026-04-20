@@ -5,6 +5,17 @@ import { getFlashscoreUrl } from './sportMap';
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
+/** Strip HTML tags from scraped text to prevent injected markup reaching the UI. */
+function sanitize(str: string): string {
+  return str.replace(/<[^>]*>/g, '').trim();
+}
+
+/** Map a raw flashscore span class to a typed status value. */
+function toMatchStatus(cls: string): 'live' | 'fin' | 'sched' {
+  if (cls === 'live' || cls === 'fin') return cls;
+  return 'sched';
+}
+
 // ─── Live scores list ───────────────────────────────────────────────────────
 
 /**
@@ -36,7 +47,7 @@ export async function fetchLiveScores(sport: string): Promise<FlashscoreEntry[]>
   return parseScoreData(html);
 }
 
-function parseScoreData(html: string): FlashscoreEntry[] {
+export function parseScoreData(html: string): FlashscoreEntry[] {
   const $ = load(html);
   const entries: FlashscoreEntry[] = [];
 
@@ -53,12 +64,12 @@ function parseScoreData(html: string): FlashscoreEntry[] {
       const $el = $(this);
 
       if (node.name === 'h4') {
-        currentLeague = $el.text().trim();
+        currentLeague = sanitize($el.text());
         pendingStatus = '';
         pendingTeams = '';
       } else if (node.name === 'span') {
-        pendingStatus = ($el.attr('class') || 'sched').trim() || 'sched';
-        pendingMinute = $el.text().trim();
+        pendingStatus = toMatchStatus(($el.attr('class') || '').trim());
+        pendingMinute = sanitize($el.text());
         pendingTeams = '';
       } else if (node.name === 'a' && pendingStatus) {
         const href = $el.attr('href') || '';
@@ -73,10 +84,10 @@ function parseScoreData(html: string): FlashscoreEntry[] {
             entries.push({
               flashscoreId,
               league: currentLeague,
-              team1: teamsStr.substring(0, sepIdx).trim(),
-              team2: teamsStr.substring(sepIdx + 3).trim(),
+              team1: sanitize(teamsStr.substring(0, sepIdx)),
+              team2: sanitize(teamsStr.substring(sepIdx + 3)),
               score,
-              status: pendingStatus,
+              status: pendingStatus as 'live' | 'fin' | 'sched',
               minute: pendingMinute,
             });
           }
@@ -145,7 +156,7 @@ export async function fetchMatchDetail(flashscoreId: string): Promise<Flashscore
   return detail;
 }
 
-function parseMatchDetail(html: string, flashscoreId: string): FlashscoreDetail | null {
+export function parseMatchDetail(html: string, flashscoreId: string): FlashscoreDetail | null {
   const $ = load(html);
 
   // Score: first <b> inside .detail
@@ -165,7 +176,7 @@ function parseMatchDetail(html: string, flashscoreId: string): FlashscoreDetail 
   });
 
   // Status: look for live minute indicator or "finished" text
-  let status = 'live';
+  let status: 'live' | 'fin' | 'sched' = 'live';
   let minute = '';
 
   // Check for a live clock span
@@ -216,8 +227,8 @@ function parseMatchDetail(html: string, flashscoreId: string): FlashscoreDetail 
 
     // Player name: text content of .incident minus the child <p> elements
     const rawText = $inc.clone().children('p').remove().end().text().trim();
-    // Clean up extra whitespace and brackets like "() [DRC]"
-    const player = rawText.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim();
+    // Sanitize and clean up extra whitespace and brackets like "() [DRC]"
+    const player = sanitize(rawText.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, ''));
 
     // Determine home/away: check for a positioning class on the incident
     const incClass = $inc.attr('class') || '';
@@ -293,8 +304,8 @@ function parseMatchLineups(html: string): FlashscoreLineups | null {
     } else if (el.name === 'table' && currentBlock) {
       const rows: FlashscorePlayer[] = [];
       $(this).find('tr').each(function () {
-        const number = $(this).find('td.number').text().trim();
-        const name = $(this).find('td a').text().trim() || $(this).find('td').not('.number').first().text().trim();
+        const number = sanitize($(this).find('td.number').text());
+        const name = sanitize($(this).find('td a').text() || $(this).find('td').not('.number').first().text());
         if (name) rows.push({ number, name });
       });
       if (pastSeparator) {

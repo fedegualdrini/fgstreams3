@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Match, Stream } from '@/types/api';
@@ -11,6 +11,7 @@ import { selectBestStream } from '@/lib/streamSelector';
 import { streamHealthMonitor } from '@/lib/streamHealth';
 import { getImageUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
+import { HEALTH_RECOVERY_INTERVAL_MS } from '@/lib/constants';
 import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
 import MatchJsonLd from './MatchJsonLd';
@@ -33,6 +34,13 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     ? `${currentStream.source || 'unknown'}-${currentStreamIndex}`
     : null;
 
+  // Stable ref for match so the fetch effect can read sources without adding
+  // the full match object to its dependency array.
+  const matchRef = useRef(match);
+  matchRef.current = match;
+  // Encode sources as a string key: effect re-runs when sources actually change.
+  const sourcesKey = match.sources?.map(s => `${s.source}:${s.id}`).join(',') ?? '';
+
   const handleStreamError = useCallback(() => {
     setStreamErrorCount((prev) => prev + 1);
     const remainingStreams = streams.filter((_, index) => index !== currentStreamIndex);
@@ -49,11 +57,13 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     }
   }, [streams, currentStreamIndex, showToast]);
 
-  // Fetch streams client-side on mount
+  // Fetch streams whenever the match's source list changes.
+  // matchRef.current is used inside to avoid listing the full match object as a dep.
   useEffect(() => {
-    if (!match.sources?.length) return;
+    const { sources } = matchRef.current;
+    if (!sources?.length) return;
     Promise.all(
-      match.sources.map(({ source, id }) =>
+      sources.map(({ source, id }) =>
         fetch(`/api/streams/${encodeURIComponent(source)}/${encodeURIComponent(id)}`)
           .then(r => r.ok ? r.json() : [])
           .catch(() => [])
@@ -61,7 +71,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     ).then((arrays: Stream[][]) => {
       const all: Stream[] = arrays.flat().map((s, i) => ({
         ...s,
-        source: s.source || match.sources![i]?.source,
+        source: s.source || sources[i]?.source,
       }));
       setStreams(all);
       const best = selectBestStream(all);
@@ -70,8 +80,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
         setCurrentStreamIndex(Math.max(0, all.findIndex(s => s.url === best.url)));
       }
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [match.id]);
+  }, [sourcesKey]);
 
   useEffect(() => {
     if (streams.length === 0) return;
@@ -90,9 +99,13 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
           await streamHealthMonitor.checkStreamRecovery(url, id);
         }
       });
-    }, 60000);
+    }, HEALTH_RECOVERY_INTERVAL_MS);
 
-    return () => clearInterval(recoveryInterval);
+    return () => {
+      clearInterval(recoveryInterval);
+      // Clean up health entries so they don't accumulate across navigations.
+      streamIds.forEach(({ id }) => streamHealthMonitor.clearHealthEntry(id));
+    };
   }, [streams]);
 
   const handleSelectStream = (stream: Stream, index: number) => {
@@ -176,7 +189,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
             )}
 
             {localTime && !isLive && (
-              <span style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>{localTime}</span>
+              <span suppressHydrationWarning style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>{localTime}</span>
             )}
 
             {/* Multi-match toggle — pushed to the right */}

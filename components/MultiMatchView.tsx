@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Match, Stream } from '@/types/api';
 import StreamPlayer from './StreamPlayer';
 import { fetchMatches, fetchStreams } from '@/lib/api';
@@ -9,6 +9,28 @@ import { selectBestStream } from '@/lib/streamSelector';
 interface MultiMatchViewProps {
   currentMatch: Match;
   maxMatches?: number;
+}
+
+// Defined outside the component — only depends on module-level imports (fetchStreams,
+// selectBestStream), so it never needs to be in a useEffect dependency array.
+async function initializeMatch(match: Match, shouldMute = false): Promise<ActiveMatch | null> {
+  try {
+    let streams: Stream[] = [];
+    if (match.sources?.length) {
+      const streamArrays = await Promise.all(
+        match.sources.map((s) => fetchStreams(s.source, s.id).catch(() => []))
+      );
+      streams = streamArrays.flat();
+    }
+    const bestStream = selectBestStream(streams);
+    const streamId = bestStream
+      ? `${bestStream.source || 'unknown'}-${match.id}`
+      : `no-stream-${match.id}`;
+    return { match, streams, selectedStream: bestStream, streamId, muted: shouldMute };
+  } catch (error) {
+    console.error('Error initializing match:', error);
+    return null;
+  }
 }
 
 interface ActiveMatch {
@@ -29,47 +51,37 @@ export default function MultiMatchView({
   const [availableMatches, setAvailableMatches] = useState<Match[]>([]);
   const [layout, setLayout] = useState<MatchLayout>('grid');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showMatchSelector, setShowMatchSelector] = useState(false);
+
+  // Use refs so the loadMatches effect can read current state without
+  // needing to list mutable state values as dependencies.
+  const activeMatchesRef = useRef(activeMatches);
+  activeMatchesRef.current = activeMatches;
+  const currentMatchRef = useRef(currentMatch);
+  currentMatchRef.current = currentMatch;
 
   useEffect(() => {
     async function loadMatches() {
       try {
+        const match = currentMatchRef.current;
         const matches = await fetchMatches();
-        const otherMatches = matches.filter((m) => m.id !== currentMatch.id);
+        const otherMatches = matches.filter((m) => m.id !== match.id);
         setAvailableMatches(otherMatches);
 
-        if (activeMatches.length === 0) {
-          const initialMatch = await initializeMatch(currentMatch);
+        if (activeMatchesRef.current.length === 0) {
+          const initialMatch = await initializeMatch(match);
           if (initialMatch) setActiveMatches([initialMatch]);
         }
       } catch (error) {
         console.error('Error loading matches:', error);
+        setLoadError('Failed to load matches. Please refresh to try again.');
       } finally {
         setLoading(false);
       }
     }
     loadMatches();
   }, [currentMatch.id]);
-
-  async function initializeMatch(match: Match, shouldMute = false): Promise<ActiveMatch | null> {
-    try {
-      let streams: Stream[] = [];
-      if (match.sources?.length) {
-        const streamArrays = await Promise.all(
-          match.sources.map((s) => fetchStreams(s.source, s.id).catch(() => []))
-        );
-        streams = streamArrays.flat();
-      }
-      const bestStream = selectBestStream(streams);
-      const streamId = bestStream
-        ? `${bestStream.source || 'unknown'}-${match.id}`
-        : `no-stream-${match.id}`;
-      return { match, streams, selectedStream: bestStream, streamId, muted: shouldMute };
-    } catch (error) {
-      console.error('Error initializing match:', error);
-      return null;
-    }
-  }
 
   const addMatch = async (match: Match) => {
     if (activeMatches.length >= maxMatches) return;
@@ -116,6 +128,21 @@ export default function MultiMatchView({
     return (
       <div className="flex items-center justify-center py-12 text-gray-400">
         Loading matches...
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-3">
+        <p className="text-red-400 text-sm">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-gray-800 text-white rounded border border-gray-700 text-sm"
+        >
+          Refresh
+        </button>
       </div>
     );
   }

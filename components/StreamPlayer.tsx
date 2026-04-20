@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Stream } from '@/types/api';
 import { streamHealthMonitor } from '@/lib/streamHealth';
+import { STREAM_LOAD_TIMEOUT_MS } from '@/lib/constants';
 import Spinner from '@/components/Spinner';
 
 interface StreamPlayerProps {
@@ -46,7 +47,7 @@ export default function StreamPlayer({
       setError(true);
       setIsLoading(false);
       onErrorRef.current?.();
-    }, 10_000);
+    }, STREAM_LOAD_TIMEOUT_MS);
     return () => {
       if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
     };

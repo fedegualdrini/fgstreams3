@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
 import Spinner from '@/components/Spinner';
 import { tabButtonStyle } from '@/lib/styles';
+import { CHANNEL_LOAD_TIMEOUT_MS } from '@/lib/constants';
+import { isSafeIframeUrl } from '@/lib/urlValidation';
 
 interface ChannelPlayerProps {
   channel: Channel;
@@ -14,7 +16,7 @@ interface ChannelPlayerProps {
 }
 
 export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptionChange, fillContainer = false, hideTabs = false }: ChannelPlayerProps) {
-  const validOptions = channel.options.filter(o => o.iframe && o.iframe !== 'undefined');
+  const validOptions = channel.options.filter(o => isSafeIframeUrl(o.iframe));
   const [selectedIndex, setSelectedIndex] = useState(
     Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0))
   );
@@ -26,12 +28,12 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
 
-  // Sync internal index when parent drives the selection (e.g. external tabs)
+  // Sync internal index when parent drives the selection (e.g. external tabs),
+  // or when the number of valid options changes (channel data updated).
   useEffect(() => {
     const clamped = Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0));
     setSelectedIndex(clamped);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialOptionIndex]);
+  }, [initialOptionIndex, validOptions.length]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -42,7 +44,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
       clearInterval(ticker);
       setTimedOut(true);
       setIsLoading(false);
-    }, 15000);
+    }, CHANNEL_LOAD_TIMEOUT_MS);
     return () => {
       clearInterval(ticker);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
