@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Match, FlashscoreEntry } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
 import { useLiveScores } from '@/lib/useLiveScores';
+import { useLocalTime } from '@/lib/dateUtils';
 
 function matchesSearch(match: Match, q: string): boolean {
   const normalized = q.trim().toLowerCase();
@@ -13,6 +14,17 @@ function matchesSearch(match: Match, q: string): boolean {
   return fields.some((f) => f.toLowerCase().includes(normalized));
 }
 
+function getRelativeTime(date: Date): string {
+  const diff = date.getTime() - Date.now();
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (h > 0) return `${h}h ${m > 0 ? `${m}m` : ''}`.trim();
+  if (m > 0) return `${m}m`;
+  return 'Soon';
+}
+
+const SPORTS = ['All', 'Football', 'Basketball', 'Tennis', 'MMA', 'Formula 1'];
+
 interface MatchListWithSearchProps {
   liveMatches: Match[];
   upcomingMatches: Match[];
@@ -20,30 +32,29 @@ interface MatchListWithSearchProps {
 
 export default function MatchListWithSearch({ liveMatches, upcomingMatches }: MatchListWithSearchProps) {
   const [query, setQuery] = useState('');
+  const [sport, setSport] = useState('All');
   const scoreMap = useLiveScores(liveMatches);
 
-  const filteredLive = liveMatches.filter((m) => matchesSearch(m, query));
-  const filteredUpcoming = upcomingMatches.filter((m) => matchesSearch(m, query));
-  const hasQuery = query.trim().length > 0;
-  const noMatchesAtAll = liveMatches.length === 0 && upcomingMatches.length === 0;
-  const bothFilteredEmpty = hasQuery && filteredLive.length === 0 && filteredUpcoming.length === 0;
+  const filter = (m: Match) => {
+    if (sport !== 'All' && m.sport !== sport) return false;
+    return matchesSearch(m, query);
+  };
+
+  const filteredLive     = liveMatches.filter(filter);
+  const filteredUpcoming = upcomingMatches.filter(filter);
+  const noResults = query.trim().length > 0 && filteredLive.length === 0 && filteredUpcoming.length === 0;
 
   return (
     <>
-      {/* Search */}
-      <div style={{ marginBottom: '2.5rem' }}>
-        <div style={{ position: 'relative', maxWidth: '480px' }}>
+      {/* ── Toolbar ── */}
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Search */}
+        <div style={{ position: 'relative', maxWidth: '340px', flex: 1, minWidth: '160px' }}>
           <span style={{
-            position: 'absolute',
-            left: '0.875rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'var(--muted)',
-            fontSize: '0.85rem',
-            pointerEvents: 'none',
-          }}>
-            ⌕
-          </span>
+            position: 'absolute', left: '0.875rem', top: '50%',
+            transform: 'translateY(-50%)', color: 'var(--muted)',
+            fontSize: '0.9rem', pointerEvents: 'none',
+          }}>⌕</span>
           <input
             id="match-search"
             type="text"
@@ -53,7 +64,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
             onChange={(e) => setQuery(e.target.value)}
             style={{
               width: '100%',
-              padding: '0.625rem 1rem 0.625rem 2.25rem',
+              padding: '0.6rem 1rem 0.6rem 2.25rem',
               background: 'var(--bg-2)',
               border: '1px solid var(--line)',
               borderRadius: '4px',
@@ -64,101 +75,198 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
               transition: 'border-color 0.15s',
             }}
             onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
+            onBlur={(e)  => { e.currentTarget.style.borderColor = 'var(--line)'; }}
           />
+        </div>
+
+        {/* Sport filter */}
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+          {SPORTS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSport(s)}
+              style={{
+                padding: '0.375rem 0.75rem',
+                background: sport === s ? 'var(--accent)' : 'var(--bg-2)',
+                color:      sport === s ? '#000' : 'var(--text-dim)',
+                border:    `1px solid ${sport === s ? 'var(--accent)' : 'var(--line)'}`,
+                borderRadius: '3px',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+                cursor: 'pointer', transition: 'all 0.12s',
+              }}
+            >
+              {s}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Live section */}
+      {/* ── Live section — horizontal scroll ── */}
       {filteredLive.length > 0 && (
-        <section style={{ marginBottom: '3rem' }}>
+        <section style={{ marginBottom: '2.75rem' }}>
           <SectionHeader live count={filteredLive.length}>Live Now</SectionHeader>
-          <MatchGrid matches={filteredLive} scoreMap={scoreMap} />
+          <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
+            {filteredLive.map((match) => {
+              const entry = scoreMap.get(match.id);
+              return (
+                <Link
+                  key={match.id}
+                  href={`/match/${match.id}`}
+                  style={{
+                    display: 'block', textDecoration: 'none', color: 'inherit',
+                    width: '290px', flexShrink: 0,
+                    background: 'var(--bg-2)',
+                    border: '1px solid var(--line)',
+                    borderRadius: '6px', overflow: 'hidden',
+                    transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--accent)';
+                    e.currentTarget.style.transform   = 'translateY(-3px)';
+                    e.currentTarget.style.boxShadow   = '0 12px 32px rgba(0,0,0,0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--line)';
+                    e.currentTarget.style.transform   = 'none';
+                    e.currentTarget.style.boxShadow   = 'none';
+                  }}
+                >
+                  <MatchCard match={match} score={entry?.score} scoreMinute={entry?.minute} />
+                </Link>
+              );
+            })}
+          </div>
         </section>
       )}
 
-      {/* Upcoming / All section */}
-      {!bothFilteredEmpty && (
+      {/* ── Upcoming section — table rows ── */}
+      {filteredUpcoming.length > 0 && (
         <section>
           <SectionHeader count={filteredUpcoming.length}>
             {filteredLive.length > 0 ? 'Upcoming' : 'All Matches'}
           </SectionHeader>
-          {filteredUpcoming.length > 0 ? (
-            <MatchGrid matches={filteredUpcoming} scoreMap={scoreMap} />
-          ) : noMatchesAtAll ? (
-            <EmptyState>No matches available right now. Check back soon.</EmptyState>
-          ) : (
-            <EmptyState>No upcoming matches.</EmptyState>
-          )}
+          <div style={{ border: '1px solid var(--line)', borderRadius: '6px', overflow: 'hidden' }}>
+            {filteredUpcoming.map((match) => (
+              <UpcomingRow key={match.id} match={match} />
+            ))}
+          </div>
         </section>
       )}
 
-      {bothFilteredEmpty && (
+      {/* ── No matches ── */}
+      {liveMatches.length === 0 && upcomingMatches.length === 0 && (
+        <EmptyState>No matches available right now. Check back soon.</EmptyState>
+      )}
+      {noResults && (
         <EmptyState>No matches for &ldquo;{query}&rdquo;</EmptyState>
       )}
     </>
   );
 }
 
-function SectionHeader({ children, count, live }: { children: React.ReactNode; count?: number; live?: boolean }) {
+// ─── Upcoming Row ─────────────────────────────────────────────────────────────
+
+function UpcomingRow({ match }: { match: Match }) {
+  const startTime = match.startTime ? new Date(match.startTime) : null;
+  const localTime = useLocalTime(startTime);
+  const relTime   = startTime ? getRelativeTime(startTime) : '';
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+    <Link
+      href={`/match/${match.id}`}
+      style={{
+        display: 'flex', alignItems: 'center', width: '100%',
+        padding: '0.75rem 1rem', textDecoration: 'none', color: 'inherit',
+        background: 'var(--bg-1)', borderBottom: '1px solid var(--line)',
+        transition: 'background 0.12s', gap: '1rem',
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
+    >
+      {/* Time */}
+      <div style={{ width: '56px', flexShrink: 0, textAlign: 'center' }}>
+        <div suppressHydrationWarning style={{
+          fontFamily: 'var(--font-body)', fontSize: '0.8rem',
+          fontWeight: 600, color: 'var(--text)', lineHeight: 1.2,
+        }}>
+          {localTime}
+        </div>
+        <div style={{ fontSize: '0.58rem', color: 'var(--muted)', marginTop: '2px' }}>{relTime}</div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ width: '1px', height: '32px', background: 'var(--line)', flexShrink: 0 }} />
+
+      {/* Match info */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em',
+          textTransform: 'uppercase', color: 'var(--subtle)', marginBottom: '0.3rem',
+        }}>
+          {match.league || match.sport}
+        </div>
+        {match.team2 ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '0.02em', lineHeight: 1 }}>
+              {match.team1}
+            </span>
+            <span style={{
+              fontSize: '0.55rem', fontWeight: 700, color: 'var(--muted)',
+              letterSpacing: '0.1em', padding: '0.1rem 0.35rem',
+              border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0,
+            }}>VS</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '0.02em', lineHeight: 1 }}>
+              {match.team2}
+            </span>
+          </div>
+        ) : (
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '0.02em' }}>
+            {match.team1}
+          </span>
+        )}
+      </div>
+
+      {/* Sport pill */}
+      <span style={{
+        flexShrink: 0, fontSize: '0.58rem', fontWeight: 600,
+        letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--subtle)',
+        padding: '0.2rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px',
+      }}>
+        {match.sport}
+      </span>
+    </Link>
+  );
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function SectionHeader({
+  children, count, live,
+}: {
+  children: React.ReactNode; count?: number; live?: boolean;
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
       {live && (
         <span className="live-dot" style={{
-          width: '7px', height: '7px', borderRadius: '50%',
+          width: '8px', height: '8px', borderRadius: '50%',
           background: 'var(--red)', display: 'inline-block', flexShrink: 0,
         }} />
       )}
       <h2 style={{
-        fontFamily: 'var(--font-display)',
-        fontSize: '1.4rem',
-        letterSpacing: '0.04em',
-        color: 'var(--text)',
-        lineHeight: 1,
+        fontFamily: 'var(--font-display)', fontSize: '1.4rem',
+        letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1,
       }}>
         {children}
         {count !== undefined && count > 0 && (
-          <span style={{ marginLeft: '0.5rem', fontSize: '0.9rem', color: 'var(--subtle)' }}>
+          <span style={{ marginLeft: '0.5rem', fontSize: '1rem', color: 'var(--subtle)' }}>
             {count}
           </span>
         )}
       </h2>
-      <div className="accent-line" />
-    </div>
-  );
-}
-
-function MatchGrid({ matches, scoreMap }: { matches: Match[]; scoreMap: Map<string, FlashscoreEntry> }) {
-  return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-      gap: '1px',
-      background: 'var(--line)',
-      border: '1px solid var(--line)',
-      borderRadius: '6px',
-      overflow: 'hidden',
-    }}>
-      {matches.map((match) => {
-        const entry = scoreMap.get(match.id);
-        return (
-          <Link
-            key={match.id}
-            href={`/match/${match.id}`}
-            style={{
-              display: 'block',
-              background: 'var(--bg-1)',
-              textDecoration: 'none',
-              color: 'inherit',
-              transition: 'background 0.12s',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
-          >
-            <MatchCard match={match} score={entry?.score} scoreMinute={entry?.minute} />
-          </Link>
-        );
-      })}
+      <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
     </div>
   );
 }
@@ -166,11 +274,8 @@ function MatchGrid({ matches, scoreMap }: { matches: Match[]; scoreMap: Map<stri
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      padding: '4rem 1rem',
-      textAlign: 'center',
-      color: 'var(--subtle)',
-      fontSize: '0.875rem',
-      fontFamily: 'var(--font-body)',
+      padding: '4rem 1rem', textAlign: 'center',
+      color: 'var(--subtle)', fontSize: '0.875rem', fontFamily: 'var(--font-body)',
     }}>
       {children}
     </div>

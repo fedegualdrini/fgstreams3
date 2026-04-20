@@ -1,7 +1,7 @@
 'use client';
 
+import { memo } from 'react';
 import type { Match } from '@/types/api';
-import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 
 interface MatchCardProps {
@@ -10,144 +10,130 @@ interface MatchCardProps {
   scoreMinute?: string;
 }
 
-export default function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
+function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
-  const posterUrl = getPosterUrl(match.poster);
+  const displayScore = isLive && score ? score : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Poster */}
-      <div style={{ position: 'relative', width: '100%', height: '160px', background: 'var(--bg-2)', overflow: 'hidden', flexShrink: 0 }}>
-        {posterUrl && (
-          <img
-            src={posterUrl}
-            alt={`${match.team1} vs ${match.team2}`}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-        )}
-        {/* Gradient overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(to top, rgba(8,8,8,0.95) 0%, rgba(8,8,8,0.2) 60%, transparent 100%)',
-        }} />
-        {/* LIVE badge */}
+
+      {/* Top: league + live badge */}
+      <div style={{
+        padding: '0.75rem 0.875rem 0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span style={{
+          fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em',
+          textTransform: 'uppercase', color: 'var(--subtle)', fontFamily: 'var(--font-body)',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '0.5rem',
+        }}>
+          {match.league || match.sport}
+        </span>
         {isLive && (
-          <div style={{
-            position: 'absolute',
-            top: '0.625rem',
-            left: '0.625rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            background: 'var(--red)',
-            color: '#fff',
-            fontSize: '0.6rem',
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            padding: '0.2rem 0.5rem',
-            borderRadius: '2px',
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+            background: 'var(--red)', color: '#fff',
+            fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em',
+            padding: '0.18rem 0.45rem', borderRadius: '2px', flexShrink: 0,
           }}>
-            <span className="live-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
+            <span
+              className="live-dot"
+              style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }}
+            />
             LIVE
-          </div>
+          </span>
         )}
       </div>
 
-      {/* Content */}
-      <div style={{ padding: '0.875rem 1rem 1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {/* League */}
-        <span className="label" style={{ fontSize: '0.6rem' }}>{match.league || match.sport}</span>
+      {/* Teams + score/vs */}
+      <div style={{
+        padding: '0.875rem 0.875rem 0.75rem',
+        display: 'flex', alignItems: 'center', gap: '0.625rem', flex: 1,
+      }}>
+        <span style={{
+          flex: 1, fontFamily: 'var(--font-display)', fontSize: '1.25rem',
+          letterSpacing: '0.02em', color: 'var(--text)', lineHeight: 1.1,
+          textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {match.team1}
+        </span>
 
-        {/* Teams */}
-        {match.team2 ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+        {displayScore ? (
+          <div style={{
+            flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: '0.2rem 0.625rem', background: 'var(--bg-3)',
+            border: '1px solid var(--line)', borderRadius: '3px',
+            minWidth: '4.25rem', textAlign: 'center',
+          }}>
             <span style={{
-              flex: 1,
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.1rem',
-              letterSpacing: '0.03em',
-              color: 'var(--text)',
-              lineHeight: 1.1,
-              textAlign: 'right',
+              fontFamily: 'var(--font-display)', fontSize: '1.2rem',
+              color: 'var(--accent)', letterSpacing: '0.04em', lineHeight: 1,
             }}>
-              {match.team1}
+              {displayScore}
             </span>
-            {isLive && score ? (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                flexShrink: 0,
-                padding: '0.15rem 0.5rem',
-                border: '1px solid var(--line)',
-                borderRadius: '2px',
-                minWidth: '2.5rem',
-                textAlign: 'center',
-              }}>
-                <span style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '1rem',
-                  letterSpacing: '0.04em',
-                  color: 'var(--accent)',
-                  lineHeight: 1.1,
-                }}>
-                  {score}
-                </span>
-                {scoreMinute && (
-                  <span style={{ fontSize: '0.5rem', color: 'var(--red)', letterSpacing: '0.05em', marginTop: '1px' }}>
-                    {scoreMinute}
-                  </span>
-                )}
-              </div>
-            ) : (
+            {scoreMinute && (
               <span style={{
-                fontSize: '0.6rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                color: 'var(--muted)',
-                flexShrink: 0,
-                padding: '0.15rem 0.4rem',
-                border: '1px solid var(--line)',
-                borderRadius: '2px',
+                fontSize: '0.5rem', color: 'var(--red)',
+                fontWeight: 600, letterSpacing: '0.06em', marginTop: '2px',
               }}>
-                VS
+                {scoreMinute}
               </span>
             )}
-            <span style={{
-              flex: 1,
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.1rem',
-              letterSpacing: '0.03em',
-              color: 'var(--text)',
-              lineHeight: 1.1,
-            }}>
-              {match.team2}
-            </span>
           </div>
         ) : (
           <span style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.2rem',
-            letterSpacing: '0.03em',
-            color: 'var(--text)',
-            lineHeight: 1.2,
-            textAlign: 'center',
+            flexShrink: 0, fontSize: '0.58rem', fontWeight: 700,
+            letterSpacing: '0.12em', color: 'var(--muted)',
+            padding: '0.15rem 0.45rem', border: '1px solid var(--line)', borderRadius: '2px',
           }}>
-            {match.team1}
+            VS
           </span>
         )}
 
-        {/* Time */}
-        {localTime && !isLive && (
-          <span style={{ fontSize: '0.7rem', color: 'var(--subtle)', marginTop: 'auto' }}>
-            {localTime}
+        {match.team2 ? (
+          <span style={{
+            flex: 1, fontFamily: 'var(--font-display)', fontSize: '1.25rem',
+            letterSpacing: '0.02em', color: 'var(--text)', lineHeight: 1.1,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {match.team2}
           </span>
+        ) : (
+          <span style={{ flex: 1 }} />
         )}
       </div>
+
+      {/* Footer: sport + time/watch */}
+      <div style={{
+        padding: '0.5rem 0.875rem', borderTop: '1px solid var(--line)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span style={{
+          fontSize: '0.6rem', color: 'var(--muted)',
+          fontFamily: 'var(--font-body)', fontWeight: 500,
+        }}>
+          {match.sport}
+        </span>
+        {isLive ? (
+          <span style={{
+            fontSize: '0.6rem', color: 'var(--accent)',
+            fontFamily: 'var(--font-body)', fontWeight: 600, letterSpacing: '0.08em',
+          }}>
+            WATCH →
+          </span>
+        ) : localTime ? (
+          <span suppressHydrationWarning style={{
+            fontSize: '0.6rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)',
+          }}>
+            {localTime}
+          </span>
+        ) : null}
+      </div>
+
     </div>
   );
 }
+
+export default memo(MatchCard);
