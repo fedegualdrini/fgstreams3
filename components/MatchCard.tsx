@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import type { Match } from '@/types/api';
+import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 
 interface MatchCardProps {
@@ -15,11 +16,40 @@ function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
   const displayScore = isLive && score ? score : null;
+  const posterUrl = getPosterUrl(match.poster);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-      {/* Top: league + live badge */}
+      {/* Poster */}
+      <div style={{ position: 'relative', width: '100%', height: '160px', background: 'var(--bg-2)', overflow: 'hidden', flexShrink: 0 }}>
+        {posterUrl && (
+          <img
+            src={posterUrl}
+            alt={`${match.team1} vs ${match.team2 ?? ''}`}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        )}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to top, rgba(7,8,12,0.95) 0%, rgba(7,8,12,0.2) 60%, transparent 100%)',
+        }} />
+        {isLive && (
+          <div style={{
+            position: 'absolute', top: '0.625rem', left: '0.625rem',
+            display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+            background: 'var(--red)', color: '#fff',
+            fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em',
+            padding: '0.18rem 0.45rem', borderRadius: '2px',
+          }}>
+            <span className="live-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
+            LIVE
+          </div>
+        )}
+      </div>
+
+      {/* Top: league */}
       <div style={{
         padding: '0.75rem 0.875rem 0',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -27,24 +57,10 @@ function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
         <span style={{
           fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em',
           textTransform: 'uppercase', color: 'var(--subtle)', fontFamily: 'var(--font-body)',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '0.5rem',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {match.league || match.sport}
         </span>
-        {isLive && (
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
-            background: 'var(--red)', color: '#fff',
-            fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em',
-            padding: '0.18rem 0.45rem', borderRadius: '2px', flexShrink: 0,
-          }}>
-            <span
-              className="live-dot"
-              style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }}
-            />
-            LIVE
-          </span>
-        )}
       </div>
 
       {/* Teams + score/vs */}
