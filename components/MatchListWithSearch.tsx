@@ -36,7 +36,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
   const scoreMap = useLiveScores(liveMatches);
 
   const filter = (m: Match) => {
-    if (sport !== 'All' && m.sport !== sport) return false;
+    if (sport !== 'All' && m.sport?.toLowerCase() !== sport.toLowerCase()) return false;
     return matchesSearch(m, query);
   };
 
@@ -141,15 +141,41 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
         </section>
       )}
 
-      {/* ── Upcoming section — table rows ── */}
+      {/* ── Upcoming section — card grid ── */}
       {filteredUpcoming.length > 0 && (
         <section>
           <SectionHeader count={filteredUpcoming.length}>
             {filteredLive.length > 0 ? 'Upcoming' : 'All Matches'}
           </SectionHeader>
-          <div style={{ border: '1px solid var(--line)', borderRadius: '6px', overflow: 'hidden' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+            gap: '12px',
+          }}>
             {filteredUpcoming.map((match) => (
-              <UpcomingRow key={match.id} match={match} />
+              <Link
+                key={match.id}
+                href={`/match/${match.id}`}
+                style={{
+                  display: 'block', textDecoration: 'none', color: 'inherit',
+                  background: 'var(--bg-2)',
+                  border: '1px solid var(--line)',
+                  borderRadius: '6px', overflow: 'hidden',
+                  transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--accent)';
+                  e.currentTarget.style.transform   = 'translateY(-3px)';
+                  e.currentTarget.style.boxShadow   = '0 12px 32px rgba(0,0,0,0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--line)';
+                  e.currentTarget.style.transform   = 'none';
+                  e.currentTarget.style.boxShadow   = 'none';
+                }}
+              >
+                <MatchCard match={match} />
+              </Link>
             ))}
           </div>
         </section>
