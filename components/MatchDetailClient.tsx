@@ -241,9 +241,9 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
             className="detail-layout"
             style={{
               display: 'flex', flexDirection: 'row',
-              flex: 1,
               height: 'calc(100vh - var(--header-h) - 52px)',
               minHeight: '420px',
+              overflow: 'hidden',
             }}
           >
             {/* Player */}
