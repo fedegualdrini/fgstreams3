@@ -21,9 +21,10 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
-              "style-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
-              "connect-src 'self'",
+              "connect-src 'self' https://va.vercel-scripts.com",
               "frame-src https:",
               "media-src 'self' https:",
             ].join('; '),
