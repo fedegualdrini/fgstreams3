@@ -74,10 +74,6 @@ export class StreamHealthMonitor {
       this.checkInterval = null;
     }
   }
-
-  clearHealthEntry(streamId: string): void {
-    this.healthMap.delete(streamId);
-  }
 }
 
 export const streamHealthMonitor = new StreamHealthMonitor();

@@ -21,11 +21,6 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
 
   const initializedRef = useRef(false);
 
-  // Guard so URL → state init only runs once on mount, even though we list all
-  // deps to satisfy exhaustive-deps. Without this, router.replace() would
-  // update searchParams and re-trigger the effect, creating a feedback loop.
-  const initializedRef = useRef(false);
-
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
