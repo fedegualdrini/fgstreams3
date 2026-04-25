@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 
 /**
  * Format a date in the user's local timezone and locale.
- * Returns null until mounted on the client to avoid hydration mismatches.
+ * Returns an empty string until mounted to avoid SSR/client hydration mismatches.
+ * Consumers should add suppressHydrationWarning to the element that renders this value.
  */
-export function useLocalTime(date: Date | null): string | null {
-  const [formatted, setFormatted] = useState<string | null>(null);
+export function useLocalTime(date: Date | null): string {
+  const [formatted, setFormatted] = useState('');
 
   useEffect(() => {
     if (!date) return;

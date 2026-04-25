@@ -13,6 +13,11 @@ export function useMatchStats(match: Match): FlashscoreDetail | null {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const flashscoreIdRef = useRef<string | null>(null);
 
+  // Stable ref so resolveAndFetch always reads current match fields
+  // without needing the full match object in the effect dep array.
+  const matchRef = useRef(match);
+  matchRef.current = match;
+
   useEffect(() => {
     let cancelled = false;
 
@@ -20,11 +25,11 @@ export function useMatchStats(match: Match): FlashscoreDetail | null {
       // Step 1: find the flashscore match ID from the live scores list
       if (!flashscoreIdRef.current) {
         try {
-          const sport = match.sport.toLowerCase();
-          const res = await fetch(`/api/scores/${encodeURIComponent(sport)}`);
+          const { sport, team1, team2 } = matchRef.current;
+          const res = await fetch(`/api/scores/${encodeURIComponent(sport.toLowerCase())}`);
           if (!res.ok || cancelled) return;
           const entries: FlashscoreEntry[] = await res.json();
-          const entry = findMatchingEntry(match.team1, match.team2, entries);
+          const entry = findMatchingEntry(team1, team2, entries);
           if (!entry || cancelled) return;
           flashscoreIdRef.current = entry.flashscoreId;
         } catch {
@@ -66,8 +71,8 @@ export function useMatchStats(match: Match): FlashscoreDetail | null {
       if (intervalRef.current) clearInterval(intervalRef.current);
       flashscoreIdRef.current = null;
     };
-  // Re-run if the match changes (navigating between matches)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Re-run only when navigating to a different match.
+  // matchRef.current provides latest team/sport fields without triggering re-runs.
   }, [match.id]);
 
   return detail;

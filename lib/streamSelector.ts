@@ -9,11 +9,20 @@ interface StreamWithHealth extends Stream {
 export function selectBestStream(streams: Stream[]): Stream | null {
   if (!streams || streams.length === 0) return null;
 
-  const streamsWithHealth: StreamWithHealth[] = streams.map((stream, index) => ({
-    ...stream,
-    id: `${stream.source || 'unknown'}-${index}`,
-    healthStatus: streamHealthMonitor.getStatus(`${stream.source || 'unknown'}-${index}`).status,
-  }));
+  const streamsWithHealth: StreamWithHealth[] = streams.map((stream, index) => {
+    // Use hostname as a fallback key to reduce ID collisions when source is absent.
+    const urlKey = stream.url || stream.embedUrl || '';
+    let sourceKey = stream.source;
+    if (!sourceKey && urlKey) {
+      try { sourceKey = new URL(urlKey).hostname; } catch { /* invalid URL */ }
+    }
+    const id = `${sourceKey || 'unknown'}-${index}`;
+    return {
+      ...stream,
+      id,
+      healthStatus: streamHealthMonitor.getStatus(id).status,
+    };
+  });
 
   const statusPriority: Record<StreamStatus, number> = {
     working: 0,

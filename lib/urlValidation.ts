@@ -1,10 +1,8 @@
-const ALLOWED_PROTOCOLS = ['https:', 'http:'];
-
-export function isSafeIframeUrl(url: string): boolean {
-  if (!url || typeof url !== 'string') return false;
+export function isSafeIframeUrl(url: string | undefined): boolean {
+  if (!url || url === 'undefined') return false;
   try {
     const parsed = new URL(url);
-    return ALLOWED_PROTOCOLS.includes(parsed.protocol);
+    return parsed.protocol === 'https:';
   } catch {
     return false;
   }

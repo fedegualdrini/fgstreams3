@@ -11,14 +11,23 @@ export function useLiveScores(liveMatches: Match[]): Map<string, FlashscoreEntry
   const [scoreMap, setScoreMap] = useState<Map<string, FlashscoreEntry>>(new Map());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Keep a stable ref to liveMatches so the polling callback always reads
+  // the latest list without needing liveMatches in the effect's dep array.
+  const liveMatchesRef = useRef(liveMatches);
+  liveMatchesRef.current = liveMatches;
+
+  // Derive a stable string key that changes only when the set of live match IDs changes.
+  const matchesKey = liveMatches.map((m) => m.id).join(',');
+
   useEffect(() => {
-    if (liveMatches.length === 0) {
+    const currentMatches = liveMatchesRef.current;
+    if (currentMatches.length === 0) {
       setScoreMap(new Map());
       return;
     }
 
     // Deduplicate sports present in live matches
-    const sports = [...new Set(liveMatches.map((m) => m.sport.toLowerCase()))];
+    const sports = [...new Set(currentMatches.map((m) => m.sport.toLowerCase()))];
 
     async function fetchAndMatch() {
       if (document.visibilityState !== 'visible') return;
@@ -36,13 +45,13 @@ export function useLiveScores(liveMatches: Match[]): Map<string, FlashscoreEntry
 
         // Pre-match each live Streamed match to a flashscore entry
         const map = new Map<string, FlashscoreEntry>();
-        for (const match of liveMatches) {
+        for (const match of liveMatchesRef.current) {
           const entry = findMatchingEntry(match.team1, match.team2, allEntries);
           if (entry) map.set(match.id, entry);
         }
         setScoreMap(map);
       } catch {
-        // Keep stale data on error
+        // Keep stale data on error; avoids clearing scores on transient network issues
       }
     }
 
@@ -52,8 +61,7 @@ export function useLiveScores(liveMatches: Match[]): Map<string, FlashscoreEntry
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liveMatches.length, liveMatches.map((m) => m.id).join(',')]);
+  }, [matchesKey]);
 
   return scoreMap;
 }

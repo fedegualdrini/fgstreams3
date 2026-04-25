@@ -1,6 +1,7 @@
-import type { Match, Stream, Sport, RawStream, RawMatch } from '@/types/api';
+import type { Match, Stream, Sport } from '@/types/api';
 import { normalizeMatches } from './matchUtils';
 import { REVALIDATE_MATCHES, REVALIDATE_STREAMS, REVALIDATE_SPORTS } from './constants';
+import { RawStreamArraySchema, RawStreamSchema, RawMatchArraySchema, SportArraySchema } from './schemas';
 
 const API_BASE = 'https://streamed.pk/api';
 
@@ -31,9 +32,13 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
         console.error(`API Error: ${response.status} ${response.statusText} for ${API_BASE}/matches/${sport}`);
         return [];
       }
-      const matches = await response.json();
-      if (!matches || !Array.isArray(matches)) return [];
-      return normalizeMatches(matches);
+      const raw = await response.json();
+      const result = RawMatchArraySchema.safeParse(raw);
+      if (!result.success) {
+        console.warn(`fetchMatches: unexpected response shape for ${sport}:`, result.error.issues);
+        return [];
+      }
+      return normalizeMatches(result.data);
     } catch (error) {
       console.error(`Error fetching matches for ${sport}:`, error);
       return [];
@@ -59,7 +64,10 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
           }
           return response.json();
         })
-        .then((data: RawMatch[]) => Array.isArray(data) ? data : [])
+        .then((data: unknown) => {
+          const r = RawMatchArraySchema.safeParse(data);
+          return r.success ? r.data : [];
+        })
         .catch(error => {
           console.error(`Error fetching ${sportItem.name} matches:`, error);
           return [];
@@ -85,12 +93,13 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
       console.error(`Failed to fetch streams for ${source}/${id}: ${response.status} ${response.statusText}`);
       return [];
     }
-    const data = await response.json();
+    const raw = await response.json();
 
     // streamed.pk returns either an array of streams or a single stream object.
-    // Both shapes are normalized to Stream[] here.
-    if (Array.isArray(data)) {
-      return data.map((stream: RawStream) => ({
+    // Both shapes are validated with Zod then normalized to Stream[].
+    const arrayResult = RawStreamArraySchema.safeParse(raw);
+    if (arrayResult.success) {
+      return arrayResult.data.map((stream) => ({
         url: stream.url || stream.embedUrl || '',
         embedUrl: stream.embedUrl || stream.url || '',
         language: stream.language,
@@ -98,15 +107,20 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
         source: stream.source || source,
       }));
     }
-    if (data && typeof data === 'object') {
+
+    const singleResult = RawStreamSchema.safeParse(raw);
+    if (singleResult.success) {
+      const stream = singleResult.data;
       return [{
-        url: data.url || data.embedUrl || '',
-        embedUrl: data.embedUrl || data.url || '',
-        language: data.language,
-        quality: data.hd ? 'HD' : (data.quality || 'SD'),
-        source: data.source || source,
+        url: stream.url || stream.embedUrl || '',
+        embedUrl: stream.embedUrl || stream.url || '',
+        language: stream.language,
+        quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
+        source: stream.source || source,
       }];
     }
+
+    console.warn(`fetchStreams: unexpected response shape for ${source}/${id}`);
     return [];
   } catch (error) {
     console.error(`Error fetching streams for ${source}/${id}:`, error);
@@ -120,7 +134,13 @@ export async function fetchSports(): Promise<Sport[]> {
       next: { revalidate: REVALIDATE_SPORTS },
     });
     if (!response.ok) throw new Error(`Failed to fetch sports: ${response.statusText}`);
-    return await response.json();
+    const raw = await response.json();
+    const result = SportArraySchema.safeParse(raw);
+    if (!result.success) {
+      console.warn('fetchSports: unexpected response shape:', result.error.issues);
+      return [];
+    }
+    return result.data as Sport[];
   } catch (error) {
     console.error('Error fetching sports:', error);
     return [];
