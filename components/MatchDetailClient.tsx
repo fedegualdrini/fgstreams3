@@ -22,43 +22,38 @@ interface MatchDetailClientProps {
   match: Match;
 }
 
+type SidebarTab = 'streams' | 'stats';
+
 export default function MatchDetailClient({ match }: MatchDetailClientProps) {
-  const [streams, setStreams] = useState<Stream[]>([]);
-  const [currentStream, setCurrentStream] = useState<Stream | null>(null);
+  const [streams, setStreams]                   = useState<Stream[]>([]);
+  const [currentStream, setCurrentStream]       = useState<Stream | null>(null);
   const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
   const [streamErrorCount, setStreamErrorCount] = useState(0);
-  const [multiStreamMode, setMultiStreamMode] = useState(false);
+  const [multiStreamMode, setMultiStreamMode]   = useState(false);
+  const [sidebarTab, setSidebarTab]             = useState<SidebarTab>('streams');
   const { showToast, ToastComponent } = useToast();
 
   const currentStreamId = currentStream
     ? `${currentStream.source || 'unknown'}-${currentStreamIndex}`
     : null;
 
-  // Stable ref for match so the fetch effect can read sources without adding
-  // the full match object to its dependency array.
-  const matchRef = useRef(match);
+  const matchRef   = useRef(match);
   matchRef.current = match;
-  // Encode sources as a string key: effect re-runs when sources actually change.
   const sourcesKey = match.sources?.map(s => `${s.source}:${s.id}`).join(',') ?? '';
 
   const handleStreamError = useCallback(() => {
     setStreamErrorCount((prev) => prev + 1);
     const remainingStreams = streams.filter((_, index) => index !== currentStreamIndex);
     const nextStream = selectBestStream(remainingStreams);
-
     if (nextStream) {
       const nextIndex = streams.findIndex((s) => s.url === nextStream.url);
       setCurrentStream(nextStream);
       setCurrentStreamIndex(nextIndex);
       setStreamErrorCount(0);
       showToast('Switched to next available stream', 'info');
-    } else {
-      console.error('No more streams available');
     }
   }, [streams, currentStreamIndex, showToast]);
 
-  // Fetch streams whenever the match's source list changes.
-  // matchRef.current is used inside to avoid listing the full match object as a dep.
   useEffect(() => {
     const { sources } = matchRef.current;
     if (!sources?.length) return;
@@ -84,14 +79,10 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
 
   useEffect(() => {
     if (streams.length === 0) return;
-
     const streamIds = streams.map((s, i) => ({
       id: `${s.source || 'unknown'}-${i}`,
       url: s.url || s.embedUrl || '',
     }));
-
-    // Health status is driven by onLoad/onError events from StreamPlayer.
-    // The recovery check below handles streams that went offline and may have recovered.
     const recoveryInterval = setInterval(() => {
       streamIds.forEach(async ({ id, url }) => {
         const health = streamHealthMonitor.getStatus(id);
@@ -100,10 +91,8 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
         }
       });
     }, HEALTH_RECOVERY_INTERVAL_MS);
-
     return () => {
       clearInterval(recoveryInterval);
-      // Clean up health entries so they don't accumulate across navigations.
       streamIds.forEach(({ id }) => streamHealthMonitor.clearHealthEntry(id));
     };
   }, [streams]);
@@ -114,7 +103,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     setStreamErrorCount(0);
   };
 
-  const isLive = match.isLive;
+  const isLive    = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
   const matchStats = useMatchStats(match);
@@ -123,110 +112,145 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     <>
       <MatchJsonLd match={match} />
       <SiteHeader activeSection="matches" />
-      <main style={{ flex: 1 }}>
-        {/* Match header — compact single row, same height as channels header */}
-        <div className="page-content" style={{ paddingTop: '1.5rem', paddingBottom: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
 
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+
+        {/* ── Match sub-header ── */}
+        <div style={{ background: 'var(--bg-1)', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
+          <div className="page-content" style={{
+            height: '52px', display: 'flex', alignItems: 'center',
+            gap: '0.875rem', overflow: 'hidden',
+          }}>
             {/* Back */}
             <Link
               href="/"
               style={{
-                fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em',
-                textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none',
-                fontFamily: 'var(--font-body)', transition: 'color 0.15s', flexShrink: 0,
+                fontSize: '1.1rem', color: 'var(--muted)', textDecoration: 'none',
+                transition: 'color 0.15s', flexShrink: 0, lineHeight: 1,
               }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)'; }}
-            >
-              ←
-            </Link>
+            >←</Link>
 
-            {/* Divider */}
-            <span style={{ color: 'var(--line)', fontSize: '1rem', flexShrink: 0 }}>|</span>
+            <span style={{ color: 'var(--line)', flexShrink: 0 }}>|</span>
 
-            {/* Team logos + names */}
+            {/* Team 1 logo + name */}
             {match.image1 && (
-              <Image src={getImageUrl(match.image1)} alt={match.team1} width={48} height={48} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }} />
+              <Image
+                src={getImageUrl(match.image1)} alt={match.team1}
+                width={24} height={24}
+                style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
+              />
             )}
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', letterSpacing: '0.03em', color: 'var(--text)', lineHeight: 1, whiteSpace: 'nowrap' }}>
               {match.team1}
             </span>
 
+            {/* Score or VS */}
             {matchStats?.score ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, padding: '0.15rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px', minWidth: '2.75rem', textAlign: 'center' }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', letterSpacing: '0.04em', color: 'var(--accent)', lineHeight: 1 }}>
+              <div style={{
+                flexShrink: 0, padding: '0.15rem 0.5rem',
+                border: '1px solid var(--line)', borderRadius: '2px', textAlign: 'center',
+              }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: 'var(--accent)', lineHeight: 1 }}>
                   {matchStats.score}
-                </span>
+                </div>
                 {matchStats.minute && (
-                  <span style={{ fontSize: '0.5rem', color: 'var(--red)', letterSpacing: '0.05em', marginTop: '1px' }}>
+                  <div style={{ fontSize: '0.5rem', color: 'var(--red)', fontWeight: 600 }}>
                     {matchStats.minute}
-                  </span>
+                  </div>
                 )}
               </div>
             ) : (
-              <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: 'var(--muted)', padding: '0.15rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0 }}>
-                VS
-              </span>
+              <span style={{
+                fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--muted)',
+                padding: '0.15rem 0.45rem', border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0,
+              }}>VS</span>
             )}
 
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
-              {match.team2}
-            </span>
+            {/* Team 2 name + logo */}
+            {match.team2 && (
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', letterSpacing: '0.03em', color: 'var(--text)', lineHeight: 1, whiteSpace: 'nowrap' }}>
+                {match.team2}
+              </span>
+            )}
             {match.image2 && (
-              <Image src={getImageUrl(match.image2)} alt={match.team2} width={48} height={48} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }} />
+              <Image
+                src={getImageUrl(match.image2)} alt={match.team2 ?? ''}
+                width={24} height={24}
+                style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)', flexShrink: 0 }}
+              />
             )}
 
             {/* League */}
-            <span className="label" style={{ fontSize: '0.55rem', flexShrink: 0 }}>{match.league || match.sport}</span>
+            <span className="label" style={{ fontSize: '0.55rem', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {match.league || match.sport}
+            </span>
 
             {/* Live badge */}
             {isLive && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'var(--red)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', padding: '0.15rem 0.5rem', borderRadius: '2px', flexShrink: 0 }}>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                background: 'var(--red)', color: '#fff',
+                fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.1em',
+                padding: '0.18rem 0.45rem', borderRadius: '2px', flexShrink: 0,
+              }}>
                 <span className="live-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
                 LIVE
               </span>
             )}
 
             {localTime && !isLive && (
-              <span suppressHydrationWarning style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>{localTime}</span>
+              <span suppressHydrationWarning style={{ fontSize: '0.65rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>
+                {localTime}
+              </span>
             )}
 
-            {/* Multi-match toggle — pushed to the right */}
+            {/* Multi-stream toggle */}
             <button
               type="button"
-              aria-label={multiStreamMode ? 'Switch to single stream view' : 'Switch to multi stream view'}
               aria-pressed={multiStreamMode}
               onClick={() => setMultiStreamMode(!multiStreamMode)}
               style={{
-                marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                marginLeft: 'auto',
+                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                 padding: '0.3rem 0.75rem',
                 background: multiStreamMode ? 'var(--accent)' : 'var(--bg-2)',
-                color: multiStreamMode ? '#000' : 'var(--text-dim)',
-                border: `1px solid ${multiStreamMode ? 'var(--accent)' : 'var(--line)'}`,
-                borderRadius: '3px', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em',
-                textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0,
+                color:      multiStreamMode ? '#000' : 'var(--text-dim)',
+                border:    `1px solid ${multiStreamMode ? 'var(--accent)' : 'var(--line)'}`,
+                borderRadius: '3px', fontSize: '0.65rem', fontWeight: 700,
+                letterSpacing: '0.08em', textTransform: 'uppercase',
+                fontFamily: 'var(--font-body)', cursor: 'pointer',
+                transition: 'all 0.15s', flexShrink: 0,
               }}
             >
               {multiStreamMode ? '▣ Single' : '▤ Multi'}
             </button>
           </div>
 
-          {multiStreamMode && <div style={{ marginTop: '1rem' }}><MultiMatchView currentMatch={match} /></div>}
+          {multiStreamMode && (
+            <div className="page-content" style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
+              <MultiMatchView currentMatch={match} />
+            </div>
+          )}
         </div>
 
+        {/* ── Split layout: player + sidebar ── */}
         {!multiStreamMode && (
-          <>
-            {/* Player — full width, fixed height to stay in viewport */}
-            <section className="player-wrapper" style={{
-              width: '100%',
-              background: '#000',
-              height: 'calc(100vh - var(--header-h) - 9rem)',
-              minHeight: '320px',
-              maxHeight: '72vh',
-              position: 'relative',
-              marginBottom: '2rem',
-            }}>
+          <div
+            className="detail-layout"
+            style={{
+              display: 'flex', flexDirection: 'row',
+              height: 'calc(100vh - var(--header-h) - 52px)',
+              minHeight: '420px',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Player */}
+            <section
+              className="detail-player"
+              style={{ flex: 1, background: '#000', position: 'relative', minWidth: 0 }}
+            >
               <StreamPlayer
                 stream={currentStream}
                 streamId={currentStreamId ?? 'none'}
@@ -235,16 +259,58 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
               />
             </section>
 
-            {/* Streams list + stats — centered below */}
-            <div className="page-content" style={{ paddingBottom: '3rem' }}>
-              <StreamList
-                streams={streams}
-                currentStreamId={currentStreamId}
-                onSelectStream={handleSelectStream}
-              />
-              {matchStats && <MatchStatsPanel detail={matchStats} />}
+            {/* Sidebar */}
+            <div
+              className="detail-sidebar"
+              style={{
+                width: '340px', flexShrink: 0,
+                borderLeft: '1px solid var(--line)',
+                display: 'flex', flexDirection: 'column',
+                background: 'var(--bg-1)', overflow: 'hidden',
+              }}
+            >
+              {/* Tabs */}
+              <div style={{ display: 'flex', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
+                {(['streams', 'stats'] as SidebarTab[]).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setSidebarTab(tab)}
+                    style={{
+                      flex: 1, padding: '0.75rem 0',
+                      background: 'none', border: 'none',
+                      borderBottom: `2px solid ${sidebarTab === tab ? 'var(--accent)' : 'transparent'}`,
+                      color: sidebarTab === tab ? 'var(--text)' : 'var(--text-dim)',
+                      fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 600,
+                      letterSpacing: '0.08em', textTransform: 'uppercase',
+                      cursor: 'pointer', transition: 'all 0.15s', marginBottom: '-1px',
+                    }}
+                  >
+                    {tab === 'streams' ? 'Streams' : 'Stats'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab content */}
+              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '1rem' }}>
+                {sidebarTab === 'streams' && (
+                  <StreamList
+                    streams={streams}
+                    currentStreamId={currentStreamId}
+                    onSelectStream={handleSelectStream}
+                  />
+                )}
+                {sidebarTab === 'stats' && matchStats && (
+                  <MatchStatsPanel detail={matchStats} />
+                )}
+                {sidebarTab === 'stats' && !matchStats && (
+                  <div style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--subtle)', fontSize: '0.8rem', fontFamily: 'var(--font-body)' }}>
+                    Stats unavailable
+                  </div>
+                )}
+              </div>
             </div>
-          </>
+          </div>
         )}
       </main>
       {ToastComponent}
