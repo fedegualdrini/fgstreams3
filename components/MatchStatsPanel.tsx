@@ -74,15 +74,20 @@ export default function MatchStatsPanel({ detail }: MatchStatsPanelProps) {
         </div>
       )}
 
-      {/* Events timeline */}
+      {/* Events timeline — center-divider layout */}
       {events.length > 0 && (
-        <div style={{
-          borderLeft: '2px solid var(--line)',
-          paddingLeft: '0.875rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.5rem',
-        }}>
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {/* Vertical center line */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            top: 0,
+            bottom: 0,
+            width: '2px',
+            background: 'var(--line)',
+            transform: 'translateX(-50%)',
+            pointerEvents: 'none',
+          }} />
           {events.map((event, i) => (
             <EventRow key={i} event={event} />
           ))}
@@ -205,15 +210,29 @@ function LineupsGrid({ lineups }: { lineups: FlashscoreLineups }) {
 function EventRow({ event }: { event: FlashscoreEvent }) {
   const icon = EVENT_ICONS[event.type];
   const isAway = event.team === 'away';
+  const isUnknown = event.team === 'unknown';
 
   return (
     <div style={{
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
+      gap: '0.4rem',
       flexDirection: isAway ? 'row-reverse' : 'row',
+      // Home events fill the left half, away events fill the right half.
+      // Unknown-team events span full width (e.g. kick-off, penalty shootout).
+      width: isUnknown ? '100%' : '50%',
+      alignSelf: isAway ? 'flex-end' : 'flex-start',
+      paddingRight: isAway ? 0 : '0.625rem',
+      paddingLeft: isAway ? '0.625rem' : 0,
+      boxSizing: 'border-box',
     }}>
-      <span style={{ fontSize: '0.6rem', color: 'var(--muted)', minWidth: '2.5rem', textAlign: isAway ? 'right' : 'left' }}>
+      <span style={{
+        fontSize: '0.6rem',
+        color: 'var(--muted)',
+        minWidth: '2rem',
+        flexShrink: 0,
+        textAlign: isAway ? 'right' : 'left',
+      }}>
         {event.minute}
       </span>
       <span style={{ fontSize: '0.75rem', flexShrink: 0 }}>{icon}</span>
@@ -222,6 +241,9 @@ function EventRow({ event }: { event: FlashscoreEvent }) {
         color: 'var(--text-dim)',
         fontFamily: 'var(--font-body)',
         textAlign: isAway ? 'right' : 'left',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
       }}>
         {event.player || event.type.replace('_', ' ')}
       </span>

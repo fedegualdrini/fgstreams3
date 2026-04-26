@@ -206,35 +206,60 @@ export function parseMatchDetail(html: string, flashscoreId: string): Flashscore
   // Events: parse incident divs
   const events: FlashscoreEvent[] = [];
 
-  // Parse team names from <h3> to determine home/away assignment
+  // Extract both team names from <h3> title: "Home Team - Away Team"
+  // Used to attribute bracket codes [XXX] in incident text to home or away.
   const matchTitle = $('h3').first().text().trim();
   const titleSep = matchTitle.indexOf(' - ');
   const homeTeam = titleSep !== -1 ? matchTitle.substring(0, titleSep).trim() : '';
+  const awayTeam = titleSep !== -1 ? matchTitle.substring(titleSep + 3).trim() : '';
+  // Each team's first word, uppercased, for prefix-matching the bracket codes.
+  const homeFirstWord = homeTeam.split(/\s+/)[0].toUpperCase();
+  const awayFirstWord = awayTeam.split(/\s+/)[0].toUpperCase();
+  // Also compute initials (e.g. "Real Madrid" → "RM") as a fallback.
+  const initials = (name: string) => name.split(/\s+/).map(w => w[0] ?? '').join('').toUpperCase();
+  const homeInitials = initials(homeTeam);
+  const awayInitials = initials(awayTeam);
 
   $('div.incident').each(function () {
     const $inc = $(this);
     const incMinute = $inc.find('p.time').text().trim();
     if (!incMinute) return;
 
-    // Determine event type from the icon class
-    const iconEl = $inc.find('p.icon');
-    const iconClass = iconEl.attr('class') || '';
+    // Determine event type from the icon <p> class.
+    // Confirmed Flashscore.mobi class names (as of 2025):
+    //   y-card       → yellow card
+    //   r-card       → red card (straight or second yellow)
+    //   substitution → substitution
+    //   ball / goal  → goal
+    const iconEl = $inc.find('p.icon, span.icon').first();
+    const iconClass = (iconEl.attr('class') || '').toLowerCase();
+
     let type: FlashscoreEvent['type'] = 'other';
     if (iconClass.includes('ball') || iconClass.includes('goal')) type = 'goal';
-    else if (iconClass.includes('yellow')) type = 'yellow_card';
-    else if (iconClass.includes('red')) type = 'red_card';
-    else if (iconClass.includes('sub') || iconClass.includes('subst')) type = 'substitution';
+    else if (iconClass.includes('y-card') && iconClass.includes('r-card')) type = 'red_card'; // second yellow
+    else if (iconClass.includes('y-card') || iconClass.includes('yellow')) type = 'yellow_card';
+    else if (iconClass.includes('r-card') || iconClass.includes('red')) type = 'red_card';
+    else if (iconClass.includes('sub')) type = 'substitution';
 
-    // Player name: text content of .incident minus the child <p> elements
+    // Player name: raw text content with child <p> elements removed.
+    // Bracket tag [XXX] and substitution parentheses are stripped after capture.
     const rawText = $inc.clone().children('p').remove().end().text().trim();
-    // Sanitize and clean up extra whitespace and brackets like "() [DRC]"
-    const player = sanitize(rawText.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, ''));
 
-    // Determine home/away: check for a positioning class on the incident
-    const incClass = $inc.attr('class') || '';
+    // Team detection: Flashscore.mobi appends a bracket code to each incident,
+    // e.g. "Mazzantti W. [NEW]" for Newells Old Boys or "Mosevich L. [INS]" for Instituto.
+    // The code matches the first N uppercase letters of the team's first word.
+    const bracketMatch = rawText.match(/\[([A-Z]{2,5})\]/);
+    const teamTag = bracketMatch ? bracketMatch[1] : '';
+
     let team: FlashscoreEvent['team'] = 'unknown';
-    if (incClass.includes('home') || incClass.includes('fl')) team = 'home';
-    else if (incClass.includes('away') || incClass.includes('fr')) team = 'away';
+    if (teamTag.length >= 2) {
+      const homeMatch = homeFirstWord.startsWith(teamTag) || homeInitials === teamTag;
+      const awayMatch = awayFirstWord.startsWith(teamTag) || awayInitials === teamTag;
+      if (homeMatch && !awayMatch) team = 'home';
+      else if (awayMatch && !homeMatch) team = 'away';
+    }
+
+    const player = sanitize(rawText.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, ''));
 
     if (player || type !== 'other') {
       events.push({ minute: incMinute, type, team, player });

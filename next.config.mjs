@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV === 'development';
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -20,7 +22,9 @@ const nextConfig = {
             // allowing the wide range of third-party HTTPS streaming embeds used by the app.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
+              // 'unsafe-eval' is required by Next.js webpack HMR in dev mode only.
+              // Production builds never use eval(), so we omit it there.
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://va.vercel-scripts.com`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
