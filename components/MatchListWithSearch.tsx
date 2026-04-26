@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import type { Match, FlashscoreEntry } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
@@ -43,6 +43,36 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
   const filteredLive     = liveMatches.filter(filter);
   const filteredUpcoming = upcomingMatches.filter(filter);
   const noResults = query.trim().length > 0 && filteredLive.length === 0 && filteredUpcoming.length === 0;
+
+  // Live-section horizontal scroll arrows
+  const liveScrollRef = useRef<HTMLDivElement>(null);
+  const [liveHovered, setLiveHovered]       = useState(false);
+  const [canScrollLeft, setCanScrollLeft]   = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const el = liveScrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = liveScrollRef.current;
+    if (!el) return;
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    const ro = new ResizeObserver(updateScrollState);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      ro.disconnect();
+    };
+  }, [updateScrollState, filteredLive.length]);
+
+  const scrollLive = useCallback((delta: number) => {
+    liveScrollRef.current?.scrollBy({ left: delta, behavior: 'smooth' });
+  }, []);
 
   return (
     <>
@@ -107,36 +137,98 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
       {filteredLive.length > 0 && (
         <section style={{ marginBottom: '2.75rem' }}>
           <SectionHeader live count={filteredLive.length}>Live Now</SectionHeader>
-          <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
-            {filteredLive.map((match) => {
-              const entry = scoreMap.get(match.id);
-              return (
-                <Link
-                  key={match.id}
-                  href={`/match/${match.id}`}
-                  style={{
-                    display: 'block', textDecoration: 'none', color: 'inherit',
-                    width: '290px', flexShrink: 0,
-                    background: 'var(--bg-2)',
-                    border: '1px solid var(--line)',
-                    borderRadius: '6px', overflow: 'hidden',
-                    transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--accent)';
-                    e.currentTarget.style.transform   = 'translateY(-3px)';
-                    e.currentTarget.style.boxShadow   = '0 12px 32px rgba(0,0,0,0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--line)';
-                    e.currentTarget.style.transform   = 'none';
-                    e.currentTarget.style.boxShadow   = 'none';
-                  }}
-                >
-                  <MatchCard match={match} score={entry?.score} scoreMinute={entry?.minute} />
-                </Link>
-              );
-            })}
+
+          {/* Wrapper tracks hover so arrows can appear/disappear */}
+          <div
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setLiveHovered(true)}
+            onMouseLeave={() => setLiveHovered(false)}
+          >
+            {/* ← Left arrow */}
+            <button
+              aria-label="Scroll left"
+              onClick={() => scrollLive(-302)}
+              style={{
+                position: 'absolute', left: 0, top: 0, bottom: 8,
+                zIndex: 2, border: 'none', cursor: 'pointer',
+                width: '52px',
+                background: 'linear-gradient(to right, var(--bg-0) 30%, transparent)',
+                display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+                paddingLeft: '6px',
+                opacity: liveHovered && canScrollLeft ? 1 : 0,
+                pointerEvents: liveHovered && canScrollLeft ? 'auto' : 'none',
+                transition: 'opacity 0.18s',
+              }}
+            >
+              <span style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '28px', height: '28px', borderRadius: '50%',
+                background: 'var(--bg-2)', border: '1px solid var(--line)',
+                color: 'var(--text)', fontSize: '0.75rem', lineHeight: 1,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+              }}>‹</span>
+            </button>
+
+            {/* Scroll track */}
+            <div
+              ref={liveScrollRef}
+              style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}
+            >
+              {filteredLive.map((match) => {
+                const entry = scoreMap.get(match.id);
+                return (
+                  <Link
+                    key={match.id}
+                    href={`/match/${match.id}`}
+                    style={{
+                      display: 'block', textDecoration: 'none', color: 'inherit',
+                      width: '290px', flexShrink: 0,
+                      background: 'var(--bg-2)',
+                      border: '1px solid var(--line)',
+                      borderRadius: '6px', overflow: 'hidden',
+                      transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--accent)';
+                      e.currentTarget.style.transform   = 'translateY(-3px)';
+                      e.currentTarget.style.boxShadow   = '0 12px 32px rgba(0,0,0,0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--line)';
+                      e.currentTarget.style.transform   = 'none';
+                      e.currentTarget.style.boxShadow   = 'none';
+                    }}
+                  >
+                    <MatchCard match={match} score={entry?.score} scoreMinute={entry?.minute} />
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* → Right arrow */}
+            <button
+              aria-label="Scroll right"
+              onClick={() => scrollLive(302)}
+              style={{
+                position: 'absolute', right: 0, top: 0, bottom: 8,
+                zIndex: 2, border: 'none', cursor: 'pointer',
+                width: '52px',
+                background: 'linear-gradient(to left, var(--bg-0) 30%, transparent)',
+                display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                paddingRight: '6px',
+                opacity: liveHovered && canScrollRight ? 1 : 0,
+                pointerEvents: liveHovered && canScrollRight ? 'auto' : 'none',
+                transition: 'opacity 0.18s',
+              }}
+            >
+              <span style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '28px', height: '28px', borderRadius: '50%',
+                background: 'var(--bg-2)', border: '1px solid var(--line)',
+                color: 'var(--text)', fontSize: '0.75rem', lineHeight: 1,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+              }}>›</span>
+            </button>
           </div>
         </section>
       )}
