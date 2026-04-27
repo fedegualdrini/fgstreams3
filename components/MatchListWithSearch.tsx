@@ -71,7 +71,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
   }, [updateScrollState, filteredLive.length]);
 
   const scrollLive = useCallback((delta: number) => {
-    liveScrollRef.current?.scrollBy({ left: delta, behavior: 'smooth' });
+    const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    liveScrollRef.current?.scrollBy({ left: delta, behavior: reduced ? 'auto' : 'smooth' });
   }, []);
 
   return (
@@ -148,6 +149,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
             <button
               aria-label="Scroll left"
               onClick={() => scrollLive(-302)}
+              onFocus={(e) => { e.currentTarget.style.outline = '2px solid var(--accent)'; e.currentTarget.style.outlineOffset = '2px'; }}
+              onBlur={(e)  => { e.currentTarget.style.outline = 'none'; }}
               style={{
                 position: 'absolute', left: 0, top: 0, bottom: 8,
                 zIndex: 2, border: 'none', cursor: 'pointer',
@@ -164,9 +167,13 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: '28px', height: '28px', borderRadius: '50%',
                 background: 'var(--bg-2)', border: '1px solid var(--line)',
-                color: 'var(--text)', fontSize: '0.75rem', lineHeight: 1,
+                color: 'var(--text)', lineHeight: 1,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-              }}>‹</span>
+              }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="15,18 9,12 15,6" />
+                </svg>
+              </span>
             </button>
 
             {/* Scroll track */}
@@ -209,6 +216,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
             <button
               aria-label="Scroll right"
               onClick={() => scrollLive(302)}
+              onFocus={(e) => { e.currentTarget.style.outline = '2px solid var(--accent)'; e.currentTarget.style.outlineOffset = '2px'; }}
+              onBlur={(e)  => { e.currentTarget.style.outline = 'none'; }}
               style={{
                 position: 'absolute', right: 0, top: 0, bottom: 8,
                 zIndex: 2, border: 'none', cursor: 'pointer',
@@ -225,9 +234,13 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: '28px', height: '28px', borderRadius: '50%',
                 background: 'var(--bg-2)', border: '1px solid var(--line)',
-                color: 'var(--text)', fontSize: '0.75rem', lineHeight: 1,
+                color: 'var(--text)', lineHeight: 1,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-              }}>›</span>
+              }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="9,18 15,12 9,6" />
+                </svg>
+              </span>
             </button>
           </div>
         </section>
