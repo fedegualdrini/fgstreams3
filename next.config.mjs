@@ -28,14 +28,12 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
-              // hls.js fetches segments via XHR (connect-src, not media-src).
-              // IPTV streams use plain HTTP IPs, so http: must be included here
-              // or segment fetches are blocked in production under HTTPS.
-              "connect-src 'self' https://va.vercel-scripts.com http: https:",
+              // hls.js fetches HLS segments via XHR — must be in connect-src, not media-src.
+              "connect-src 'self' https://va.vercel-scripts.com https:",
               // https: covers all sports stream embeds + VidSrc mirrors:
               // vidsrc-embed.ru, vidsrc-embed.su, vidsrcme.su, vsrc.su
               "frame-src https:",
-              "media-src 'self' https: http:",
+              "media-src 'self' https:",
             ].join('; '),
           },
         ],
