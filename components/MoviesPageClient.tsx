@@ -12,11 +12,11 @@ function buildEmbedUrl(
   episode?: number
 ): string {
   if (item.type === 'movie') {
-    return `${VIDSRC_BASE}/movie?tmdb=${item.tmdbId}`;
+    return `${VIDSRC_BASE}/movie?tmdb=${item.tmdbId}&ds_lang=en`;
   }
   const s = season ?? 1;
   const e = episode ?? 1;
-  return `${VIDSRC_BASE}/tv?tmdb=${item.tmdbId}&season=${s}&episode=${e}`;
+  return `${VIDSRC_BASE}/tv?tmdb=${item.tmdbId}&season=${s}&episode=${e}&ds_lang=en`;
 }
 
 export default function MoviesPageClient() {
