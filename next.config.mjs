@@ -30,8 +30,7 @@ const nextConfig = {
               "img-src 'self' data: https:",
               // hls.js fetches HLS segments via XHR — must be in connect-src, not media-src.
               "connect-src 'self' https://va.vercel-scripts.com https:",
-              // https: covers all sports stream embeds + VidSrc mirrors:
-              // vidsrc-embed.ru, vidsrc-embed.su, vidsrcme.su, vsrc.su
+              // https: covers all sports stream embeds + VidSrc (vidsrcme.ru)
               "frame-src https:",
               "media-src 'self' https:",
             ].join('; '),

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { MediaResult, TvDetail } from '@/types/movies';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w185';
-const VIDSRC_BASE = 'https://vidsrc-embed.ru/embed';
+const VIDSRC_BASE = 'https://vidsrcme.ru/embed';
 
 function buildEmbedUrl(
   item: MediaResult,
@@ -223,7 +223,8 @@ export default function MoviesPageClient() {
               key={embedUrl}
               src={embedUrl}
               allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allow="fullscreen; autoplay"
+              referrerPolicy="origin"
               title={selected.title}
             />
           </div>
