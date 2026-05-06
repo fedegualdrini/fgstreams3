@@ -217,21 +217,13 @@ export default function MoviesPageClient() {
             </button>
           </div>
 
-          {/* 16:9 iframe */}
-          <div style={{
-            position: 'relative', width: '100%', paddingTop: '56.25%',
-            background: '#000', borderRadius: '6px', overflow: 'hidden',
-            border: '1px solid var(--line)',
-          }}>
+          {/* 16:9 iframe — use .video-container class (matches StreamPlayer/ChannelPlayer pattern) */}
+          <div className="video-container">
             <iframe
               key={embedUrl}
               src={embedUrl}
               allowFullScreen
-              allow="autoplay; fullscreen; picture-in-picture"
-              style={{
-                position: 'absolute', inset: 0,
-                width: '100%', height: '100%', border: 'none',
-              }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               title={selected.title}
             />
           </div>
