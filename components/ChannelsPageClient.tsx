@@ -12,12 +12,12 @@ interface ChannelsPageClientProps {
 }
 
 export default function ChannelsPageClient({ channels }: ChannelsPageClientProps) {
-  const router       = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [selectedChannel,     setSelectedChannel]     = useState<Channel | null>(null);
+  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
-  const [search,              setSearch]              = useState('');
+  const [search, setSearch] = useState('');
 
   const initializedRef = useRef(false);
 
@@ -35,6 +35,17 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
     }
   }, [channels, searchParams]);
 
+  useEffect(() => {
+    if (!selectedChannel) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedChannel]);
+
   const syncURL = (channelName: string | null, optionIndex: number) => {
     const params = new URLSearchParams();
     if (channelName) {
@@ -45,16 +56,21 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
     router.replace(newUrl, { scroll: false });
   };
 
+  const closePlayer = () => {
+    setSelectedChannel(null);
+    setSelectedOptionIndex(0);
+    syncURL(null, 0);
+  };
+
   const handleSelectChannel = (channel: Channel) => {
     if (selectedChannel?.name === channel.name) {
-      setSelectedChannel(null);
-      setSelectedOptionIndex(0);
-      syncURL(null, 0);
-    } else {
-      setSelectedChannel(channel);
-      setSelectedOptionIndex(0);
-      syncURL(channel.name, 0);
+      closePlayer();
+      return;
     }
+
+    setSelectedChannel(channel);
+    setSelectedOptionIndex(0);
+    syncURL(channel.name, 0);
   };
 
   const handleOptionChange = (index: number) => {
@@ -64,9 +80,11 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
 
   useEffect(() => {
     if (!selectedChannel) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSelectedChannel(null);
+      if (e.key === 'Escape') closePlayer();
     };
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [selectedChannel]);
@@ -79,13 +97,39 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
 
   return (
     <div style={{ flex: 1 }}>
-
-      {/* ── Inline player ── */}
       {selectedChannel && (
-        <div role="dialog" aria-modal="true" aria-label="Channel player">
-          {/* Channel header */}
-          <div className="page-content" style={{ paddingTop: '1.25rem', paddingBottom: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Channel player"
+          style={{
+            position: 'fixed',
+            inset: 'var(--header-h) 0 0',
+            zIndex: 60,
+            background: 'rgba(7, 8, 12, 0.94)',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0,
+            }}
+          >
+            <div
+              className="page-content"
+              style={{
+                paddingTop: '1rem',
+                paddingBottom: '0.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.875rem',
+                flexWrap: 'wrap',
+              }}
+            >
               {selectedChannel.logo && (
                 <img
                   src={selectedChannel.logo}
@@ -94,97 +138,123 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
               )}
-              <span style={{
-                fontFamily: 'var(--font-display)', fontSize: '1.5rem',
-                letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1,
-              }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1.5rem',
+                  letterSpacing: '0.04em',
+                  color: 'var(--text)',
+                  lineHeight: 1,
+                }}
+              >
                 {selectedChannel.name}
               </span>
               <button
                 type="button"
-                onClick={() => handleSelectChannel(selectedChannel)}
+                onClick={closePlayer}
                 style={{
                   marginLeft: 'auto',
-                  display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
                   padding: '0.3rem 0.75rem',
-                  background: 'var(--bg-2)', color: 'var(--muted)',
-                  border: '1px solid var(--line)', borderRadius: '3px',
-                  fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em',
-                  textTransform: 'uppercase', fontFamily: 'var(--font-body)',
-                  cursor: 'pointer', transition: 'all 0.12s',
+                  background: 'var(--bg-2)',
+                  color: 'var(--muted)',
+                  border: '1px solid var(--line)',
+                  borderRadius: '3px',
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  fontFamily: 'var(--font-body)',
+                  cursor: 'pointer',
+                  transition: 'all 0.12s',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color       = 'var(--text)';
+                  e.currentTarget.style.color = 'var(--text)';
                   e.currentTarget.style.borderColor = 'var(--muted)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color       = 'var(--muted)';
+                  e.currentTarget.style.color = 'var(--muted)';
                   e.currentTarget.style.borderColor = 'var(--line)';
                 }}
               >
                 ✕ Close
               </button>
             </div>
-          </div>
 
-          {/* Player */}
-          <section style={{
-            width: '100%',
-            height: 'clamp(220px, 40vh, 480px)',
-            background: '#000', position: 'relative', overflow: 'hidden',
-            marginBottom: '1rem',
-          }}>
-            <ChannelPlayer
-              channel={selectedChannel}
-              initialOptionIndex={selectedOptionIndex}
-              onOptionChange={handleOptionChange}
-              fillContainer
-              hideTabs
-            />
-          </section>
+            <section
+              style={{
+                flex: 1,
+                minHeight: 0,
+                width: '100%',
+                background: '#000',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <ChannelPlayer
+                channel={selectedChannel}
+                initialOptionIndex={selectedOptionIndex}
+                onOptionChange={handleOptionChange}
+                fillContainer
+                hideTabs
+              />
+            </section>
 
-          {/* Option tabs */}
-          {(() => {
-            const validOptions = selectedChannel.options.filter(o => isSafeIframeUrl(o.iframe));
-            return validOptions.length > 1 ? (
-              <div className="page-content" style={{
-                paddingTop: '0.75rem', paddingBottom: '1rem',
-                borderBottom: '1px solid var(--line)', marginBottom: '2rem',
-              }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                  {validOptions.map((option, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => handleOptionChange(i)}
-                      style={tabButtonStyle(i === selectedOptionIndex)}
-                    >
-                      {option.name}
-                    </button>
-                  ))}
+            {(() => {
+              const validOptions = selectedChannel.options.filter(o => isSafeIframeUrl(o.iframe));
+              return validOptions.length > 1 ? (
+                <div
+                  className="page-content"
+                  style={{
+                    paddingTop: '0.75rem',
+                    paddingBottom: '1rem',
+                    borderTop: '1px solid var(--line)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    {validOptions.map((option, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => handleOptionChange(i)}
+                        style={tabButtonStyle(i === selectedOptionIndex)}
+                      >
+                        {option.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div style={{ borderBottom: '1px solid var(--line)', marginBottom: '2rem' }} />
-            );
-          })()}
+              ) : null;
+            })()}
+          </div>
         </div>
       )}
 
-      {/* ── Channel grid ── */}
       <div className="page-content" style={{ paddingTop: '2rem', paddingBottom: '3rem' }}>
-
-        {/* Search + count */}
-        <div style={{
-          marginBottom: '1.75rem', display: 'flex',
-          alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
-        }}>
+        <div
+          style={{
+            marginBottom: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
           <div style={{ position: 'relative', maxWidth: '360px', flex: 1 }}>
-            <span style={{
-              position: 'absolute', left: '0.875rem', top: '50%',
-              transform: 'translateY(-50%)', color: 'var(--muted)',
-              fontSize: '0.9rem', pointerEvents: 'none',
-            }}>⌕</span>
+            <span
+              style={{
+                position: 'absolute',
+                left: '0.875rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--muted)',
+                fontSize: '0.9rem',
+                pointerEvents: 'none',
+              }}
+            >⌕</span>
             <input
               type="text"
               placeholder="Search channels…"
@@ -194,31 +264,43 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
               style={{
                 width: '100%',
                 padding: '0.6rem 1rem 0.6rem 2.25rem',
-                background: 'var(--bg-2)', border: '1px solid var(--line)',
-                borderRadius: '4px', color: 'var(--text)',
-                fontFamily: 'var(--font-body)', fontSize: '0.875rem', outline: 'none',
+                background: 'var(--bg-2)',
+                border: '1px solid var(--line)',
+                borderRadius: '4px',
+                color: 'var(--text)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.875rem',
+                outline: 'none',
                 transition: 'border-color 0.15s',
               }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
-              onBlur={(e)  => { e.currentTarget.style.borderColor = 'var(--line)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
             />
           </div>
-          <span style={{
-            fontSize: '0.7rem', color: 'var(--muted)',
-            fontFamily: 'var(--font-body)', whiteSpace: 'nowrap',
-          }}>
+          <span
+            style={{
+              fontSize: '0.7rem',
+              color: 'var(--muted)',
+              fontFamily: 'var(--font-body)',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {filtered.length} channel{filtered.length !== 1 ? 's' : ''}
           </span>
         </div>
 
-        {/* Grid */}
         {filtered.length > 0 ? (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-            gap: '1px', background: 'var(--line)',
-            border: '1px solid var(--line)', borderRadius: '6px', overflow: 'hidden',
-          }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+              gap: '1px',
+              background: 'var(--line)',
+              border: '1px solid var(--line)',
+              borderRadius: '6px',
+              overflow: 'hidden',
+            }}
+          >
             {filtered.map(channel => {
               const validCount = channel.options.filter(o => isSafeIframeUrl(o.iframe)).length;
               const isSelected = selectedChannel?.name === channel.name;
@@ -234,10 +316,15 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
             })}
           </div>
         ) : (
-          <div style={{
-            padding: '4rem 1rem', textAlign: 'center',
-            color: 'var(--subtle)', fontSize: '0.875rem', fontFamily: 'var(--font-body)',
-          }}>
+          <div
+            style={{
+              padding: '4rem 1rem',
+              textAlign: 'center',
+              color: 'var(--subtle)',
+              fontSize: '0.875rem',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
             No channels for &ldquo;{search}&rdquo;
           </div>
         )}
@@ -245,8 +332,6 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
     </div>
   );
 }
-
-// ─── Channel Tile ─────────────────────────────────────────────────────────────
 
 function ChannelTile({
   channel, validCount, isSelected, onClick,
@@ -274,7 +359,6 @@ function ChannelTile({
         cursor: 'pointer', transition: 'background 0.12s', textAlign: 'center',
       }}
     >
-      {/* Logo or abbreviation */}
       {channel.logo ? (
         <img
           src={channel.logo}
