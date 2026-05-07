@@ -108,6 +108,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
             zIndex: 60,
             background: 'rgba(7, 8, 12, 0.94)',
             backdropFilter: 'blur(10px)',
+            overflow: 'hidden',
           }}
         >
           <div
@@ -122,12 +123,13 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
             <div
               className="page-content"
               style={{
-                paddingTop: '1rem',
+                paddingTop: '0.75rem',
                 paddingBottom: '0.75rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.875rem',
                 flexWrap: 'wrap',
+                flexShrink: 0,
               }}
             >
               {selectedChannel.logo && (
@@ -200,35 +202,41 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
                 fillContainer
                 hideTabs
               />
-            </section>
 
-            {(() => {
-              const validOptions = selectedChannel.options.filter(o => isSafeIframeUrl(o.iframe));
-              return validOptions.length > 1 ? (
-                <div
-                  className="page-content"
-                  style={{
-                    paddingTop: '0.75rem',
-                    paddingBottom: '1rem',
-                    borderTop: '1px solid var(--line)',
-                    flexShrink: 0,
-                  }}
-                >
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              {(() => {
+                const validOptions = selectedChannel.options.filter(o => isSafeIframeUrl(o.iframe));
+                return validOptions.length > 1 ? (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '0.75rem',
+                      right: '1rem',
+                      zIndex: 25,
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '4px',
+                      justifyContent: 'flex-end',
+                      maxWidth: 'min(50vw, 42rem)',
+                    }}
+                  >
                     {validOptions.map((option, i) => (
                       <button
                         key={i}
                         type="button"
                         onClick={() => handleOptionChange(i)}
-                        style={tabButtonStyle(i === selectedOptionIndex)}
+                        style={{
+                          ...tabButtonStyle(i === selectedOptionIndex),
+                          background: i === selectedOptionIndex ? 'var(--accent)' : 'rgba(13, 14, 22, 0.88)',
+                          backdropFilter: 'blur(8px)',
+                        }}
                       >
                         {option.name}
                       </button>
                     ))}
                   </div>
-                </div>
-              ) : null;
-            })()}
+                ) : null;
+              })()}
+            </section>
           </div>
         </div>
       )}
