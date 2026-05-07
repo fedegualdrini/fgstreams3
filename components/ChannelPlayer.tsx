@@ -27,9 +27,9 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
+  const iframeScale = fillContainer ? 0.86 : 1;
+  const iframeExpandedSize = `${100 / iframeScale}%`;
 
-  // Sync internal index when parent drives the selection (e.g. external tabs),
-  // or when the number of valid options changes (channel data updated).
   useEffect(() => {
     const clamped = Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0));
     setSelectedIndex(clamped);
@@ -94,7 +94,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
       )}
       <div
         className={fillContainer ? undefined : 'video-container'}
-        style={fillContainer ? { position: 'relative' as const, width: '100%', flex: 1, minHeight: 0 } : { position: 'relative' as const }}
+        style={fillContainer ? { position: 'relative' as const, width: '100%', flex: 1, minHeight: 0, overflow: 'hidden' } : { position: 'relative' as const }}
       >
         {isLoading && !timedOut && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10 }}>
@@ -127,19 +127,31 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
           </div>
         )}
         {currentOption && (
-          <iframe
-            key={`${channel.name}-${selectedIndex}-${reloadKey}`}
-            src={currentOption.iframe}
-            title={`${channel.name} - ${currentOption.name}`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-            allowFullScreen
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
-            onLoad={() => {
-              if (timeoutRef.current) clearTimeout(timeoutRef.current);
-              setIsLoading(false);
-              setTimedOut(false);
-            }}
-          />
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#000' }}>
+            <iframe
+              key={`${channel.name}-${selectedIndex}-${reloadKey}`}
+              src={currentOption.iframe}
+              title={`${channel.name} - ${currentOption.name}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              scrolling="no"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: fillContainer ? iframeExpandedSize : '100%',
+                height: fillContainer ? iframeExpandedSize : '100%',
+                border: 'none',
+                transform: fillContainer ? `scale(${iframeScale})` : 'none',
+                transformOrigin: 'top left',
+              }}
+              onLoad={() => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                setIsLoading(false);
+                setTimedOut(false);
+              }}
+            />
+          </div>
         )}
       </div>
       {!fillContainer && (
