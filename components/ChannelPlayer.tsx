@@ -27,7 +27,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
-  const iframeScale = fillContainer ? 0.86 : 1;
+  const iframeScale = fillContainer ? 0.94 : 1;
   const iframeExpandedSize = `${100 / iframeScale}%`;
 
   useEffect(() => {
