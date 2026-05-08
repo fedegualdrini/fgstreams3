@@ -47,7 +47,7 @@ export class StreamHealthMonitor {
   async checkStreamRecovery(url: string, streamId: string): Promise<boolean> {
     const status = await this.checkStreamHealth(url, streamId);
     const health = this.getStatus(streamId);
-    if (status === 'working' && health.lastWorkingTime && health.lastWorkingTime < Date.now() - 60000) {
+    if (status === 'working' && health.lastWorkingTime && health.lastWorkingTime > Date.now() - 60_000) {
       return true;
     }
     return status === 'working';

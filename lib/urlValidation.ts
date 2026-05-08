@@ -8,13 +8,13 @@ export function isSafeIframeUrl(url: string | undefined): boolean {
   }
 }
 
+// Accepts both http: and https: — HTTP streams are routed through the HLS proxy
+// via toProxyUrl() in HLSVideoPlayer before any network request is made.
 export function isValidStreamUrl(url: string | undefined): boolean {
   if (!url || url === 'undefined') return false;
   try {
-    const parsed = new URL(url);
-    if (parsed.protocol === 'https:') return true;
-    if (parsed.protocol === 'http:' && url.includes('.m3u8')) return true;
-    return false;
+    const { protocol } = new URL(url);
+    return protocol === 'https:' || protocol === 'http:';
   } catch {
     return false;
   }

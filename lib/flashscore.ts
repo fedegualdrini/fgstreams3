@@ -1,13 +1,18 @@
 import { load } from 'cheerio';
+import type { AnyNode, Element, Text } from 'domhandler';
 import type { FlashscoreEntry, FlashscoreDetail, FlashscoreEvent, FlashscoreStat, FlashscorePlayer, FlashscoreLineups } from '@/types/api';
 import { getFlashscoreUrl } from './sportMap';
 
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
-/** Strip HTML tags from scraped text to prevent injected markup reaching the UI. */
+/** Strip HTML tags and decode common HTML entities from scraped text. */
 function sanitize(str: string): string {
-  return str.replace(/<[^>]*>/g, '').trim();
+  return str
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+    .trim();
 }
 
 /** Map a raw flashscore span class to a typed status value. */
@@ -52,26 +57,25 @@ export function parseScoreData(html: string): FlashscoreEntry[] {
   const entries: FlashscoreEntry[] = [];
 
   let currentLeague = '';
-  let pendingStatus = '';
+  let pendingStatus: 'live' | 'fin' | 'sched' | '' = '';
   let pendingMinute = '';
   let pendingTeams = '';
 
   // Walk every direct child node of #score-data (including text nodes)
-  $('#score-data').contents().each(function () {
-    const node = this as unknown as { type: string; name?: string; data?: string };
+  $('#score-data').contents().each(function (this: AnyNode) {
+    if (this.type === 'tag') {
+      const el = this as Element;
+      const $el = $(el);
 
-    if (node.type === 'tag') {
-      const $el = $(this);
-
-      if (node.name === 'h4') {
+      if (el.name === 'h4') {
         currentLeague = sanitize($el.text());
         pendingStatus = '';
         pendingTeams = '';
-      } else if (node.name === 'span') {
+      } else if (el.name === 'span') {
         pendingStatus = toMatchStatus(($el.attr('class') || '').trim());
         pendingMinute = sanitize($el.text());
         pendingTeams = '';
-      } else if (node.name === 'a' && pendingStatus) {
+      } else if (el.name === 'a' && pendingStatus) {
         const href = $el.attr('href') || '';
         const idMatch = href.match(/\/match\/([^/\?]+)/);
         if (idMatch) {
@@ -87,7 +91,7 @@ export function parseScoreData(html: string): FlashscoreEntry[] {
               team1: sanitize(teamsStr.substring(0, sepIdx)),
               team2: sanitize(teamsStr.substring(sepIdx + 3)),
               score,
-              status: pendingStatus as 'live' | 'fin' | 'sched',
+              status: pendingStatus,
               minute: pendingMinute,
             });
           }
@@ -96,8 +100,8 @@ export function parseScoreData(html: string): FlashscoreEntry[] {
         pendingMinute = '';
         pendingTeams = '';
       }
-    } else if (node.type === 'text' && pendingStatus) {
-      pendingTeams += node.data ?? '';
+    } else if (this.type === 'text' && pendingStatus) {
+      pendingTeams += (this as Text).data ?? '';
     }
   });
 
@@ -317,8 +321,8 @@ function parseMatchLineups(html: string): FlashscoreLineups | null {
   let pastSeparator = false;
 
   // Walk all relevant elements in order
-  $('h4, table.lineup, hr.lineup-separator').each(function () {
-    const el = this as { name: string };
+  $('h4, table.lineup, hr.lineup-separator').each(function (this: AnyNode) {
+    const el = this as Element;
 
     if (el.name === 'h4') {
       if (currentBlock) teamBlocks.push(currentBlock);

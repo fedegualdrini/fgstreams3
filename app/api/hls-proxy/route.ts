@@ -9,6 +9,11 @@ const ALLOWED_HOSTS = new Set([
   '191.97.59.33',
 ]);
 
+// Maximum bytes allowed for a single proxied segment (not applied to M3U8 manifests
+// which are always small text files). Prevents a compromised upstream from exhausting
+// Vercel function memory.
+const MAX_SEGMENT_BYTES = 10 * 1024 * 1024; // 10 MB
+
 function isM3U8(contentType: string, url: string): boolean {
   return (
     contentType.includes('mpegurl') ||
@@ -27,7 +32,9 @@ function rewriteM3U8(text: string, baseUrl: string): string {
       if (trimmed === '' || trimmed.startsWith('#')) return line;
       try {
         const absolute = new URL(trimmed, base).toString();
-        if (absolute.startsWith('http://')) {
+        // Proxy all absolute HTTP/HTTPS segment URLs so the player never makes
+        // cross-origin requests directly (handles both mixed-content and CORS issues).
+        if (absolute.startsWith('http://') || absolute.startsWith('https://')) {
           return `/api/hls-proxy?url=${encodeURIComponent(absolute)}`;
         }
         return absolute;
@@ -70,6 +77,9 @@ export async function GET(req: NextRequest) {
 
   const contentType = upstream.headers.get('content-type') ?? 'application/octet-stream';
 
+  // Restrict CORS to the app's own origin only — the player runs on the same domain.
+  const corsOrigin = req.headers.get('origin') ?? 'https://fgstreams3.vercel.app';
+
   if (isM3U8(contentType, rawUrl)) {
     const text = await upstream.text();
     const rewritten = rewriteM3U8(text, rawUrl);
@@ -77,16 +87,43 @@ export async function GET(req: NextRequest) {
       headers: {
         'Content-Type': 'application/vnd.apple.mpegurl',
         'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': corsOrigin,
       },
     });
   }
 
-  return new NextResponse(upstream.body, {
+  // For binary segments: enforce size limit before buffering to avoid memory exhaustion.
+  const reader = upstream.body?.getReader();
+  if (!reader) {
+    return new NextResponse('Empty upstream body', { status: 502 });
+  }
+
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_SEGMENT_BYTES) {
+      await reader.cancel();
+      return new NextResponse('Payload too large', { status: 413 });
+    }
+    chunks.push(value);
+  }
+
+  const body = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return new NextResponse(body, {
     headers: {
       'Content-Type': contentType,
       'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
     },
   });
 }

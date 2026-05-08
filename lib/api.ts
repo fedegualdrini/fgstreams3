@@ -140,7 +140,7 @@ export async function fetchSports(): Promise<Sport[]> {
       console.warn('fetchSports: unexpected response shape:', result.error.issues);
       return [];
     }
-    return result.data as Sport[];
+    return result.data;
   } catch (error) {
     console.error('Error fetching sports:', error);
     return [];

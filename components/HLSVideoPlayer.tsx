@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import type { ErrorData } from 'hls.js';
 
 interface HLSVideoPlayerProps {
   src: string;
@@ -66,9 +67,12 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
     if (!video) return;
 
     let destroyed = false;
-    let retryCount = 0;
+    let networkRetries = 0;
+    let mediaRetries = 0;
 
-    let hlsInstance: any = null; // hls.js types require dynamic import
+    type HlsClass = Awaited<typeof import('hls.js')>['default'];
+    type HlsInstance = InstanceType<HlsClass>;
+    let hlsInstance: HlsInstance | null = null;
 
     const isExternal = EXTERNAL_IPS.some(ip => src.includes(ip));
     const config = isExternal
@@ -97,34 +101,37 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
       }
 
       hlsInstance = new Hls(config);
-      hlsInstance.loadSource(toProxyUrl(src));
-      hlsInstance.attachMedia(video);
+      // Capture a stable non-null reference for use inside event callbacks.
+      // hlsInstance may be set to null in the destroy path, but hls never will.
+      const hls = hlsInstance;
+      hls.loadSource(toProxyUrl(src));
+      hls.attachMedia(video);
 
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
         if (destroyed) return;
         onPlayingRef.current();
         video.play().catch(() => {});
-        if (hlsInstance.levels && hlsInstance.levels.length > 1) {
-          hlsInstance.currentLevel = -1;
+        if (hls.levels && hls.levels.length > 1) {
+          hls.currentLevel = -1;
         }
       });
 
-      hlsInstance.on(Hls.Events.ERROR, (_: unknown, data: { fatal: boolean; type: string }) => {
+      hls.on(Hls.Events.ERROR, (_: unknown, data: ErrorData) => {
         if (!data.fatal || destroyed) return;
 
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && retryCount < MAX_NETWORK_RETRIES) {
-          retryCount++;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && networkRetries < MAX_NETWORK_RETRIES) {
+          networkRetries++;
           setTimeout(() => { if (!destroyed && hlsInstance) hlsInstance.startLoad(); }, 1000);
           return;
         }
 
-        if (data.type === Hls.ErrorTypes.MEDIA_ERROR && retryCount < MAX_MEDIA_RETRIES) {
-          retryCount++;
-          hlsInstance.recoverMediaError();
+        if (data.type === Hls.ErrorTypes.MEDIA_ERROR && mediaRetries < MAX_MEDIA_RETRIES) {
+          mediaRetries++;
+          hls.recoverMediaError();
           return;
         }
 
-        hlsInstance.destroy();
+        hls.destroy();
         hlsInstance = null;
         if (!destroyed) onErrorRef.current();
       });

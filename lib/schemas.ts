@@ -17,12 +17,21 @@ export const RawMatchSourceSchema = z.object({
   id: z.string(),
 });
 
+const TeamInfoSchema = z.object({
+  name: z.string().optional(),
+  badge: z.string().optional(),
+}).passthrough();
+
 export const RawMatchSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
   category: z.string().optional(),
   date: z.union([z.number(), z.string()]).optional(),
   time: z.string().optional(),
+  teams: z.object({
+    home: TeamInfoSchema.optional(),
+    away: TeamInfoSchema.optional(),
+  }).optional(),
   sources: z.array(RawMatchSourceSchema).optional(),
   sport: z.string().optional(),
   league: z.string().optional(),
