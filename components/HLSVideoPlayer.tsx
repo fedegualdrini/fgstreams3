@@ -47,6 +47,12 @@ const BASE_CONFIG = {
 const MAX_NETWORK_RETRIES = 5;
 const MAX_MEDIA_RETRIES = 3;
 
+function toProxyUrl(url: string): string {
+  return url.startsWith('http://')
+    ? `/api/hls-proxy?url=${encodeURIComponent(url)}`
+    : url;
+}
+
 export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const onPlayingRef = useRef(onPlaying);
@@ -77,7 +83,7 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
 
       if (!Hls.isSupported()) {
         if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = src;
+          video.src = toProxyUrl(src);
           video.addEventListener('loadedmetadata', () => {
             if (!destroyed) { video.play().catch(() => {}); onPlayingRef.current(); }
           }, { once: true });
@@ -91,7 +97,7 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
       }
 
       hlsInstance = new Hls(config);
-      hlsInstance.loadSource(src);
+      hlsInstance.loadSource(toProxyUrl(src));
       hlsInstance.attachMedia(video);
 
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
