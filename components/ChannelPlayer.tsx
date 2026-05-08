@@ -5,7 +5,8 @@ import type { Channel, ChannelOption } from '@/types/channels';
 import Spinner from '@/components/Spinner';
 import { tabButtonStyle } from '@/lib/styles';
 import { CHANNEL_LOAD_TIMEOUT_MS } from '@/lib/constants';
-import { isSafeIframeUrl } from '@/lib/urlValidation';
+import { isValidStreamUrl, isHlsUrl } from '@/lib/urlValidation';
+import HLSVideoPlayer from '@/components/HLSVideoPlayer';
 
 interface ChannelPlayerProps {
   channel: Channel;
@@ -16,7 +17,7 @@ interface ChannelPlayerProps {
 }
 
 export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptionChange, fillContainer = false, hideTabs = false }: ChannelPlayerProps) {
-  const validOptions = channel.options.filter(o => isSafeIframeUrl(o.iframe));
+  const validOptions = channel.options.filter(o => isValidStreamUrl(o.iframe));
   const [selectedIndex, setSelectedIndex] = useState(
     Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0))
   );
@@ -124,7 +125,22 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
             ))}
           </div>
         )}
-        {currentOption && (
+        {currentOption && isHlsUrl(currentOption.iframe) ? (
+          <HLSVideoPlayer
+            key={`${channel.name}-${selectedIndex}-${reloadKey}`}
+            src={currentOption.iframe}
+            onPlaying={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+              setIsLoading(false);
+              setTimedOut(false);
+            }}
+            onError={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+              setIsLoading(false);
+              setTimedOut(true);
+            }}
+          />
+        ) : currentOption ? (
           <iframe
             key={`${channel.name}-${selectedIndex}-${reloadKey}`}
             src={currentOption.iframe}
@@ -138,7 +154,7 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
               setTimedOut(false);
             }}
           />
-        )}
+        ) : null}
       </div>
       {!fillContainer && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.625rem' }}>

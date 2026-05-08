@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Channel } from '@/types/channels';
 import ChannelPlayer from './ChannelPlayer';
-import { isSafeIframeUrl } from '@/lib/urlValidation';
+import { isValidStreamUrl } from '@/lib/urlValidation';
 
 interface ChannelsPageClientProps {
   channels: Channel[];
@@ -84,7 +84,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
   }, [channels, search]);
 
   const validOptions = selectedChannel
-    ? selectedChannel.options.filter(o => isSafeIframeUrl(o.iframe))
+    ? selectedChannel.options.filter(o => isValidStreamUrl(o.iframe))
     : [];
 
   return (
@@ -306,12 +306,13 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
               }}
             >
               {filtered.map(channel => {
-                const validCount = channel.options.filter(o => isSafeIframeUrl(o.iframe)).length;
+                const validCount = channel.options.filter(o => isValidStreamUrl(o.iframe)).length;
                 return (
                   <ChannelTile
                     key={channel.name}
                     channel={channel}
                     validCount={validCount}
+                    isHls={channel.source === 'hls'}
                     onClick={handleSelectChannel}
                   />
                 );
@@ -337,10 +338,11 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
 }
 
 function ChannelTile({
-  channel, validCount, onClick,
+  channel, validCount, isHls, onClick,
 }: {
   channel: Channel;
   validCount: number;
+  isHls: boolean;
   onClick: (ch: Channel) => void;
 }) {
   const [hovered, setHovered] = useState(false);
@@ -393,6 +395,17 @@ function ChannelTile({
       <span style={{ fontSize: '0.55rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
         {validCount} stream{validCount !== 1 ? 's' : ''}
       </span>
+      {isHls && (
+        <span style={{
+          fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.1em',
+          padding: '1px 5px', borderRadius: '3px',
+          background: 'rgba(255,140,0,0.18)', color: '#ff8c00',
+          border: '1px solid rgba(255,140,0,0.35)',
+          fontFamily: 'var(--font-body)',
+        }}>
+          HLS
+        </span>
+      )}
     </button>
   );
 }
