@@ -29,10 +29,11 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
               // hls.js fetches HLS segments via XHR — must be in connect-src, not media-src.
-              "connect-src 'self' https://va.vercel-scripts.com https:",
+              "connect-src 'self' https://va.vercel-scripts.com https: http:",
               // https: covers all sports stream embeds + VidSrc (vidsrcme.ru)
               "frame-src https:",
-              "media-src 'self' https:",
+              // blob: is required for HLS.js Media Source Extensions
+              "media-src 'self' https: blob:",
             ].join('; '),
           },
         ],
