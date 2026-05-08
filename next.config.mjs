@@ -24,7 +24,7 @@ const nextConfig = {
               "default-src 'self'",
               // 'unsafe-eval' is required by Next.js webpack HMR in dev mode only.
               // Production builds never use eval(), so we omit it there.
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://va.vercel-scripts.com`,
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://va.vercel-scripts.com https://vercel.live`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
@@ -32,7 +32,8 @@ const nextConfig = {
               "connect-src 'self' https://va.vercel-scripts.com https:",
               // https: covers all sports stream embeds + VidSrc (vidsrcme.ru)
               "frame-src https:",
-              "media-src 'self' https:",
+              // blob: is required for HLS.js Media Source Extensions
+              "media-src 'self' https: blob:",
             ].join('; '),
           },
         ],

@@ -4456,5 +4456,797 @@
       }
     ],
     "show": true
+  },
+  {
+    "name": "America TV",
+    "logo": "https://bestleague.world/img/america.webp",
+    "options": [
+      {
+        "name": "America TV - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00c/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TV Publica",
+    "logo": "https://bestleague.world/img/tvpublica.webp",
+    "options": [
+      {
+        "name": "TV Publica - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00h/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "El Nueve",
+    "logo": "https://bestleague.world/img/nueve.webp",
+    "options": [
+      {
+        "name": "El Nueve - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00e/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Telefe",
+    "logo": "https://bestleague.world/img/telefe.png",
+    "options": [
+      {
+        "name": "Telefe - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00g/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "El Trece",
+    "logo": "https://bestleague.world/img/eltrece.webp",
+    "options": [
+      {
+        "name": "El Trece - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00f/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "CanalNet",
+    "logo": "https://bestleague.world/img/nettv.webp",
+    "options": [
+      {
+        "name": "CanalNet - HLS",
+        "iframe": "http://201.217.246.42:44310/Live/a8a0dc318cc5a076f84bea2206893142/CanalNet.playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "C5N",
+    "logo": "https://bestleague.world/img/c5n.webp",
+    "options": [
+      {
+        "name": "C5N - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a007/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TN",
+    "logo": "https://bestleague.world/img/tn.png",
+    "options": [
+      {
+        "name": "TN - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00b/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Cronica TV",
+    "logo": "https://bestleague.world/img/cronica.png",
+    "options": [
+      {
+        "name": "Cronica TV - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a009/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "A24",
+    "logo": "https://bestleague.world/img/a24.webp",
+    "options": [
+      {
+        "name": "A24 - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a006/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "LN+",
+    "logo": "https://bestleague.world/img/ln.webp",
+    "options": [
+      {
+        "name": "LN+ - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00a/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Canal 26",
+    "logo": "https://bestleague.world/img/canal26.webp",
+    "options": [
+      {
+        "name": "Canal 26 - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a008/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "CNN Espanol",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnu7Vmb19p18xiBbI-njcgFnKuqPCXJfM5XA&s",
+    "options": [
+      {
+        "name": "CNN Espanol - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a026/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Sony (AR)",
+    "logo": "https://bestleague.world/img/sony.webp",
+    "options": [
+      {
+        "name": "Sony - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a016/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "AXN",
+    "logo": "https://bestleague.world/img/axn.webp",
+    "options": [
+      {
+        "name": "AXN - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01f/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "AMC",
+    "logo": "https://bestleague.world/img/amc.webp",
+    "options": [
+      {
+        "name": "AMC - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01e/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Comedy Central",
+    "logo": "https://bestleague.world/img/comedy.webp",
+    "options": [
+      {
+        "name": "Comedy Central - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01c/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "DSports",
+    "logo": "https://bestleague.world/img/dsports.webp",
+    "options": [
+      {
+        "name": "DSports - HLS",
+        "iframe": "http://190.61.41.181:8000/play/a0r5/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "DSports 2",
+    "logo": "https://bestleague.world/img/dsports2.webp",
+    "options": [
+      {
+        "name": "DSports 2 - HLS",
+        "iframe": "http://190.61.41.181:8000/play/a0r4/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "DSports+",
+    "logo": "https://bestleague.world/img/dsportsplus.webp",
+    "options": [
+      {
+        "name": "DSports+ - HLS",
+        "iframe": "http://190.61.41.181:8000/play/a0r3/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TyC Sports",
+    "logo": "https://bestleague.world/img/tyc.webp",
+    "options": [
+      {
+        "name": "TyC Sports - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00s/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Fox Sports",
+    "logo": "https://bestleague.world/img/foxnew.png",
+    "options": [
+      {
+        "name": "Fox Sports - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00n/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Fox Sports 2",
+    "logo": "https://bestleague.world/img/foxnew2.png",
+    "options": [
+      {
+        "name": "Fox Sports 2 - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00o/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Fox Sports 3",
+    "logo": "https://bestleague.world/img/foxnew3.png",
+    "options": [
+      {
+        "name": "Fox Sports 3 - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00p/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "ESPN (HLS)",
+    "logo": "https://bestleague.world/img/espn.webp",
+    "options": [
+      {
+        "name": "ESPN - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00i/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "ESPN 2 (HLS)",
+    "logo": "https://bestleague.world/img/espn2.webp",
+    "options": [
+      {
+        "name": "ESPN 2 - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00j/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "ESPN 3 (HLS)",
+    "logo": "https://bestleague.world/img/espn3.webp",
+    "options": [
+      {
+        "name": "ESPN 3 - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00k/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "ESPN Premium (HLS)",
+    "logo": "https://bestleague.world/img/espnpr.webp",
+    "options": [
+      {
+        "name": "ESPN Premium - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00m/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TNT Sports (HLS)",
+    "logo": "https://bestleague.world/img/tntar.svg",
+    "options": [
+      {
+        "name": "TNT Sports - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00r/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Paka Paka",
+    "logo": "https://bestleague.world/img/pakapaka.png",
+    "options": [
+      {
+        "name": "Paka Paka - HLS",
+        "iframe": "http://138.59.227.20:8000/play/a05t/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Cartoon Network (HLS)",
+    "logo": "https://bestleague.world/img/cn.webp",
+    "options": [
+      {
+        "name": "Cartoon Network - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a005/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Disney Channel (HLS)",
+    "logo": "https://bestleague.world/img/disney.webp",
+    "options": [
+      {
+        "name": "Disney Channel - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00u/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Nickelodeon (HLS)",
+    "logo": "https://bestleague.world/img/nick.png",
+    "options": [
+      {
+        "name": "Nickelodeon - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00x/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Discovery Kids (HLS)",
+    "logo": "https://bestleague.world/img/diskids.webp",
+    "options": [
+      {
+        "name": "Discovery Kids - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00t/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Garage TV",
+    "logo": "https://bestleague.world/img/garagetv.webp",
+    "options": [
+      {
+        "name": "Garage TV - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00q/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Ciudad Magazine",
+    "logo": "https://bestleague.world/img/ciudad.webp",
+    "options": [
+      {
+        "name": "Ciudad Magazine - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a03i/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "El Gourmet",
+    "logo": "https://bestleague.world/img/Group.svg",
+    "options": [
+      {
+        "name": "El Gourmet - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01z/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Encuentro",
+    "logo": "https://bestleague.world/img/encuentro.webp",
+    "options": [
+      {
+        "name": "Encuentro - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a020/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "E!",
+    "logo": "https://bestleague.world/img/e.webp",
+    "options": [
+      {
+        "name": "E! - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01n/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Discovery Channel (HLS)",
+    "logo": "https://bestleague.world/img/discovery.webp",
+    "options": [
+      {
+        "name": "Discovery - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01s/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Animal Planet (HLS)",
+    "logo": "https://bestleague.world/img/aplanet.webp",
+    "options": [
+      {
+        "name": "Animal Planet - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a003/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TLC",
+    "logo": "https://bestleague.world/img/tlc.webp",
+    "options": [
+      {
+        "name": "TLC - HLS",
+        "iframe": "http://201.217.246.42:44310/Live/a8a0dc318cc5a076f84bea2206893142/tlc.playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "History Channel (HLS)",
+    "logo": "https://bestleague.world/img/history.webp",
+    "options": [
+      {
+        "name": "History - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a021/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Rural",
+    "logo": "https://bestleague.world/img/rural.webp",
+    "options": [
+      {
+        "name": "Rural - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01r/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "MTV (HLS)",
+    "logo": "https://bestleague.world/img/mtv.webp",
+    "options": [
+      {
+        "name": "MTV - HLS",
+        "iframe": "http://138.59.227.20:8000/play/a06r/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Quiero Musica",
+    "logo": "https://bestleague.world/img/quiero.webp",
+    "options": [
+      {
+        "name": "Quiero - HLS",
+        "iframe": "http://138.59.227.20:8000/play/a06s/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "HTV",
+    "logo": "https://bestleague.world/img/htv.webp",
+    "options": [
+      {
+        "name": "HTV - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a024/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "CM",
+    "logo": "https://bestleague.world/img/cm.webp",
+    "options": [
+      {
+        "name": "CM - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a023/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Star Channel (HLS)",
+    "logo": "https://bestleague.world/img/star.webp",
+    "options": [
+      {
+        "name": "Star Channel - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a018/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Volver",
+    "logo": "https://bestleague.world/img/volver.webp",
+    "options": [
+      {
+        "name": "Volver - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a02n/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Adult Swim (HLS)",
+    "logo": "https://bestleague.world/img/adults.png",
+    "options": [
+      {
+        "name": "Adult Swim - HLS",
+        "iframe": "http://177.74.205.189:8000/play/a00h/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TNT (HLS)",
+    "logo": "https://bestleague.world/img/tnt.webp",
+    "options": [
+      {
+        "name": "TNT - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a019/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Cinecanal",
+    "logo": "https://bestleague.world/img/cinecanal.webp",
+    "options": [
+      {
+        "name": "Cinecanal - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a02j/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Cinemax (HLS)",
+    "logo": "https://bestleague.world/img/cinemax.webp",
+    "options": [
+      {
+        "name": "Cinemax - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a02i/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Cine AR",
+    "logo": "https://bestleague.world/img/cinear.png",
+    "options": [
+      {
+        "name": "Cine AR - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01j/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Space (HLS)",
+    "logo": "https://bestleague.world/img/space.webp",
+    "options": [
+      {
+        "name": "Space - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a017/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "HBO (HLS)",
+    "logo": "https://bestleague.world/img/hbo.webp",
+    "options": [
+      {
+        "name": "HBO - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a00z/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Studio Universal",
+    "logo": "https://bestleague.world/img/studio.webp",
+    "options": [
+      {
+        "name": "Studio Universal - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01k/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "TVE",
+    "logo": "https://bestleague.world/img/tvees.png",
+    "options": [
+      {
+        "name": "TVE - HLS",
+        "iframe": "http://138.59.227.20:8000/play/a080/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "RAI",
+    "logo": "https://bestleague.world/img/raiitalia.png",
+    "options": [
+      {
+        "name": "RAI - HLS",
+        "iframe": "http://138.59.227.20:8000/play/a06u/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Telemundo (HLS)",
+    "logo": "https://bestleague.world/img/telemundo.png",
+    "options": [
+      {
+        "name": "Telemundo - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01q/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "USA Network",
+    "logo": "https://bestleague.world/img/uss.png",
+    "options": [
+      {
+        "name": "USA Network - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a01h/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Euro Channel",
+    "logo": "https://bestleague.world/img/eurochannel.png",
+    "options": [
+      {
+        "name": "Euro Channel - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a02s/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Caracol Television",
+    "logo": "https://bestleague.world/img/caracoltv.webp",
+    "options": [
+      {
+        "name": "Caracol TV - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a02w/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Canal RCN",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a3/CanalRCN2023.png",
+    "options": [
+      {
+        "name": "Canal RCN - HLS",
+        "iframe": "http://45.5.151.147:8000/play/a02z/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
+  },
+  {
+    "name": "Eventos 1",
+    "logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu3DnKA26pZam_crvfw71Ssq3Qxd5ERHxe7dU_abYfJN02bWYEXhSRGG3SS3ps8XVDSBsXF3yVeAkwVcwQWLJ_sxX8uDKzm3oaVXbgpeLqFP58fZ0p6we9XjGzjTyiZb5nJe9kr6qTfv94gsOLP4Vy8dvXCgCB8tQMbi1klPUXt0OYX7brRTX7T0_FvvY/s900/ChocoPop%20TV%20Eventos.png",
+    "options": [
+      {
+        "name": "Eventos 1 - HLS",
+        "iframe": "http://191.97.59.33:8000/play/a09t/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "hls"
   }
 ]

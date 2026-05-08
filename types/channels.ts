@@ -8,4 +8,5 @@ export interface Channel {
   logo: string;
   options: ChannelOption[];
   show: boolean;
+  source?: string;
 }
