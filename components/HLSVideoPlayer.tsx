@@ -62,8 +62,7 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
     let destroyed = false;
     let retryCount = 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let hlsInstance: any = null;
+    let hlsInstance: any = null; // hls.js types require dynamic import
 
     const isExternal = EXTERNAL_IPS.some(ip => src.includes(ip));
     const config = isExternal
