@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import AdBlockBanner from "@/components/AdBlockBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <AdBlockBanner />
         <div className="site-container">
           <ErrorBoundary>
             {children}
