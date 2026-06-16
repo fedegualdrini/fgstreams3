@@ -896,8 +896,68 @@
     "logo": "https://images.seeklogo.com/logo-png/39/1/fifa-united-2026-logo-png_seeklogo-398253.png",
     "options": [
       {
-        "name": "",
-        "iframe": "chrome://dino"
+        "name": "FS1 (720p)",
+        "iframe": "https://junkieembeds.pages.dev/embed/fox-sports-1"
+      },
+      {
+        "name": "FS1 (Prime Video FHD)",
+        "iframe": "https://junkieembeds.pages.dev/embed/fox-sports-1-fhd"
+      },
+      {
+        "name": "FS1 (4K HEVC)",
+        "iframe": "https://junkieembeds.pages.dev/embed/fox-sports-1-4k"
+      },
+      {
+        "name": "Telemundo",
+        "iframe": "https://junkieembeds.pages.dev/embed/telemundo-usa"
+      },
+      {
+        "name": "Peacock (Spanish)",
+        "iframe": "https://junkieembeds.pages.dev/embed/peacock-1"
+      },
+      {
+        "name": "Fusball TV 1 Germany (4K HEVC)",
+        "iframe": "https://junkieembeds.pages.dev/embed/fusballtv1uhd-de"
+      },
+      {
+        "name": "Fusball TV Tactical Cam (4K HEVC)",
+        "iframe": "https://junkieembeds.pages.dev/embed/fusballtv2uhd-de"
+      },
+      {
+        "name": "Fusball TV No Commentary (4K HEVC)",
+        "iframe": "https://junkieembeds.pages.dev/embed/fusballtvuhd-de"
+      },
+      {
+        "name": "BBC iPlayer (4K HEVC)",
+        "iframe": "https://junkieembeds.pages.dev/embed/bbc-4k"
+      },
+      {
+        "name": "beIN Sports MAX 2 Arabia",
+        "iframe": "https://junkieembeds.pages.dev/embed/beinsportsmax2-sa"
+      },
+      {
+        "name": "beIN Sports MAX 4 Arabia",
+        "iframe": "https://junkieembeds.pages.dev/embed/beinsportsmax4-sa"
+      },
+      {
+        "name": "beIN Sports 1 France",
+        "iframe": "https://junkieembeds.pages.dev/embed/beinsports1-fr"
+      },
+      {
+        "name": "BBC One United Kingdom",
+        "iframe": "https://junkieembeds.pages.dev/embed/bbcone-uk"
+      },
+      {
+        "name": "ZDF Germany",
+        "iframe": "https://junkieembeds.pages.dev/embed/zdf-de"
+      },
+      {
+        "name": "DSports Argentina",
+        "iframe": "https://junkieembeds.pages.dev/embed/dsports-ar"
+      },
+      {
+        "name": "CazeTV Brasil",
+        "iframe": "https://junkieembeds.pages.dev/embed/cazetv-br"
       }
     ],
     "show": true
