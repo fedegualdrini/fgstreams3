@@ -8,11 +8,11 @@ export default function AdBlockBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
+    if (!sessionStorage.getItem(STORAGE_KEY)) setVisible(true);
   }, []);
 
   const dismiss = () => {
-    localStorage.setItem(STORAGE_KEY, '1');
+    sessionStorage.setItem(STORAGE_KEY, '1');
     setVisible(false);
   };
 
