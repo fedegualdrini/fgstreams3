@@ -4,7 +4,11 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Channel } from '@/types/channels';
 import ChannelPlayer from './ChannelPlayer';
+import WorldCupPanel from './WorldCupPanel';
 import { isValidStreamUrl } from '@/lib/urlValidation';
+
+// Channel that surfaces the World Cup 2026 data panel (standings/fixtures/scorers).
+const WORLD_CUP_CHANNEL = 'Mundial 2026';
 
 interface ChannelsPageClientProps {
   channels: Channel[];
@@ -86,6 +90,8 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
   const validOptions = selectedChannel
     ? selectedChannel.options.filter(o => isValidStreamUrl(o.iframe))
     : [];
+
+  const isWorldCup = selectedChannel?.name === WORLD_CUP_CHANNEL;
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -202,7 +208,17 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
                 </div>
               </div>
 
-              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '1rem' }}>
+              <div
+                style={{
+                  // When the World Cup panel is shown, the sources list shares the
+                  // sidebar: cap its height and let the data panel take the rest.
+                  flex: isWorldCup ? '0 0 auto' : 1,
+                  maxHeight: isWorldCup ? '35%' : undefined,
+                  minHeight: 0,
+                  overflowY: 'auto',
+                  padding: '1rem',
+                }}
+              >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                   {validOptions.map((option, index) => {
                     const active = index === selectedOptionIndex;
@@ -233,6 +249,17 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
                   })}
                 </div>
               </div>
+
+              {isWorldCup && (
+                <div style={{ borderTop: '1px solid var(--line)', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ borderBottom: '1px solid var(--line)', flexShrink: 0, padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-dim)', fontFamily: 'var(--font-body)' }}>
+                      World Cup 2026
+                    </div>
+                  </div>
+                  <WorldCupPanel />
+                </div>
+              )}
             </div>
           </div>
         </>

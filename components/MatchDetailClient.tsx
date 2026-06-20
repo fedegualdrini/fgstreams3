@@ -16,6 +16,7 @@ import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
 import MatchJsonLd from './MatchJsonLd';
 import MatchStatsPanel from './MatchStatsPanel';
+import OfficialStatsPanel from './OfficialStatsPanel';
 import { useMatchStats } from '@/lib/useMatchStats';
 
 interface MatchDetailClientProps {
@@ -300,13 +301,16 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
                     onSelectStream={handleSelectStream}
                   />
                 )}
-                {sidebarTab === 'stats' && matchStats && (
-                  <MatchStatsPanel detail={matchStats} />
-                )}
-                {sidebarTab === 'stats' && !matchStats && (
-                  <div style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--subtle)', fontSize: '0.8rem', fontFamily: 'var(--font-body)' }}>
-                    Stats unavailable
-                  </div>
+                {sidebarTab === 'stats' && (
+                  <>
+                    {matchStats && <MatchStatsPanel detail={matchStats} />}
+                    <OfficialStatsPanel match={match} />
+                    {!matchStats && (
+                      <div style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--subtle)', fontSize: '0.8rem', fontFamily: 'var(--font-body)' }}>
+                        Live match stats unavailable
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

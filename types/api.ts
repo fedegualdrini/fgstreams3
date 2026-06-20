@@ -135,6 +135,91 @@ export interface FlashscoreDetail {
   lineups: FlashscoreLineups | null;
 }
 
+// ─── API-Football (v3) ──────────────────────────────────────────────────────
+// All v3 endpoints wrap their payload in `{ response: [...] }`.
+export interface ApiFootballEnvelope<T> {
+  errors?: unknown;
+  results?: number;
+  response: T[];
+}
+
+// /standings → one league with grouped standings rows
+export interface ApiFootballStandingRow {
+  rank: number;
+  team: { id: number; name: string; logo: string };
+  points: number;
+  goalsDiff: number;
+  group: string;
+  form: string | null;
+  all: { played: number; win: number; draw: number; lose: number; goals: { for: number; against: number } };
+}
+
+// /fixtures → a single fixture
+export interface ApiFootballFixture {
+  fixture: {
+    id: number;
+    date: string;
+    venue: { name: string | null; city: string | null };
+    status: { short: string; long: string; elapsed: number | null };
+  };
+  league: { id: number; name: string; round: string };
+  teams: {
+    home: { id: number; name: string; logo: string; winner: boolean | null };
+    away: { id: number; name: string; logo: string; winner: boolean | null };
+  };
+  goals: { home: number | null; away: number | null };
+}
+
+// /players/topscorers → a ranked player
+export interface ApiFootballTopScorer {
+  player: { id: number; name: string; photo: string };
+  statistics: Array<{
+    team: { id: number; name: string; logo: string };
+    goals: { total: number | null; assists: number | null };
+    games: { appearences: number | null };
+  }>;
+}
+
+// /fixtures/lineups → one team's lineup
+export interface ApiFootballLineup {
+  team: { id: number; name: string; logo: string };
+  formation: string | null;
+  startXI: Array<{ player: { id: number; name: string; number: number; pos: string | null } }>;
+  substitutes: Array<{ player: { id: number; name: string; number: number; pos: string | null } }>;
+}
+
+// /fixtures/events → one in-match event
+export interface ApiFootballEvent {
+  time: { elapsed: number; extra: number | null };
+  team: { id: number; name: string };
+  player: { id: number | null; name: string | null };
+  type: string;        // "Goal" | "Card" | "subst" | "Var"
+  detail: string;      // "Normal Goal" | "Yellow Card" | ...
+}
+
+// /fixtures/statistics → one team's stat block
+export interface ApiFootballStatistics {
+  team: { id: number; name: string; logo: string };
+  statistics: Array<{ type: string; value: number | string | null }>;
+}
+
+// Combined payload served by /api/football/fixture/[id]
+export interface ApiFootballFixtureDetail {
+  fixtureId: number;
+  lineups: ApiFootballLineup[];
+  events: ApiFootballEvent[];
+  statistics: ApiFootballStatistics[];
+}
+
+// /predictions → prediction block for a fixture
+export interface ApiFootballPrediction {
+  predictions: {
+    winner: { id: number | null; name: string | null; comment: string | null };
+    percent: { home: string; draw: string; away: string };
+    advice: string | null;
+  };
+}
+
 export interface StreamHealth {
   streamId: string;
   status: StreamStatus;
