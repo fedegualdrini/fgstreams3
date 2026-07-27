@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchLiveScores } from '@/lib/flashscore';
+import { fetchLiveScoresCached } from '@/lib/flashscore';
 import type { FlashscoreEntry } from '@/types/api';
 import { SCORE_DEDUP_WINDOW_MS, SCORE_CACHE_MAX_AGE_MS } from '@/lib/constants';
 
@@ -34,7 +34,7 @@ export async function GET(
       });
     }
 
-    const entries = await fetchLiveScores(sport);
+    const entries = await fetchLiveScoresCached(sport);
     cache.set(sport, { data: entries, timestamp: now });
 
     return NextResponse.json(entries, {

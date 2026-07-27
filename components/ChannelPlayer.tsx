@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
 import Spinner from '@/components/Spinner';
 import { tabButtonStyle } from '@/lib/styles';
@@ -50,15 +50,25 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
     };
   }, [selectedIndex, reloadKey]);
 
-  const selectOption = (index: number) => {
+  const selectOption = useCallback((index: number) => {
     setSelectedIndex(index);
     onOptionChange?.(index);
-  };
+  }, [onOptionChange]);
 
-  const tryNextOption = () => {
+  const tryNextOption = useCallback(() => {
     if (validOptions.length < 2) return;
     selectOption((selectedIndex + 1) % validOptions.length);
-  };
+  }, [validOptions.length, selectedIndex, selectOption]);
+
+  useEffect(() => {
+    if (validOptions.length < 2) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'n' || e.key === 'N') tryNextOption();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [tryNextOption, validOptions.length]);
 
   const reloadPlayer = () => setReloadKey(k => k + 1);
 

@@ -6,6 +6,8 @@ import type { Match, FlashscoreEntry } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
 import { useLiveScores } from '@/lib/useLiveScores';
 import { useLocalTime } from '@/lib/dateUtils';
+import { addToHistory, getHistory, type HistoryEntry } from '@/lib/watchHistory';
+import { getPosterUrl } from '@/lib/api';
 
 function matchesSearch(match: Match, q: string): boolean {
   const normalized = q.trim().toLowerCase();
@@ -23,7 +25,14 @@ function getRelativeTime(date: Date): string {
   return 'Soon';
 }
 
-const SPORTS = ['All', 'Football', 'Basketball', 'Tennis', 'MMA', 'Formula 1'];
+const SPORTS: { label: string; icon: string }[] = [
+  { label: 'All',        icon: '🏆' },
+  { label: 'Football',   icon: '⚽' },
+  { label: 'Basketball', icon: '🏀' },
+  { label: 'Tennis',     icon: '🎾' },
+  { label: 'MMA',        icon: '🥊' },
+  { label: 'Formula 1',  icon: '🏎️' },
+];
 
 interface MatchListWithSearchProps {
   liveMatches: Match[];
@@ -34,6 +43,29 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
   const [query, setQuery] = useState('');
   const [sport, setSport] = useState('All');
   const scoreMap = useLiveScores(liveMatches);
+
+  // Watch history
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  useEffect(() => { setHistory(getHistory()); }, []);
+
+  const saveToHistory = useCallback((match: Match) => {
+    const entry: HistoryEntry = {
+      id: match.id,
+      team1: match.team1,
+      team2: match.team2 ?? null,
+      league: match.league ?? null,
+      sport: match.sport,
+      poster: match.poster ?? '',
+    };
+    addToHistory(entry);
+    setHistory(getHistory());
+  }, []);
+
+  // Mobile touch detection
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    setIsMobile(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
 
   const filter = (m: Match) => {
     if (sport !== 'All' && m.sport?.toLowerCase() !== sport.toLowerCase()) return false;
@@ -114,25 +146,70 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           {SPORTS.map((s) => (
             <button
-              key={s}
+              key={s.label}
               type="button"
-              onClick={() => setSport(s)}
+              onClick={() => setSport(s.label)}
               style={{
                 padding: '0.375rem 0.75rem',
-                background: sport === s ? 'var(--accent)' : 'var(--bg-2)',
-                color:      sport === s ? '#000' : 'var(--text-dim)',
-                border:    `1px solid ${sport === s ? 'var(--accent)' : 'var(--line)'}`,
+                background: sport === s.label ? 'var(--accent)' : 'var(--bg-2)',
+                color:      sport === s.label ? '#000' : 'var(--text-dim)',
+                border:    `1px solid ${sport === s.label ? 'var(--accent)' : 'var(--line)'}`,
                 borderRadius: '3px',
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
                 cursor: 'pointer', transition: 'all 0.12s',
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
               }}
             >
-              {s}
+              <span>{s.icon}</span>
+              <span>{s.label}</span>
             </button>
           ))}
         </div>
       </div>
+
+      {/* ── Recently Watched ── */}
+      {history.length > 0 && !query.trim() && sport === 'All' && (
+        <section style={{ marginBottom: '2.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>
+              Recently Watched
+            </h2>
+            <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
+            {history.map((entry) => (
+              <Link
+                key={entry.id}
+                href={`/match/${entry.id}`}
+                onClick={() => { addToHistory(entry); setHistory(getHistory()); }}
+                style={{
+                  display: 'flex', flexDirection: 'column', flexShrink: 0,
+                  width: '160px', background: 'var(--bg-2)', border: '1px solid var(--line)',
+                  borderRadius: '6px', overflow: 'hidden', textDecoration: 'none', color: 'inherit',
+                  transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
+              >
+                {entry.poster && (
+                  <div style={{ width: '100%', height: '90px', background: 'var(--bg-3)', overflow: 'hidden', flexShrink: 0 }}>
+                    <img src={getPosterUrl(entry.poster)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  </div>
+                )}
+                <div style={{ padding: '0.5rem 0.625rem' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {entry.team1}{entry.team2 ? ` vs ${entry.team2}` : ''}
+                  </div>
+                  <div style={{ fontSize: '0.55rem', color: 'var(--subtle)', marginTop: '3px', fontFamily: 'var(--font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {entry.league || entry.sport}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Live section — horizontal scroll ── */}
       {filteredLive.length > 0 && (
@@ -158,8 +235,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                 background: 'linear-gradient(to right, var(--bg-0) 30%, transparent)',
                 display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
                 paddingLeft: '6px',
-                opacity: liveHovered && canScrollLeft ? 1 : 0,
-                pointerEvents: liveHovered && canScrollLeft ? 'auto' : 'none',
+                opacity: (isMobile ? canScrollLeft : liveHovered && canScrollLeft) ? 1 : 0,
+                pointerEvents: (isMobile ? canScrollLeft : liveHovered && canScrollLeft) ? 'auto' : 'none',
                 transition: 'opacity 0.18s',
               }}
             >
@@ -187,6 +264,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                   <Link
                     key={match.id}
                     href={`/match/${match.id}`}
+                    onClick={() => saveToHistory(match)}
                     style={{
                       display: 'block', textDecoration: 'none', color: 'inherit',
                       width: '290px', flexShrink: 0,
@@ -225,8 +303,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                 background: 'linear-gradient(to left, var(--bg-0) 30%, transparent)',
                 display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
                 paddingRight: '6px',
-                opacity: liveHovered && canScrollRight ? 1 : 0,
-                pointerEvents: liveHovered && canScrollRight ? 'auto' : 'none',
+                opacity: (isMobile ? canScrollRight : liveHovered && canScrollRight) ? 1 : 0,
+                pointerEvents: (isMobile ? canScrollRight : liveHovered && canScrollRight) ? 'auto' : 'none',
                 transition: 'opacity 0.18s',
               }}
             >
@@ -261,6 +339,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
               <Link
                 key={match.id}
                 href={`/match/${match.id}`}
+                onClick={() => saveToHistory(match)}
                 style={{
                   display: 'block', textDecoration: 'none', color: 'inherit',
                   background: 'var(--bg-2)',
@@ -288,10 +367,14 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
 
       {/* ── No matches ── */}
       {liveMatches.length === 0 && upcomingMatches.length === 0 && (
-        <EmptyState>No matches available right now. Check back soon.</EmptyState>
+        <EmptyState icon="📺" hint="Streams typically go live 30 minutes before kickoff.">
+          No matches available right now
+        </EmptyState>
       )}
       {noResults && (
-        <EmptyState>No matches for &ldquo;{query}&rdquo;</EmptyState>
+        <EmptyState icon="🔍" hint="Try searching for a team name, league, or sport.">
+          No matches for &ldquo;{query}&rdquo;
+        </EmptyState>
       )}
     </>
   );
@@ -402,13 +485,14 @@ function SectionHeader({
   );
 }
 
-function EmptyState({ children }: { children: React.ReactNode }) {
+function EmptyState({ children, icon, hint }: { children: React.ReactNode; icon?: string; hint?: string }) {
   return (
-    <div style={{
-      padding: '4rem 1rem', textAlign: 'center',
-      color: 'var(--subtle)', fontSize: '0.875rem', fontFamily: 'var(--font-body)',
-    }}>
-      {children}
+    <div style={{ padding: '4rem 1rem', textAlign: 'center', fontFamily: 'var(--font-body)' }}>
+      {icon && <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{icon}</div>}
+      <div style={{ color: 'var(--text-dim)', fontSize: '0.875rem', marginBottom: hint ? '0.375rem' : 0 }}>
+        {children}
+      </div>
+      {hint && <div style={{ color: 'var(--subtle)', fontSize: '0.75rem' }}>{hint}</div>}
     </div>
   );
 }

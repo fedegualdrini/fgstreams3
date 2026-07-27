@@ -2,9 +2,10 @@ import Link from 'next/link';
 
 interface SiteHeaderProps {
   activeSection?: 'matches' | 'channels' | 'movies';
+  liveCount?: number;
 }
 
-export default function SiteHeader({ activeSection }: SiteHeaderProps) {
+export default function SiteHeader({ activeSection, liveCount }: SiteHeaderProps) {
   return (
     <header style={{
       background: 'var(--bg-1)',
@@ -30,16 +31,16 @@ export default function SiteHeader({ activeSection }: SiteHeaderProps) {
 
         {/* Nav */}
         <nav aria-label="Main navigation" style={{ display: 'flex', alignItems: 'center', gap: '0.125rem' }}>
-          <NavLink href="/" active={activeSection === 'matches'}>Matches</NavLink>
+          <NavLink href="/" active={activeSection === 'matches'} badge={liveCount && liveCount > 0 ? liveCount : undefined}>Matches</NavLink>
           <NavLink href="/channels" active={activeSection === 'channels'}>Channels</NavLink>
-<NavLink href="/movies" active={activeSection === 'movies'}>Movies / Series</NavLink>
+          <NavLink href="/movies" active={activeSection === 'movies'}>Movies / Series</NavLink>
         </nav>
       </div>
     </header>
   );
 }
 
-function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+function NavLink({ href, active, children, badge }: { href: string; active: boolean; children: React.ReactNode; badge?: number }) {
   return (
     <Link
       href={href}
@@ -56,9 +57,24 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
         transition: 'all 0.15s',
         background: active ? 'var(--accent)' : 'transparent',
         color: active ? '#000' : 'var(--text-dim)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.375rem',
       }}
     >
       {children}
+      {badge !== undefined && badge > 0 && (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          minWidth: '16px', height: '16px', padding: '0 4px',
+          background: active ? 'rgba(0,0,0,0.2)' : 'var(--red)',
+          color: active ? '#000' : '#fff',
+          borderRadius: '8px', fontSize: '0.5rem', fontWeight: 700,
+          lineHeight: 1, letterSpacing: 0,
+        }}>
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </Link>
   );
 }

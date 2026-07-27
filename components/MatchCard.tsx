@@ -1,6 +1,7 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import type { Match } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
@@ -18,17 +19,31 @@ function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
   const displayScore = isLive && score ? score : null;
   const posterUrl = getPosterUrl(match.poster);
 
+  const prevScoreRef = useRef<string | null | undefined>(undefined);
+  const [scoreFlash, setScoreFlash] = useState(false);
+
+  useEffect(() => {
+    if (prevScoreRef.current !== undefined && prevScoreRef.current !== displayScore && displayScore) {
+      setScoreFlash(true);
+      const t = setTimeout(() => setScoreFlash(false), 800);
+      return () => clearTimeout(t);
+    }
+    prevScoreRef.current = displayScore;
+  }, [displayScore]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
       {/* Poster */}
       <div style={{ position: 'relative', width: '100%', height: '160px', background: 'var(--bg-2)', overflow: 'hidden', flexShrink: 0 }}>
         {posterUrl && (
-          <img
+          <Image
             src={posterUrl}
             alt={`${match.team1} vs ${match.team2 ?? ''}`}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            fill
+            sizes="(max-width: 768px) 100vw, 300px"
+            style={{ objectFit: 'cover', opacity: 0.85 }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
           />
         )}
         <div style={{
@@ -83,10 +98,13 @@ function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
             border: '1px solid var(--line)', borderRadius: '3px',
             minWidth: '4.25rem', textAlign: 'center',
           }}>
-            <span style={{
-              fontFamily: 'var(--font-display)', fontSize: '1.2rem',
-              color: 'var(--accent)', letterSpacing: '0.04em', lineHeight: 1,
-            }}>
+            <span
+              className={scoreFlash ? 'score-flash' : undefined}
+              style={{
+                fontFamily: 'var(--font-display)', fontSize: '1.2rem',
+                color: 'var(--accent)', letterSpacing: '0.04em', lineHeight: 1,
+              }}
+            >
               {displayScore}
             </span>
             {scoreMinute && (

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { MediaResult, TvDetail } from '@/types/movies';
+import { useToast } from '@/components/Toast';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w185';
-const VIDSRC_BASE = 'https://vidsrcme.ru/embed';
+const VIDSRC_BASE = 'https://vsembed.ru/embed';
 
 function buildEmbedUrl(
   item: MediaResult,
@@ -29,6 +30,7 @@ export default function MoviesPageClient() {
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { showToast, ToastComponent } = useToast();
 
   // Debounced search — fires 350ms after typing stops
   const search = useCallback(async (q: string, type: 'movie' | 'tv') => {
@@ -38,11 +40,19 @@ export default function MoviesPageClient() {
       const res = await fetch(
         `/api/media/search?q=${encodeURIComponent(q.trim())}&type=${type}`
       );
-      if (res.ok) setResults(await res.json());
+      if (!res.ok) {
+        showToast('Search failed. Please try again.', 'error');
+        setResults([]);
+      } else {
+        setResults(await res.json());
+      }
+    } catch {
+      showToast('Search failed. Check your connection.', 'error');
+      setResults([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -278,6 +288,7 @@ export default function MoviesPageClient() {
           Type at least 2 characters to search
         </div>
       )}
+      {ToastComponent}
     </div>
   );
 }

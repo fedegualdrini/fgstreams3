@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Suspense } from 'react';
 import { fetchMatches, fetchSports } from '@/lib/api';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
@@ -26,7 +27,7 @@ export default async function Home() {
 
   return (
     <>
-      <SiteHeader activeSection="matches" />
+      <SiteHeader activeSection="matches" liveCount={liveMatches.length} />
 
       <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
         <Suspense fallback={<MatchListSkeleton />}>
@@ -37,11 +38,22 @@ export default async function Home() {
         </Suspense>
       </main>
 
-      <footer className="bg-gray-900 border-t border-gray-800 mt-12">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <p className="text-sm text-gray-400 text-center">
-            Streams sourced from publicly available sources via Streamed API
-          </p>
+      <footer style={{ borderTop: '1px solid var(--line)', marginTop: 'auto', padding: '1.25rem 0' }}>
+        <div className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.65rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
+            Streams sourced from publicly available sources
+          </span>
+          <nav aria-label="Footer navigation" style={{ display: 'flex', gap: '1rem' }}>
+            {[
+              { href: '/', label: 'Matches' },
+              { href: '/channels', label: 'Channels' },
+              { href: '/movies', label: 'Movies' },
+            ].map(({ href, label }) => (
+              <Link key={href} href={href} style={{ fontSize: '0.65rem', color: 'var(--subtle)', textDecoration: 'none', fontFamily: 'var(--font-body)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                {label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </footer>
     </>

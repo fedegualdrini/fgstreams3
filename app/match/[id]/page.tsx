@@ -1,8 +1,11 @@
+import { cache } from 'react';
 import { fetchMatches, getPosterUrl } from '@/lib/api';
 import MatchDetailClient from '@/components/MatchDetailClient';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { REVALIDATE_MATCHES } from '@/lib/constants';
+
+const getMatches = cache(fetchMatches);
 
 interface MatchDetailPageProps {
   params: Promise<{ id: string }>;
@@ -11,14 +14,14 @@ interface MatchDetailPageProps {
 export const revalidate = REVALIDATE_MATCHES;
 
 export async function generateStaticParams() {
-  const matches = await fetchMatches();
+  const matches = await getMatches();
   // Only pre-generate the first 50 matches — others generate on-demand
   return matches.slice(0, 50).map(m => ({ id: m.id }));
 }
 
 export async function generateMetadata({ params }: MatchDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const matches = await fetchMatches();
+  const matches = await getMatches();
   const match = matches.find(m => m.id === id);
   if (!match) return { title: 'Match Not Found' };
 
@@ -46,7 +49,7 @@ export async function generateMetadata({ params }: MatchDetailPageProps): Promis
 
 export default async function MatchDetailPage({ params }: MatchDetailPageProps) {
   const { id } = await params;
-  const matches = await fetchMatches();
+  const matches = await getMatches();
   const match = matches.find(m => m.id === id);
 
   if (!match) {

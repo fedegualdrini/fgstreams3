@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface HLSVideoPlayerProps {
   src: string;
@@ -57,6 +57,29 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
   const videoRef = useRef<HTMLVideoElement>(null);
   const onPlayingRef = useRef(onPlaying);
   const onErrorRef = useRef(onError);
+
+  const [pipActive, setPipActive] = useState(false);
+  const [pipSupported, setPipSupported] = useState(false);
+
+  useEffect(() => {
+    setPipSupported(typeof document !== 'undefined' && !!document.pictureInPictureEnabled);
+  }, []);
+
+  const togglePip = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        setPipActive(false);
+      } else {
+        await video.requestPictureInPicture();
+        setPipActive(true);
+      }
+    } catch {
+      // PiP not available for this video
+    }
+  };
 
   useEffect(() => { onPlayingRef.current = onPlaying; }, [onPlaying]);
   useEffect(() => { onErrorRef.current = onError; }, [onError]);
@@ -130,23 +153,53 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
       });
     };
 
+    const handleEnterPip = () => setPipActive(true);
+    const handleLeavePip = () => setPipActive(false);
+    video.addEventListener('enterpictureinpicture', handleEnterPip);
+    video.addEventListener('leavepictureinpicture', handleLeavePip);
+
     setupHls();
 
     return () => {
       destroyed = true;
       if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+      video.removeEventListener('enterpictureinpicture', handleEnterPip);
+      video.removeEventListener('leavepictureinpicture', handleLeavePip);
       video.removeAttribute('src');
       video.load();
     };
   }, [src]);
 
   return (
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      controls
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: '#000' }}
-    />
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        controls
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: '#000' }}
+      />
+      {pipSupported && (
+        <button
+          type="button"
+          onClick={togglePip}
+          title={pipActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
+          aria-label={pipActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
+          style={{
+            position: 'absolute', bottom: '48px', right: '8px', zIndex: 10,
+            background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '4px', color: '#fff', cursor: 'pointer',
+            padding: '4px 8px', fontSize: '0.65rem', fontFamily: 'var(--font-body)',
+            fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
+            backdropFilter: 'blur(4px)',
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.85)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; }}
+        >
+          {pipActive ? '⊡ Exit PiP' : '⧉ PiP'}
+        </button>
+      )}
+    </div>
   );
 }

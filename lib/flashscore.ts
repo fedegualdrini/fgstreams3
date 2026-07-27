@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { load } from 'cheerio';
 import type { FlashscoreEntry, FlashscoreDetail, FlashscoreEvent, FlashscoreStat, FlashscorePlayer, FlashscoreLineups } from '@/types/api';
 import { getFlashscoreUrl } from './sportMap';
@@ -354,3 +355,11 @@ function parseMatchLineups(html: string): FlashscoreLineups | null {
     awaySubs: teamBlocks[1].subs,
   };
 }
+
+// ─── Cached live scores (persists across cold starts via Next.js Data Cache) ─
+
+export const fetchLiveScoresCached = unstable_cache(
+  fetchLiveScores,
+  ['flashscore-live-scores'],
+  { revalidate: 25 }, // matches SCORE_DEDUP_WINDOW_MS (25s)
+);

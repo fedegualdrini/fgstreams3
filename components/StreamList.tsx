@@ -29,7 +29,22 @@ export default function StreamList({ streams, currentStreamId, onSelectStream }:
 
   return (
     <div>
-      <span className="label" style={{ display: 'block', marginBottom: '0.75rem' }}>Available Streams</span>
+      <span className="label" style={{ display: 'block', marginBottom: '0.5rem' }}>Available Streams</span>
+      {/* Health legend */}
+      <div style={{
+        display: 'flex', gap: '0.875rem', marginBottom: '0.75rem',
+        flexWrap: 'wrap',
+      }}>
+        {Object.entries(STREAM_STATUS_CONFIG).map(([status, { color, label }]) => (
+          <span key={status} style={{
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
+            fontSize: '0.58rem', color: 'var(--muted)', fontFamily: 'var(--font-body)',
+          }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0 }} />
+            {label}
+          </span>
+        ))}
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
         {streams.map((stream, index) => {
           const streamId = `${stream.source || 'unknown'}-${index}`;

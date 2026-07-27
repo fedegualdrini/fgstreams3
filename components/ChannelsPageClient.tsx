@@ -289,7 +289,9 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
                 whiteSpace: 'nowrap',
               }}
             >
-              {filtered.length} channel{filtered.length !== 1 ? 's' : ''}
+              {search.trim()
+                ? `${filtered.length} of ${channels.length} channels`
+                : `${channels.length} channel${channels.length !== 1 ? 's' : ''}`}
             </span>
           </div>
 
@@ -319,16 +321,26 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
               })}
             </div>
           ) : (
-            <div
-              style={{
-                padding: '4rem 1rem',
-                textAlign: 'center',
-                color: 'var(--subtle)',
-                fontSize: '0.875rem',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              No channels for &ldquo;{search}&rdquo;
+            <div style={{ padding: '4rem 1rem', textAlign: 'center', fontFamily: 'var(--font-body)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📺</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-dim)', marginBottom: '0.375rem' }}>
+                No channels match &ldquo;{search}&rdquo;
+              </div>
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                style={{
+                  marginTop: '0.75rem', padding: '0.4rem 1rem',
+                  background: 'none', border: '1px solid var(--line)', borderRadius: '3px',
+                  color: 'var(--subtle)', fontFamily: 'var(--font-body)', fontSize: '0.7rem',
+                  cursor: 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase',
+                  transition: 'border-color 0.15s, color 0.15s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text)'; e.currentTarget.style.color = 'var(--text)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--subtle)'; }}
+              >
+                Clear search
+              </button>
             </div>
           )}
         </div>

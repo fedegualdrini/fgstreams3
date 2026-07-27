@@ -163,3 +163,13 @@ input { color-scheme: dark; }
     flex: none !important;
   }
 }
+
+/* ── Score flash ── */
+@keyframes score-flash {
+  0%   { background: var(--accent); color: #000; }
+  100% { background: var(--bg-3); color: var(--accent); }
+}
+
+.score-flash {
+  animation: score-flash 0.8s ease-out both;
+}
