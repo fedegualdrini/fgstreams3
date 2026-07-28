@@ -6,6 +6,8 @@ interface HLSVideoPlayerProps {
   src: string;
   onPlaying: () => void;
   onError: () => void;
+  /** Fired when playback recovers from a non-fatal error — playing, but not cleanly. */
+  onDegraded?: () => void;
 }
 
 const EXTERNAL_IPS = [
@@ -53,10 +55,11 @@ function toProxyUrl(url: string): string {
     : url;
 }
 
-export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlayerProps) {
+export default function HLSVideoPlayer({ src, onPlaying, onError, onDegraded }: HLSVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const onPlayingRef = useRef(onPlaying);
   const onErrorRef = useRef(onError);
+  const onDegradedRef = useRef(onDegraded);
 
   const [pipActive, setPipActive] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
@@ -83,13 +86,18 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
 
   useEffect(() => { onPlayingRef.current = onPlaying; }, [onPlaying]);
   useEffect(() => { onErrorRef.current = onError; }, [onError]);
+  useEffect(() => { onDegradedRef.current = onDegraded; }, [onDegraded]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     let destroyed = false;
-    let retryCount = 0;
+    // Tracked separately: a stream that survives 5 network blips is not the same
+    // as one that also hit 3 media errors, and a single shared counter that never
+    // reset meant later recoverable errors were treated as fatal.
+    let networkRetries = 0;
+    let mediaRetries = 0;
 
     let hlsInstance: any = null; // hls.js types require dynamic import
 
@@ -132,17 +140,26 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
         }
       });
 
+      // A buffered fragment means the stream is healthy again, so the retry
+      // budget resets — otherwise a long session exhausts it and dies on a blip.
+      hlsInstance.on(Hls.Events.FRAG_BUFFERED, () => {
+        networkRetries = 0;
+        mediaRetries = 0;
+      });
+
       hlsInstance.on(Hls.Events.ERROR, (_: unknown, data: { fatal: boolean; type: string }) => {
         if (!data.fatal || destroyed) return;
 
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && retryCount < MAX_NETWORK_RETRIES) {
-          retryCount++;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && networkRetries < MAX_NETWORK_RETRIES) {
+          networkRetries++;
+          onDegradedRef.current?.();
           setTimeout(() => { if (!destroyed && hlsInstance) hlsInstance.startLoad(); }, 1000);
           return;
         }
 
-        if (data.type === Hls.ErrorTypes.MEDIA_ERROR && retryCount < MAX_MEDIA_RETRIES) {
-          retryCount++;
+        if (data.type === Hls.ErrorTypes.MEDIA_ERROR && mediaRetries < MAX_MEDIA_RETRIES) {
+          mediaRetries++;
+          onDegradedRef.current?.();
           hlsInstance.recoverMediaError();
           return;
         }

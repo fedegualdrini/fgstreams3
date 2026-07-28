@@ -8,10 +8,9 @@ import StreamPlayer from './StreamPlayer';
 import StreamList from './StreamList';
 import MultiMatchView from './MultiMatchView';
 import { selectBestStream } from '@/lib/streamSelector';
-import { streamHealthMonitor } from '@/lib/streamHealth';
+import { streamHealthMonitor, streamKeyFor } from '@/lib/streamHealth';
 import { getImageUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
-import { HEALTH_RECOVERY_INTERVAL_MS } from '@/lib/constants';
 import { useToast } from '@/components/Toast';
 import SiteHeader from './SiteHeader';
 import MatchJsonLd from './MatchJsonLd';
@@ -37,22 +36,29 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
   const [showShortcuts, setShowShortcuts]       = useState(false);
   const { showToast, ToastComponent } = useToast();
 
-  const currentStreamId = currentStream
-    ? `${currentStream.source || 'unknown'}-${currentStreamIndex}`
-    : null;
+  const currentStreamId = currentStream ? streamKeyFor(currentStream) : null;
 
   const matchRef   = useRef(match);
   matchRef.current = match;
   const sourcesKey = match.sources?.map(s => `${s.source}:${s.id}`).join(',') ?? '';
 
+  // Rotate to the next-best stream. The player reports its own load failures to
+  // the health store, so this does not record one — see `skipCurrentStream` for
+  // the user-initiated case.
   const handleStreamError = useCallback(() => {
     setStreamErrorCount((prev) => prev + 1);
-    const remainingStreams = streams.filter((_, index) => index !== currentStreamIndex);
-    const nextStream = selectBestStream(remainingStreams);
-    if (nextStream) {
-      const nextIndex = streams.findIndex((s) => s.url === nextStream.url);
-      setCurrentStream(nextStream);
-      setCurrentStreamIndex(nextIndex);
+
+    // Carry the original index alongside each stream: selecting from a filtered
+    // array and then looking the winner up by URL mis-resolves duplicate URLs.
+    const remaining = streams
+      .map((stream, index) => ({ stream, index }))
+      .filter(({ index }) => index !== currentStreamIndex);
+    const nextStream = selectBestStream(remaining.map(r => r.stream));
+    const next = remaining.find(r => r.stream === nextStream);
+
+    if (next) {
+      setCurrentStream(next.stream);
+      setCurrentStreamIndex(next.index);
       setStreamErrorCount(0);
       showToast('Switched to next available stream', 'info');
     } else {
@@ -60,6 +66,13 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
       showToast('All streams unavailable', 'error');
     }
   }, [streams, currentStreamIndex, showToast]);
+
+  /** User skipped away from the current stream — that is itself a health signal. */
+  const skipCurrentStream = useCallback(() => {
+    const skipped = streams[currentStreamIndex];
+    if (skipped) streamHealthMonitor.reportFailed(streamKeyFor(skipped), 'skipped');
+    handleStreamError();
+  }, [streams, currentStreamIndex, handleStreamError]);
 
   const refetchStreams = useCallback(() => {
     setAllStreamsFailed(false);
@@ -93,26 +106,6 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     });
   }, [sourcesKey, streamsFetchKey]);
 
-  useEffect(() => {
-    if (streams.length === 0) return;
-    const streamIds = streams.map((s, i) => ({
-      id: `${s.source || 'unknown'}-${i}`,
-      url: s.url || s.embedUrl || '',
-    }));
-    const recoveryInterval = setInterval(() => {
-      streamIds.forEach(async ({ id, url }) => {
-        const health = streamHealthMonitor.getStatus(id);
-        if (health.status === 'offline') {
-          await streamHealthMonitor.checkStreamRecovery(url, id);
-        }
-      });
-    }, HEALTH_RECOVERY_INTERVAL_MS);
-    return () => {
-      clearInterval(recoveryInterval);
-      streamIds.forEach(({ id }) => streamHealthMonitor.clearHealthEntry(id));
-    };
-  }, [streams]);
-
   const handleSelectStream = (stream: Stream, index: number) => {
     setCurrentStream(stream);
     setCurrentStreamIndex(index);
@@ -139,7 +132,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'n' || e.key === 'N') {
         if (!multiStreamMode && streams.length > 0 && !allStreamsFailed) {
-          handleStreamError();
+          skipCurrentStream();
         }
       } else if (e.key === 'f' || e.key === 'F') {
         const playerSection = document.querySelector('.detail-player') as HTMLElement | null;
@@ -158,7 +151,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [multiStreamMode, streams, allStreamsFailed, handleStreamError]);
+  }, [multiStreamMode, streams, allStreamsFailed, skipCurrentStream]);
 
   const isLive    = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
@@ -367,7 +360,6 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
               ) : (
                 <StreamPlayer
                   stream={currentStream}
-                  streamId={currentStreamId ?? 'none'}
                   onError={handleStreamError}
                   fillParent
                 />
