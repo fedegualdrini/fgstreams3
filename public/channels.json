@@ -4518,795 +4518,1598 @@
     "show": true
   },
   {
-    "name": "America TV",
-    "logo": "https://bestleague.world/img/america.webp",
+    "name": "ABC",
+    "logo": "https://cdn.abcotvs.com/dip/images/11479454_011822-cc-abc-generic-thumb-img.jpg",
     "options": [
       {
-        "name": "America TV - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00c/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/abc-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "TV Publica",
-    "logo": "https://bestleague.world/img/tvpublica.webp",
+    "name": "ACC Network",
+    "logo": "https://theacc.com/images/2018/11/30/ACCN_Launch.png",
     "options": [
       {
-        "name": "TV Publica - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00h/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/accn-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "El Nueve",
-    "logo": "https://bestleague.world/img/nueve.webp",
+    "name": "AE",
+    "logo": "https://www.aetv.com/assets/images/aetv/generic-thumb.jpg",
     "options": [
       {
-        "name": "El Nueve - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00e/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/ae-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "Telefe",
-    "logo": "https://bestleague.world/img/telefe.png",
-    "options": [
-      {
-        "name": "Telefe - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00g/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "El Trece",
-    "logo": "https://bestleague.world/img/eltrece.webp",
-    "options": [
-      {
-        "name": "El Trece - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00f/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "CanalNet",
-    "logo": "https://bestleague.world/img/nettv.webp",
-    "options": [
-      {
-        "name": "CanalNet - HLS",
-        "iframe": "http://201.217.246.42:44310/Live/a8a0dc318cc5a076f84bea2206893142/CanalNet.playlist.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "C5N",
-    "logo": "https://bestleague.world/img/c5n.webp",
-    "options": [
-      {
-        "name": "C5N - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a007/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "TN",
-    "logo": "https://bestleague.world/img/tn.png",
-    "options": [
-      {
-        "name": "TN - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00b/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "Cronica TV",
-    "logo": "https://bestleague.world/img/cronica.png",
-    "options": [
-      {
-        "name": "Cronica TV - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a009/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "A24",
-    "logo": "https://bestleague.world/img/a24.webp",
-    "options": [
-      {
-        "name": "A24 - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a006/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "LN+",
-    "logo": "https://bestleague.world/img/ln.webp",
-    "options": [
-      {
-        "name": "LN+ - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00a/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "Canal 26",
-    "logo": "https://bestleague.world/img/canal26.webp",
-    "options": [
-      {
-        "name": "Canal 26 - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a008/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "CNN Espanol",
-    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnu7Vmb19p18xiBbI-njcgFnKuqPCXJfM5XA&s",
-    "options": [
-      {
-        "name": "CNN Espanol - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a026/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "Sony (AR)",
-    "logo": "https://bestleague.world/img/sony.webp",
-    "options": [
-      {
-        "name": "Sony - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a016/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
-  },
-  {
-    "name": "AXN",
-    "logo": "https://bestleague.world/img/axn.webp",
-    "options": [
-      {
-        "name": "AXN - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01f/index.m3u8"
-      }
-    ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
     "name": "AMC",
-    "logo": "https://bestleague.world/img/amc.webp",
+    "logo": "https://tvseriesfinale.com/wp-content/uploads/2014/08/amc02.jpg",
     "options": [
       {
-        "name": "AMC - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01e/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/amc-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
+  },
+  {
+    "name": "American Heroes Channel",
+    "logo": "https://payload.cargocollective.com/1/10/342209/9724942/AHC_15a_3_1340_c.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/ahc-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Animal Planet",
+    "logo": "https://mir-s3-cdn-cf.behance.net/project_modules/disp/f9ee57107702215.5facf9f601507.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/animalplanet-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "AXS TV",
+    "logo": "https://www.hcc.net/wp-content/uploads/2012/06/AXS_TV_BlueWhite.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/axs-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "BBC America",
+    "logo": "https://www.newscaststudio.com/wp-content/uploads/2024/11/bbc-america-logo.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/bbc-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "BBC One London",
+    "logo": "https://ichef.bbci.co.uk/images/ic/1200x675/p0dkt7rv.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/bbcone-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "BBC Two",
+    "logo": "https://ichef.bbci.co.uk/images/ic/1200x675/p0bvs8dg.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/bbctwo-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "beIN Sports",
+    "logo": "https://assets-us-01.kc-usercontent.com/31dbcbc6-da4c-0033-328a-d7621d0fa726/1318873e-8501-4f79-bb69-182d741cf9ad/beIN%20SPORTS%20Portada.jpg?ver=03-06-2025?w=3840&q=75",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/beinsports-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Bravo",
+    "logo": "https://www.bravotv.com/sites/bravo/files/2024/05/bravo-logo-2jpg.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/bravo-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Boomerang",
+    "logo": "https://cdn.broadbandtvnews.com/wp-content/uploads/2024/08/05120702/Boomerang.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/boomerang-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CANAL+ Sport PL",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/canalsport-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CANAL+ Sport 2 PL",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/canalsport2-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CANAL+ Sport 3 PL",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/canalsport3-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CANAL+ Sport 4 PL",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/canalsport4-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CANAL+ Sport 5 PL",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/canalsport5-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Cartoon Network",
+    "logo": "https://1000logos.net/wp-content/uploads/2016/10/Cartoon-Network-logo.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/cartoonnetwork-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CBeebies",
+    "logo": "https://static.files.bbci.co.uk/core/website/assets/static/childrens-web/images/metadata/cbeebies-poster-1024x576.8eb27aa32e.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/cbeebies-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CBS",
+    "logo": "https://wwwimage-tve.cbsstatic.com/base/files/seo/cbs_seo_1200x627_1.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/cbs-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CBS Sports Network",
+    "logo": "https://www.paramountshop.com/cdn/shop/files/cbssportsnetwork-mobile-min.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/cbssn-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "CNBC",
+    "logo": "https://cdn.versantmedia.com/versantmedia/styles/newsroom/s3/2025-11/cnbc%281600x900%29.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/cnbc-usa"
+      }
+    ],
+    "show": true
   },
   {
     "name": "Comedy Central",
-    "logo": "https://bestleague.world/img/comedy.webp",
+    "logo": "https://wwwimage-us.pplusstatic.com/base/files/seo/og-brand-comedy-central.jpg?format=webp",
     "options": [
       {
-        "name": "Comedy Central - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01c/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/comedycentral-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "DSports",
-    "logo": "https://bestleague.world/img/dsports.webp",
+    "name": "CW",
+    "logo": "https://www.wavy.com/wp-content/uploads/sites/3/2024/08/cw-logo-white-on-blue-wavy-background.jpg?w=1280",
     "options": [
       {
-        "name": "DSports - HLS",
-        "iframe": "http://190.61.41.181:8000/play/a0r5/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/cw-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "DSports 2",
-    "logo": "https://bestleague.world/img/dsports2.webp",
+    "name": "DAZN 1 Germany",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=12dpnhddhmpm71228raanhyxs2_image-header_pDach_1723627450000&quality=70",
     "options": [
       {
-        "name": "DSports 2 - HLS",
-        "iframe": "http://190.61.41.181:8000/play/a0r4/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/dazn1-de"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "DSports+",
-    "logo": "https://bestleague.world/img/dsportsplus.webp",
+    "name": "DAZN 2 Germany",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=1ni1lpwjtnxmr1xklfoptrt2mz_image-header_pDach_1723628653000",
     "options": [
       {
-        "name": "DSports+ - HLS",
-        "iframe": "http://190.61.41.181:8000/play/a0r3/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/dazn2-de"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "TyC Sports",
-    "logo": "https://bestleague.world/img/tyc.webp",
+    "name": "DAZN 1 Italia",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=pterrit4f2xu1pa2r6x87y5e9_image-header_pIt_1724315365000&quality=70",
     "options": [
       {
-        "name": "TyC Sports - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00s/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/dazn1-it"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Fox Sports",
-    "logo": "https://bestleague.world/img/foxnew.png",
+    "name": "DAZN 1 Spain",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=hn9vkic8rbfi1ndrym8sw2qh7_image-header_pEs_1723035920000",
     "options": [
       {
-        "name": "Fox Sports - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00n/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/dazn1-es"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Fox Sports 2",
-    "logo": "https://bestleague.world/img/foxnew2.png",
+    "name": "DAZN 2 Spain",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=2ouwtae8ad7l1fxviow9bowpk_image-header_pEs_1723118632000&quality=70",
     "options": [
       {
-        "name": "Fox Sports 2 - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00o/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/dazn2-es"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Fox Sports 3",
-    "logo": "https://bestleague.world/img/foxnew3.png",
+    "name": "DAZN 1 USA",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=1owzb99m9mnzy15hjxolpukwul_image-header_pUs_1771501796000&quality=70",
     "options": [
       {
-        "name": "Fox Sports 3 - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00p/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/dazn1-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "ESPN (HLS)",
-    "logo": "https://bestleague.world/img/espn.webp",
+    "name": "DAZN F1",
+    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=14ln25pmjdv031ejxsmg8dczsu_image-header_pEs_1723117975000&quality=70",
     "options": [
       {
-        "name": "ESPN - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00i/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/daznf1-es"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "ESPN 2 (HLS)",
-    "logo": "https://bestleague.world/img/espn2.webp",
+    "name": "Discovery Channel",
+    "logo": "https://i.ibb.co/k2rbB1jc/e35d6be84084fed1d756c39242f13163.webp",
     "options": [
       {
-        "name": "ESPN 2 - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00j/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/discovery-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "ESPN 3 (HLS)",
-    "logo": "https://bestleague.world/img/espn3.webp",
+    "name": "Discovery Family",
+    "logo": "https://i.ibb.co/wFmT9Q5t/Discovery-Family-ID-Let-s-Go-Yellow.webp",
     "options": [
       {
-        "name": "ESPN 3 - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00k/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/discoveryfamily-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "ESPN Premium (HLS)",
-    "logo": "https://bestleague.world/img/espnpr.webp",
+    "name": "Discovery Turbo",
+    "logo": "https://i.ibb.co/20MgSXjy/featured-Image-1767979538707.jpg",
     "options": [
       {
-        "name": "ESPN Premium - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00m/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/discoveryturbo-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "TNT Sports (HLS)",
-    "logo": "https://bestleague.world/img/tntar.svg",
+    "name": "Disney Channel",
+    "logo": "https://vignette4.wikia.nocookie.net/logopedia/images/9/93/Disney_Channel_Original_2014.png/revision/latest?cb=20140705213010",
     "options": [
       {
-        "name": "TNT Sports - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00r/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/disneychannel-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Paka Paka",
-    "logo": "https://bestleague.world/img/pakapaka.png",
+    "name": "Disney Junior",
+    "logo": "https://thewaltdisneycompany.com/app/uploads/2021/02/021221_Disney-Junior-10th-Anniversary-00.jpg",
     "options": [
       {
-        "name": "Paka Paka - HLS",
-        "iframe": "http://138.59.227.20:8000/play/a05t/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/disneyjunior-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Cartoon Network (HLS)",
-    "logo": "https://bestleague.world/img/cn.webp",
+    "name": "Disney XD",
+    "logo": "https://www.laughingplace.com/uploads/2015/10/d128457e3b3ab8c050f306aa8e23666b9b05d3cc.jpg",
     "options": [
       {
-        "name": "Cartoon Network - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a005/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/disneyxd-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Disney Channel (HLS)",
-    "logo": "https://bestleague.world/img/disney.webp",
+    "name": "Eleven Sports 1",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
     "options": [
       {
-        "name": "Disney Channel - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00u/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/elevensports1-pl"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Nickelodeon (HLS)",
-    "logo": "https://bestleague.world/img/nick.png",
+    "name": "Eleven Sports 2",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
     "options": [
       {
-        "name": "Nickelodeon - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00x/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/elevensports2-pl"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Discovery Kids (HLS)",
-    "logo": "https://bestleague.world/img/diskids.webp",
+    "name": "Eleven Sports 3",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
     "options": [
       {
-        "name": "Discovery Kids - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00t/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/elevensports3-pl"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Garage TV",
-    "logo": "https://bestleague.world/img/garagetv.webp",
+    "name": "Eleven Sports 4",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
     "options": [
       {
-        "name": "Garage TV - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00q/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/elevensports4-pl"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Ciudad Magazine",
-    "logo": "https://bestleague.world/img/ciudad.webp",
+    "name": "ESPN",
+    "logo": "https://a1.espncdn.com/combiner/i?img=%2Fi%2Fespn%2Fespn_logos%2Fespn_red.png",
     "options": [
       {
-        "name": "Ciudad Magazine - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a03i/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/espn-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "El Gourmet",
-    "logo": "https://bestleague.world/img/Group.svg",
+    "name": "ESPN Deportes",
+    "logo": "https://i.ibb.co/Y7zHmbbz/i.png",
     "options": [
       {
-        "name": "El Gourmet - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01z/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/espndeportes-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Encuentro",
-    "logo": "https://bestleague.world/img/encuentro.webp",
+    "name": "ESPN2",
+    "logo": "https://discgolf.ultiworld.com/wp-content/uploads/2020/10/ESPN2.png",
     "options": [
       {
-        "name": "Encuentro - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a020/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/espn2-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "E!",
-    "logo": "https://bestleague.world/img/e.webp",
+    "name": "ESPNEWS",
+    "logo": "https://i.ibb.co/5h4LGFHq/image.png",
     "options": [
       {
-        "name": "E! - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01n/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/espnews-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Discovery Channel (HLS)",
-    "logo": "https://bestleague.world/img/discovery.webp",
+    "name": "ESPNU",
+    "logo": "https://i.ibb.co/Lh5jHVDm/ESPNU-logo-1-jpg.webp",
     "options": [
       {
-        "name": "Discovery - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01s/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/espnu-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Animal Planet (HLS)",
-    "logo": "https://bestleague.world/img/aplanet.webp",
+    "name": "Food Network",
+    "logo": "https://i.ibb.co/5WcnZbYf/food-network-jpg.jpg",
     "options": [
       {
-        "name": "Animal Planet - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a003/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/foodnetwork-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "TLC",
-    "logo": "https://bestleague.world/img/tlc.webp",
+    "name": "Fox",
+    "logo": "https://i.ibb.co/8JdwqP4/foxusa.png",
     "options": [
       {
-        "name": "TLC - HLS",
-        "iframe": "http://201.217.246.42:44310/Live/a8a0dc318cc5a076f84bea2206893142/tlc.playlist.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "History Channel (HLS)",
-    "logo": "https://bestleague.world/img/history.webp",
+    "name": "Fox Deportes",
+    "logo": "https://foxsports-wordpress-www-prsupports-prod.s3.amazonaws.com/uploads/sites/2/2016/12/LOGO-DEPORTES-1040x585.jpg",
     "options": [
       {
-        "name": "History - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a021/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/foxdeportes-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Rural",
-    "logo": "https://bestleague.world/img/rural.webp",
+    "name": "Fox Sports 1",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/2015_Fox_Sports_1_logo.svg/1280px-2015_Fox_Sports_1_logo.svg.png",
     "options": [
       {
-        "name": "Rural - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01r/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-1"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "MTV (HLS)",
-    "logo": "https://bestleague.world/img/mtv.webp",
+    "name": "Fox Sports 2 (US)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/FS2_logo_2015.svg/1280px-FS2_logo_2015.svg.png",
     "options": [
       {
-        "name": "MTV - HLS",
-        "iframe": "http://138.59.227.20:8000/play/a06r/index.m3u8"
+        "name": "Timstreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-2"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Quiero Musica",
-    "logo": "https://bestleague.world/img/quiero.webp",
+    "name": "Fox Sports 501 (Cricket)",
+    "logo": "https://i.ibb.co/Y4bTS1p7/image.webp",
     "options": [
       {
-        "name": "Quiero - HLS",
-        "iframe": "http://138.59.227.20:8000/play/a06s/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-501"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "HTV",
-    "logo": "https://bestleague.world/img/htv.webp",
+    "name": "Fox Sports 502 (League)",
+    "logo": "https://i.ibb.co/tppZhDrb/image.webp",
     "options": [
       {
-        "name": "HTV - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a024/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-502"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "CM",
-    "logo": "https://bestleague.world/img/cm.webp",
+    "name": "Fox Sports 503",
+    "logo": "https://i.ibb.co/xS4MkGSL/image.webp",
     "options": [
       {
-        "name": "CM - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a023/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-503"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Star Channel (HLS)",
-    "logo": "https://bestleague.world/img/star.webp",
+    "name": "Fox Sports 504 (Footy)",
+    "logo": "https://i.ibb.co/SXvQLc0M/image.webp",
     "options": [
       {
-        "name": "Star Channel - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a018/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-504"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Volver",
-    "logo": "https://bestleague.world/img/volver.webp",
+    "name": "Fox Sports 505",
+    "logo": "https://i.ibb.co/prKZGNLt/image.webp",
     "options": [
       {
-        "name": "Volver - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a02n/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-505"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Adult Swim (HLS)",
-    "logo": "https://bestleague.world/img/adults.png",
+    "name": "Fox Sports 506",
+    "logo": "https://i.ibb.co/Swks4Lmj/image.webp",
     "options": [
       {
-        "name": "Adult Swim - HLS",
-        "iframe": "http://177.74.205.189:8000/play/a00h/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-506"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "TNT (HLS)",
-    "logo": "https://bestleague.world/img/tnt.webp",
+    "name": "Fox Sports 507",
+    "logo": "https://i.ibb.co/7d6VgDVL/image.webp",
     "options": [
       {
-        "name": "TNT - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a019/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fox-sports-507"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Cinecanal",
-    "logo": "https://bestleague.world/img/cinecanal.webp",
+    "name": "FX",
+    "logo": "https://static0.srcdn.com/wordpress/wp-content/uploads/2026/01/gold-fx-channel-logo-1.jpg",
     "options": [
       {
-        "name": "Cinecanal - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a02j/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fx-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Cinemax (HLS)",
-    "logo": "https://bestleague.world/img/cinemax.webp",
+    "name": "FXM",
+    "logo": "https://www.awn.com/sites/default/files/styles/original/public/image/featured/50716-buster-creates-brand-id-new-fxm-programming-block_0.jpg",
     "options": [
       {
-        "name": "Cinemax - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a02i/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fxm-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Cine AR",
-    "logo": "https://bestleague.world/img/cinear.png",
+    "name": "FXX",
+    "logo": "https://thestreamable.com/media/pages/channels/fxx/b6fc72ce3d-1756344305/fxx-banner-1536x864-crop.png",
     "options": [
       {
-        "name": "Cine AR - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01j/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/fxx-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Space (HLS)",
-    "logo": "https://bestleague.world/img/space.webp",
+    "name": "Freeform",
+    "logo": "https://d2z00kf51ll94q.cloudfront.net//archive/2023/large/ADC102_BCD021B_0.jpg",
     "options": [
       {
-        "name": "Space - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a017/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/freeform-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "HBO (HLS)",
-    "logo": "https://bestleague.world/img/hbo.webp",
+    "name": "GOLF Channel",
+    "logo": "https://corporate.comcast.com/media/img/1000w/2020/01/corporate_golf-channel-16x9-social.jpg",
     "options": [
       {
-        "name": "HBO - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a00z/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/golfchannel-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Studio Universal",
-    "logo": "https://bestleague.world/img/studio.webp",
+    "name": "HBO",
+    "logo": "https://static.hbo.com/2021-11/hbo-static-1920.jpg",
     "options": [
       {
-        "name": "Studio Universal - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01k/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/hbo-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "TVE",
-    "logo": "https://bestleague.world/img/tvees.png",
+    "name": "HBO Comedy",
+    "logo": "https://www.tvinsider.com/wp-content/uploads/2022/03/hbo-comedy.png",
     "options": [
       {
-        "name": "TVE - HLS",
-        "iframe": "http://138.59.227.20:8000/play/a080/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/hbocomedy-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "RAI",
-    "logo": "https://bestleague.world/img/raiitalia.png",
+    "name": "HBO Drama",
+    "logo": "https://i.ibb.co/Qv2Mz3ZB/https-archive-images-prod-global-a201836-reutersmedia-net-2016-10-30-LYNXMPEC9-T08-O.avif",
     "options": [
       {
-        "name": "RAI - HLS",
-        "iframe": "http://138.59.227.20:8000/play/a06u/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/hbodrama-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Telemundo (HLS)",
-    "logo": "https://bestleague.world/img/telemundo.png",
+    "name": "HBO Latino",
+    "logo": "https://i.ibb.co/TMzmbVYq/maxresdefault.jpg",
     "options": [
       {
-        "name": "Telemundo - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01q/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/hbolatino-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
+  },
+  {
+    "name": "HBO Movies",
+    "logo": "https://i.ibb.co/Qv2Mz3ZB/https-archive-images-prod-global-a201836-reutersmedia-net-2016-10-30-LYNXMPEC9-T08-O.avif",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/hbomovies-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "HGTV",
+    "logo": "https://i.ibb.co/gbtDnLhS/hgtv-jpg.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/hgtv-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "MLB Network",
+    "logo": "https://img.mlbstatic.com/mlb-images/image/private/t_16x9/t_w2208/mlb/xtkynqe5wgtzaddnsus2.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/mlbnetwork-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "MotoGP Channel",
+    "logo": "https://sportbikesincmag.com/wp-content/uploads/2024/11/New-MotoGP-Logo-sportbikesincmag.com-4.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/motpgp-tv"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "MTV",
+    "logo": "https://static0.colliderimages.com/wordpress/wp-content/uploads/2025/12/mtv-logo-1.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/mtv-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "NBA TV",
+    "logo": "https://static.cdn.turner.com/styles/header_image_1500x500_cropped/s3/nba-tv-16x9-1.jpg?itok=6H8mrlyR",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nbatv-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "NBC",
+    "logo": "https://cdn.mos.cms.futurecdn.net/zP42nmS7MRj2kvBqNEs8CE.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nbc-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "NBC Sports Bay Area",
+    "logo": "https://cdn.mos.cms.futurecdn.net/d7jWexxhtezRZ6ryLHyKmd.jpeg",
+    "options": [
+      {
+        "name": "Timstreams",
+        "iframe": "https://logic.icelanders.st/embed/nbc-sports-bayarea"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "NBC Sports Philadelphia",
+    "logo": "https://media.nbcsportsphiladelphia.com/2023/04/Philly-Landmark.png?resize=1200%2C675&quality=85&strip=all",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nbc-sports-philly"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "NFL Network",
+    "logo": "https://i.ibb.co/ZRsTndvV/tfki7njrm3y8jycbtkrx.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nflnetwork-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "NHL Network",
+    "logo": "https://media.d3.nhle.com/image/private/t_ratio16_9-size50/prd/lhum6z3hyaga9ahnjow0.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nhlnetwork-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Nick Jr.",
+    "logo": "https://i.ibb.co/xS6CMxZD/nick-jr-logo-2023-4.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nickjr-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Nickelodeon",
+    "logo": "https://i.ibb.co/xSM8bDYh/roger-nickelodeon-graphic-design-format-webp-width-2880-8-Yj-L2u3-KSI20j-HDQ.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nickelodeon-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Nicktoons",
+    "logo": "https://i.ibb.co/XfX32tyx/nicktoons-logo-2023-rebrand-2.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/nicktoons-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Polsat Sport 1",
+    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COEd/3809-polsat-sport-1-hd.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/polsatsport1-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Polsat Sport 2",
+    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COId/3810-polsat-sport-2-hd.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/polsatsport2-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Polsat Sport 3",
+    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COMd/3811-polsat-sport-3-hd.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/polsatsport3-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Polsat Sport Fight",
+    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COUd/3813-polsat-sport-fight-hd.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/polsatsportfight-pl"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Premiere",
+    "logo": "https://s3.glbimg.com/v1/AUTH_36abb2af534644878388f516c38b89ac/prod/home-share-1b75cdaa.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/premiere-br"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "RACER Network",
+    "logo": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltb30b537c79808b35/680f2c517c8c98109d720e49/Racer_Network_1920x1080_Presser_V1.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/racernetwork-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Showtime",
+    "logo": "https://i.ibb.co/v7vcNY4/Showtime-Logo.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/showtime-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Showtime 2",
+    "logo": "https://i.ibb.co/8gCRbv0s/Showtime-2-svg.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/showtime2-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Showtime Extreme",
+    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/showtimeextreme-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Showtime Family Zone",
+    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/showtimefamilyzone-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Showtime Next",
+    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/showtimenext-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Showtime Women",
+    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/showtimewomen-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 1 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport1-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 2 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport2-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 3 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport3-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 4 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport4-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 5 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport5-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 6 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport6-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 7 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport7-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 8 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport8-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport 9 NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysport9-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sport Select NZ",
+    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportselect-nz"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports+",
+    "logo": "https://e0.365dm.com/24/07/2048x1152/skysports-ssplus-sky-sports-plus_6644064.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsplus-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Action",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/skysportsaction.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsaction-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Cricket",
+    "logo": "https://e0.365dm.com/17/07/2048x1152/skysports-sky-sports-cricket-podcast-sky-cricket-podcast_4004801.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportscricket-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports F1",
+    "logo": "https://e0.365dm.com/21/03/1600x900/skysports-f1-2021-graphic_5299452.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsf1-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Football",
+    "logo": "https://images.squarespace-cdn.com/content/v1/6380a5b12f7b6f632e16ce77/46d62da8-e650-4d2b-a5bc-48a5648edb8e/Beth_Mead.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsfootball-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Golf",
+    "logo": "https://e0.365dm.com/23/05/1600x900/skysports-golf-sky-sports-golf_6158933.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsgolf-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Main Event",
+    "logo": "https://e0.365dm.com/17/07/1600x900/skysports-all-new-rebrand-f1-premier-league-golf-cricket_4001810.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsmainevent-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Mix",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/Sky_Sports_Mix_Generic_ID_2017.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsmix-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports News",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/image.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsnews-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Premier League",
+    "logo": "https://e0.365dm.com/25/06/2048x1152/skysports-premier-league-fixtures_6937276.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportspremierleague-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Racing",
+    "logo": "https://e0.365dm.com/23/07/2048x1152/skysports-racing-league-sky-sports-racing_6230990.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportsracing-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sky Sports Tennis",
+    "logo": "https://e0.365dm.com/24/01/2048x1152/skysports-sky-sports-tennis_6437709.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/skysportstennis-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sony Sports Network",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/sonysportsnetwork-in"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sony Sports Network 2",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/sonysportsnetwork2-in"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sony Sports Network 3",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/sonysportsnetwork3-in"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sony Sports Network 4",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/sonysportsnetwork4-in"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Sony Sports Network 5",
+    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/sonysportsnetwork5-in"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "STARZ",
+    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "options": [
+      {
+        "name": "Timstreams",
+        "iframe": "https://logic.icelanders.st/embed/starz-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "STARZ Cinema",
+    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/starzcinema-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "STARZ Comedy",
+    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/starzcomedy-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "STARZ Kids and Family",
+    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/starzkidsfamily-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "SYFY",
+    "logo": "https://assets.goal.com/images/v3/blt1be56273baf0440d/syfy%20logo.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/syfy-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TBS",
+    "logo": "https://cdn.sanity.io/images/1pn9obcz/production/a6971fbe09c85f2deeb480fc494a39219d039135-1920x1080.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tbs-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Teenick",
+    "logo": "https://i.ibb.co/3yCJDVrW/Teen-Nick-2023.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/teenick-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Telemundo",
+    "logo": "https://media-cldnry.s-nbcnews.com/image/upload/newscms/2020_20/3352176/telemundo-social-default.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/telemundo-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "Tennis Channel",
+    "logo": "https://s10019.cdn.ncms.io/wp-content/uploads/2026/05/tenn2.jpg.jpeg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tennischannel-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "The Weather Channel",
+    "logo": "https://i.ibb.co/bRJqL6WK/LWRBPBUMCVFA3-G5-Q4-ZH3-XJYDNY.avif",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/twc-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TNT",
+    "logo": "https://i.ytimg.com/vi/F-AHKcxi3pY/maxresdefault.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tnt-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TNT Sports 1",
+    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tntsports1-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TNT Sports 2",
+    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tntsports2-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TNT Sports 3",
+    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tntsports3-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TNT Sports 4",
+    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tntsports4-uk"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TruTV",
+    "logo": "https://i.ibb.co/DfGcnjXY/Header-tru-TV.webp",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/trutv-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TUDN",
+    "logo": "https://cdn.aptoide.com/imgs/e/e/6/ee65573e3ed2c5fcafa0191860afdf51_fgraphic.png",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tudn-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "TYC Sports Internacional",
+    "logo": "https://assets.goal.com/images/v3/blta396e76391fffdfa/TyC_Sports_logo.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/tycsports-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "UFC Fight Pass 24/7",
+    "logo": "https://fightrecord.co.uk/wp-content/uploads/2020/12/ufc-fight-pass-lion-fight-muay-thai.jpg",
+    "options": [
+      {
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/ufc-fight-pass"
+      }
+    ],
+    "show": true
   },
   {
     "name": "USA Network",
-    "logo": "https://bestleague.world/img/uss.png",
+    "logo": "https://variety.com/wp-content/uploads/2013/10/usa-network-logo1.jpg",
     "options": [
       {
-        "name": "USA Network - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a01h/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/usanetwork-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Euro Channel",
-    "logo": "https://bestleague.world/img/eurochannel.png",
+    "name": "WAPA America",
+    "logo": "https://m.media-amazon.com/images/I/81AEkpHaIPL._SL1920_.png",
     "options": [
       {
-        "name": "Euro Channel - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a02s/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/wapaamerica-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Caracol Television",
-    "logo": "https://bestleague.world/img/caracoltv.webp",
+    "name": "WAPA Deportes",
+    "logo": "https://i.ibb.co/pBzhsJ17/WAPA-Deportes.jpg",
     "options": [
       {
-        "name": "Caracol TV - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a02w/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/wapadeportes-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Canal RCN",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a3/CanalRCN2023.png",
+    "name": "Willow Cricket",
+    "logo": "https://mgpindia.com/wp-content/uploads/2021/10/willow-logo.jpg",
     "options": [
       {
-        "name": "Canal RCN - HLS",
-        "iframe": "http://45.5.151.147:8000/play/a02z/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/willow-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   },
   {
-    "name": "Eventos 1",
-    "logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu3DnKA26pZam_crvfw71Ssq3Qxd5ERHxe7dU_abYfJN02bWYEXhSRGG3SS3ps8XVDSBsXF3yVeAkwVcwQWLJ_sxX8uDKzm3oaVXbgpeLqFP58fZ0p6we9XjGzjTyiZb5nJe9kr6qTfv94gsOLP4Vy8dvXCgCB8tQMbi1klPUXt0OYX7brRTX7T0_FvvY/s900/ChocoPop%20TV%20Eventos.png",
+    "name": "Willow Cricket 2",
+    "logo": "https://d229kpbsb5jevy.cloudfront.net/tv/1920/1080/languages/WILLOW-2.jpg",
     "options": [
       {
-        "name": "Eventos 1 - HLS",
-        "iframe": "http://191.97.59.33:8000/play/a09t/index.m3u8"
+        "name": "TimStreams",
+        "iframe": "https://logic.icelanders.st/embed/willow2-usa"
       }
     ],
-    "show": true,
-    "source": "hls"
+    "show": true
   }
 ]
