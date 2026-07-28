@@ -8,7 +8,6 @@ import StreamPlayer from './StreamPlayer';
 import StreamList from './StreamList';
 import MultiMatchView from './MultiMatchView';
 import { selectBestStream } from '@/lib/streamSelector';
-import { streamHealthMonitor, streamKeyFor } from '@/lib/streamHealth';
 import { getImageUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 import { useToast } from '@/components/Toast';
@@ -27,7 +26,6 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
   const [streams, setStreams]                   = useState<Stream[]>([]);
   const [currentStream, setCurrentStream]       = useState<Stream | null>(null);
   const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
-  const [streamErrorCount, setStreamErrorCount] = useState(0);
   const [allStreamsFailed, setAllStreamsFailed] = useState(false);
   const [streamsFetchKey, setStreamsFetchKey]   = useState(0);
   const [multiStreamMode, setMultiStreamMode]   = useState(false);
@@ -36,30 +34,32 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
   const [showShortcuts, setShowShortcuts]       = useState(false);
   const { showToast, ToastComponent } = useToast();
 
-  const currentStreamId = currentStream ? streamKeyFor(currentStream) : null;
+  // Indexes already tried and failed for the current stream set.
+  const triedIndexesRef = useRef<Set<number>>(new Set());
 
   const matchRef   = useRef(match);
   matchRef.current = match;
   const sourcesKey = match.sources?.map(s => `${s.source}:${s.id}`).join(',') ?? '';
 
-  // Rotate to the next-best stream. The player reports its own load failures to
-  // the health store, so this does not record one — see `skipCurrentStream` for
-  // the user-initiated case.
+  /**
+   * Rotate to the next stream. Streams already tried are skipped so rotation
+   * cannot ping-pong between two broken sources; "Try Again" clears the set.
+   */
   const handleStreamError = useCallback(() => {
-    setStreamErrorCount((prev) => prev + 1);
+    triedIndexesRef.current.add(currentStreamIndex);
+    const tried = triedIndexesRef.current;
 
     // Carry the original index alongside each stream: selecting from a filtered
     // array and then looking the winner up by URL mis-resolves duplicate URLs.
     const remaining = streams
       .map((stream, index) => ({ stream, index }))
-      .filter(({ index }) => index !== currentStreamIndex);
+      .filter(({ index }) => !tried.has(index));
     const nextStream = selectBestStream(remaining.map(r => r.stream));
     const next = remaining.find(r => r.stream === nextStream);
 
     if (next) {
       setCurrentStream(next.stream);
       setCurrentStreamIndex(next.index);
-      setStreamErrorCount(0);
       showToast('Switched to next available stream', 'info');
     } else {
       setAllStreamsFailed(true);
@@ -67,16 +67,9 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     }
   }, [streams, currentStreamIndex, showToast]);
 
-  /** User skipped away from the current stream — that is itself a health signal. */
-  const skipCurrentStream = useCallback(() => {
-    const skipped = streams[currentStreamIndex];
-    if (skipped) streamHealthMonitor.reportFailed(streamKeyFor(skipped), 'skipped');
-    handleStreamError();
-  }, [streams, currentStreamIndex, handleStreamError]);
-
   const refetchStreams = useCallback(() => {
     setAllStreamsFailed(false);
-    setStreamErrorCount(0);
+    triedIndexesRef.current = new Set();
     setCurrentStream(null);
     setStreams([]);
     setStreamsFetchKey(k => k + 1);
@@ -84,6 +77,8 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
 
   useEffect(() => {
     setAllStreamsFailed(false);
+    // Indexes refer to the incoming stream list, so reset them alongside it.
+    triedIndexesRef.current = new Set();
     const { sources } = matchRef.current;
     if (!sources?.length) return;
     Promise.all(
@@ -109,7 +104,8 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
   const handleSelectStream = (stream: Stream, index: number) => {
     setCurrentStream(stream);
     setCurrentStreamIndex(index);
-    setStreamErrorCount(0);
+    // An explicit pick overrides an earlier failure on that stream.
+    triedIndexesRef.current.delete(index);
   };
 
   const handleShare = useCallback(async () => {
@@ -132,7 +128,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'n' || e.key === 'N') {
         if (!multiStreamMode && streams.length > 0 && !allStreamsFailed) {
-          skipCurrentStream();
+          handleStreamError();
         }
       } else if (e.key === 'f' || e.key === 'F') {
         const playerSection = document.querySelector('.detail-player') as HTMLElement | null;
@@ -151,7 +147,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [multiStreamMode, streams, allStreamsFailed, skipCurrentStream]);
+  }, [multiStreamMode, streams, allStreamsFailed, handleStreamError]);
 
   const isLive    = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
@@ -403,7 +399,7 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
                 {sidebarTab === 'streams' && (
                   <StreamList
                     streams={streams}
-                    currentStreamId={currentStreamId}
+                    currentStreamIndex={currentStream ? currentStreamIndex : null}
                     onSelectStream={handleSelectStream}
                   />
                 )}

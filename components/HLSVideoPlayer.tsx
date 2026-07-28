@@ -6,8 +6,6 @@ interface HLSVideoPlayerProps {
   src: string;
   onPlaying: () => void;
   onError: () => void;
-  /** Fired when playback recovers from a non-fatal error — playing, but not cleanly. */
-  onDegraded?: () => void;
 }
 
 const EXTERNAL_IPS = [
@@ -55,11 +53,10 @@ function toProxyUrl(url: string): string {
     : url;
 }
 
-export default function HLSVideoPlayer({ src, onPlaying, onError, onDegraded }: HLSVideoPlayerProps) {
+export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const onPlayingRef = useRef(onPlaying);
   const onErrorRef = useRef(onError);
-  const onDegradedRef = useRef(onDegraded);
 
   const [pipActive, setPipActive] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
@@ -86,7 +83,6 @@ export default function HLSVideoPlayer({ src, onPlaying, onError, onDegraded }: 
 
   useEffect(() => { onPlayingRef.current = onPlaying; }, [onPlaying]);
   useEffect(() => { onErrorRef.current = onError; }, [onError]);
-  useEffect(() => { onDegradedRef.current = onDegraded; }, [onDegraded]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -152,14 +148,12 @@ export default function HLSVideoPlayer({ src, onPlaying, onError, onDegraded }: 
 
         if (data.type === Hls.ErrorTypes.NETWORK_ERROR && networkRetries < MAX_NETWORK_RETRIES) {
           networkRetries++;
-          onDegradedRef.current?.();
           setTimeout(() => { if (!destroyed && hlsInstance) hlsInstance.startLoad(); }, 1000);
           return;
         }
 
         if (data.type === Hls.ErrorTypes.MEDIA_ERROR && mediaRetries < MAX_MEDIA_RETRIES) {
           mediaRetries++;
-          onDegradedRef.current?.();
           hlsInstance.recoverMediaError();
           return;
         }
