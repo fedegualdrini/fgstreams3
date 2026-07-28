@@ -1,7 +1,8 @@
 'use client';
 
 import type { Stream, StreamStatus } from '@/types/api';
-import { streamHealthMonitor } from '@/lib/streamHealth';
+import { streamKeyFor } from '@/lib/streamHealth';
+import { useStreamHealthMap } from '@/lib/useStreamHealth';
 import { STREAM_STATUS_CONFIG } from '@/lib/constants';
 
 interface StreamListProps {
@@ -11,6 +12,9 @@ interface StreamListProps {
 }
 
 export default function StreamList({ streams, currentStreamId, onSelectStream }: StreamListProps) {
+  // One subscription covers every row — this is what makes the dots update live.
+  const healthMap = useStreamHealthMap();
+
   if (!streams?.length) {
     return (
       <div style={{
@@ -47,16 +51,18 @@ export default function StreamList({ streams, currentStreamId, onSelectStream }:
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
         {streams.map((stream, index) => {
-          const streamId = `${stream.source || 'unknown'}-${index}`;
+          const streamId = streamKeyFor(stream);
           const isActive = currentStreamId === streamId;
-          const health = streamHealthMonitor.getStatus(streamId);
+          const status: StreamStatus = healthMap[streamId]?.status ?? 'unknown';
+          const { color, label } = STREAM_STATUS_CONFIG[status];
 
           return (
             <button
-              key={streamId}
+              // Two entries can share a URL, so index disambiguates the React key.
+              key={`${streamId}-${index}`}
               type="button"
               onClick={() => onSelectStream(stream, index)}
-              aria-label={`Select ${stream.language || 'stream'} ${stream.quality || ''} from ${stream.source || 'source'}`}
+              aria-label={`Select ${stream.language || 'stream'} ${stream.quality || ''} from ${stream.source || 'source'} — status: ${label}`}
               aria-pressed={isActive}
               style={{
                 display: 'flex',
@@ -78,14 +84,14 @@ export default function StreamList({ streams, currentStreamId, onSelectStream }:
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                background: STREAM_STATUS_CONFIG[health.status]?.color ?? '#6b7280',
+                background: color,
                 flexShrink: 0,
               }} />
 
               {/* Info */}
               <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.75rem', color: isActive ? 'var(--text)' : 'var(--text-dim)', fontFamily: 'var(--font-body)' }}>
-                  {STREAM_STATUS_CONFIG[health.status]?.label ?? 'Unknown'}
+                  {label}
                 </span>
                 {stream.quality && (
                   <span style={{

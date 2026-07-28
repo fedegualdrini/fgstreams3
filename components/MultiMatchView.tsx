@@ -23,10 +23,7 @@ async function initializeMatch(match: Match, shouldMute = false): Promise<Active
       streams = streamArrays.flat();
     }
     const bestStream = selectBestStream(streams);
-    const streamId = bestStream
-      ? `${bestStream.source || 'unknown'}-${match.id}`
-      : `no-stream-${match.id}`;
-    return { match, streams, selectedStream: bestStream, streamId, muted: shouldMute };
+    return { match, streams, selectedStream: bestStream, muted: shouldMute };
   } catch (error) {
     console.error('Error initializing match:', error);
     return null;
@@ -37,7 +34,6 @@ interface ActiveMatch {
   match: Match;
   streams: Stream[];
   selectedStream: Stream | null;
-  streamId: string;
   muted: boolean;
 }
 
@@ -107,11 +103,9 @@ export default function MultiMatchView({
 
   const changeStream = (matchId: string, stream: Stream) => {
     setActiveMatches((prev) =>
-      prev.map((m) => {
-        if (m.match.id !== matchId) return m;
-        const streamId = `${stream.source || 'unknown'}-${matchId}`;
-        return { ...m, selectedStream: stream, streamId };
-      })
+      prev.map((m) =>
+        m.match.id === matchId ? { ...m, selectedStream: stream } : m
+      )
     );
   };
 
@@ -243,7 +237,6 @@ export default function MultiMatchView({
                 <>
                   <StreamPlayer
                     stream={activeMatch.selectedStream}
-                    streamId={activeMatch.streamId}
                     muted={activeMatch.muted}
                   />
                   {activeMatch.muted && (

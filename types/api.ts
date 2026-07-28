@@ -136,9 +136,15 @@ export interface FlashscoreDetail {
 }
 
 export interface StreamHealth {
+  /** URL-derived key (origin + pathname) — see `healthKey` in lib/streamHealth.ts */
   streamId: string;
   status: StreamStatus;
+  /** When this entry was last written. Drives TTL expiry and LRU eviction. */
   lastChecked: number;
+  /** First time this stream was ever observed in this session. */
+  firstSeen: number;
   lastWorkingTime?: number;
+  /** True once playback was sustained past the dwell threshold at least once. */
+  sustained: boolean;
   errorCount: number;
 }
