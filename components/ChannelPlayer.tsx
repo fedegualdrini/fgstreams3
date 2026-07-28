@@ -4,14 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
 import Spinner from '@/components/Spinner';
 import { tabButtonStyle } from '@/lib/styles';
-import {
-  CHANNEL_LOAD_TIMEOUT_MS,
-  HEALTH_WORKING_DWELL_MS,
-  STREAM_STATUS_CONFIG,
-} from '@/lib/constants';
+import { CHANNEL_LOAD_TIMEOUT_MS } from '@/lib/constants';
 import { isValidStreamUrl, isHlsUrl } from '@/lib/urlValidation';
-import { streamHealthMonitor, healthKey } from '@/lib/streamHealth';
-import { useStreamHealthMap } from '@/lib/useStreamHealth';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
 
 interface ChannelPlayerProps {
@@ -32,20 +26,8 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
   const [loadingSeconds, setLoadingSeconds] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const dwellRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const healthMap = useStreamHealthMap();
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
-  const currentKey = healthKey(currentOption?.iframe);
-
-  /** Playback started: reachable now, promoted to "working" once it holds. */
-  const reportPlaying = useCallback((key: string) => {
-    streamHealthMonitor.reportLoaded(key);
-    if (dwellRef.current) clearTimeout(dwellRef.current);
-    dwellRef.current = setTimeout(() => {
-      streamHealthMonitor.reportSustained(key);
-    }, HEALTH_WORKING_DWELL_MS);
-  }, []);
 
   useEffect(() => {
     const clamped = Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0));
@@ -57,19 +39,16 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
     setTimedOut(false);
     setLoadingSeconds(0);
     const ticker = setInterval(() => setLoadingSeconds(s => s + 1), 1000);
-    const key = currentKey;
     timeoutRef.current = setTimeout(() => {
       clearInterval(ticker);
       setTimedOut(true);
       setIsLoading(false);
-      streamHealthMonitor.reportFailed(key, 'timeout');
     }, CHANNEL_LOAD_TIMEOUT_MS);
     return () => {
       clearInterval(ticker);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (dwellRef.current) clearTimeout(dwellRef.current);
     };
-  }, [selectedIndex, reloadKey, currentKey]);
+  }, [selectedIndex, reloadKey]);
 
   const selectOption = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -78,10 +57,8 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
 
   const tryNextOption = useCallback(() => {
     if (validOptions.length < 2) return;
-    // Skipping away is itself evidence this option was not usable.
-    streamHealthMonitor.reportFailed(currentKey, 'skipped');
     selectOption((selectedIndex + 1) % validOptions.length);
-  }, [validOptions.length, selectedIndex, selectOption, currentKey]);
+  }, [validOptions.length, selectedIndex, selectOption]);
 
   useEffect(() => {
     if (validOptions.length < 2) return;
@@ -117,22 +94,11 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
     }>
       {!fillContainer && !hideTabs && validOptions.length > 1 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '0.75rem' }}>
-          {validOptions.map((option, i) => {
-            const status = healthMap[healthKey(option.iframe)]?.status ?? 'unknown';
-            const { color, label } = STREAM_STATUS_CONFIG[status];
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => selectOption(i)}
-                aria-label={`${option.name} — status: ${label}`}
-                style={{ ...tabButtonStyle(i === selectedIndex), display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-              >
-                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: color, flexShrink: 0 }} />
-                {option.name}
-              </button>
-            );
-          })}
+          {validOptions.map((option, i) => (
+            <button key={i} type="button" onClick={() => selectOption(i)} style={tabButtonStyle(i === selectedIndex)}>
+              {option.name}
+            </button>
+          ))}
         </div>
       )}
       <div
@@ -177,15 +143,11 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
               setIsLoading(false);
               setTimedOut(false);
-              reportPlaying(currentKey);
             }}
-            onDegraded={() => streamHealthMonitor.reportDegraded(currentKey)}
             onError={() => {
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
-              if (dwellRef.current) clearTimeout(dwellRef.current);
               setIsLoading(false);
               setTimedOut(true);
-              streamHealthMonitor.reportFailed(currentKey, 'fatal');
             }}
           />
         ) : currentOption ? (
@@ -200,7 +162,6 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
               setIsLoading(false);
               setTimedOut(false);
-              reportPlaying(currentKey);
             }}
           />
         ) : null}

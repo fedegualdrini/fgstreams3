@@ -1,38 +1,18 @@
-import type { Stream, StreamStatus } from '@/types/api';
-import { streamHealthMonitor, streamKeyFor } from './streamHealth';
-
-const STATUS_PRIORITY: Record<StreamStatus, number> = {
-  working: 0,
-  unstable: 1,
-  unknown: 2,
-  offline: 3,
-};
+import type { Stream } from '@/types/api';
 
 const QUALITY_ORDER = ['hd', '720p', '1080p', 'sd', '480p', '360p'];
 
-/** Resolves a stream's observed health. Injectable so ranking stays unit-testable. */
-export type StatusResolver = (stream: Stream) => StreamStatus;
-
-const defaultResolver: StatusResolver = (stream) =>
-  streamHealthMonitor.getStatus(streamKeyFor(stream)).status;
-
 /**
- * Rank streams by observed health, then English language, then quality, and
- * return the best one. Streams are keyed by URL (see `streamKeyFor`), so the
- * same embed is scored identically wherever it appears.
+ * Pick the preferred stream: English first, then best quality, then original
+ * order. Playback failures are handled by rotating to the next stream in
+ * MatchDetailClient rather than by scoring streams up front.
  */
-export function selectBestStream(
-  streams: Stream[],
-  getStatus: StatusResolver = defaultResolver
-): Stream | null {
+export function selectBestStream(streams: Stream[]): Stream | null {
   if (!streams || streams.length === 0) return null;
 
   const ranked = streams
-    .map((stream, index) => ({ stream, index, status: getStatus(stream) }))
+    .map((stream, index) => ({ stream, index }))
     .sort((a, b) => {
-      const statusDiff = STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status];
-      if (statusDiff !== 0) return statusDiff;
-
       const aLang = (a.stream.language ?? '').toLowerCase();
       const bLang = (b.stream.language ?? '').toLowerCase();
       if (aLang === 'en' && bLang !== 'en') return -1;

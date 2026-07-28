@@ -77,8 +77,6 @@ export interface Sport {
   slug?: string;
 }
 
-export type StreamStatus = 'working' | 'unstable' | 'offline' | 'unknown';
-
 // Flashscore live score entry (one row from #score-data)
 export interface FlashscoreEntry {
   flashscoreId: string;
@@ -133,18 +131,4 @@ export interface FlashscoreDetail {
   events: FlashscoreEvent[];
   stats: FlashscoreStat[];
   lineups: FlashscoreLineups | null;
-}
-
-export interface StreamHealth {
-  /** URL-derived key (origin + pathname) — see `healthKey` in lib/streamHealth.ts */
-  streamId: string;
-  status: StreamStatus;
-  /** When this entry was last written. Drives TTL expiry and LRU eviction. */
-  lastChecked: number;
-  /** First time this stream was ever observed in this session. */
-  firstSeen: number;
-  lastWorkingTime?: number;
-  /** True once playback was sustained past the dwell threshold at least once. */
-  sustained: boolean;
-  errorCount: number;
 }
