@@ -2,19 +2,13 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
-import type { Match, FlashscoreEntry } from '@/types/api';
+import type { Match } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
 import { useLiveScores } from '@/lib/useLiveScores';
 import { useLocalTime } from '@/lib/dateUtils';
 import { addToHistory, getHistory, type HistoryEntry } from '@/lib/watchHistory';
 import { getPosterUrl } from '@/lib/api';
-
-function matchesSearch(match: Match, q: string): boolean {
-  const normalized = q.trim().toLowerCase();
-  if (!normalized) return true;
-  const fields = [match.team1 ?? '', match.team2 ?? '', match.league ?? '', match.sport ?? ''];
-  return fields.some((f) => f.toLowerCase().includes(normalized));
-}
+import { ALL_SPORT_FILTER, getAvailableSportFilters, matchesFilters } from '@/lib/matchFilters';
 
 function getRelativeTime(date: Date): string {
   const diff = date.getTime() - Date.now();
@@ -25,7 +19,7 @@ function getRelativeTime(date: Date): string {
   return 'Soon';
 }
 
-const SPORTS: { label: string; icon: string }[] = [
+const SPORT_ICON_OPTIONS: { label: string; icon: string }[] = [
   { label: 'All',        icon: '🏆' },
   { label: 'Football',   icon: '⚽' },
   { label: 'Basketball', icon: '🏀' },
@@ -34,6 +28,10 @@ const SPORTS: { label: string; icon: string }[] = [
   { label: 'Formula 1',  icon: '🏎️' },
 ];
 
+const SPORT_ICONS = new Map(
+  SPORT_ICON_OPTIONS.map(({ label, icon }) => [label.toLowerCase(), icon])
+);
+
 interface MatchListWithSearchProps {
   liveMatches: Match[];
   upcomingMatches: Match[];
@@ -41,8 +39,9 @@ interface MatchListWithSearchProps {
 
 export default function MatchListWithSearch({ liveMatches, upcomingMatches }: MatchListWithSearchProps) {
   const [query, setQuery] = useState('');
-  const [sport, setSport] = useState('All');
+  const [sport, setSport] = useState(ALL_SPORT_FILTER);
   const scoreMap = useLiveScores(liveMatches);
+  const sports = getAvailableSportFilters([...liveMatches, ...upcomingMatches]);
 
   // Watch history
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -67,13 +66,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  const filter = (m: Match) => {
-    if (sport !== 'All' && m.sport?.toLowerCase() !== sport.toLowerCase()) return false;
-    return matchesSearch(m, query);
-  };
-
-  const filteredLive     = liveMatches.filter(filter);
-  const filteredUpcoming = upcomingMatches.filter(filter);
+  const filteredLive     = liveMatches.filter((match) => matchesFilters(match, query, sport));
+  const filteredUpcoming = upcomingMatches.filter((match) => matchesFilters(match, query, sport));
   const noResults = query.trim().length > 0 && filteredLive.length === 0 && filteredUpcoming.length === 0;
 
   // Live-section horizontal scroll arrows
@@ -144,32 +138,35 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
 
         {/* Sport filter */}
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-          {SPORTS.map((s) => (
-            <button
-              key={s.label}
-              type="button"
-              onClick={() => setSport(s.label)}
-              style={{
-                padding: '0.375rem 0.75rem',
-                background: sport === s.label ? 'var(--accent)' : 'var(--bg-2)',
-                color:      sport === s.label ? '#000' : 'var(--text-dim)',
-                border:    `1px solid ${sport === s.label ? 'var(--accent)' : 'var(--line)'}`,
-                borderRadius: '3px',
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
-                cursor: 'pointer', transition: 'all 0.12s',
-                display: 'inline-flex', alignItems: 'center', gap: '4px',
-              }}
-            >
-              <span>{s.icon}</span>
-              <span>{s.label}</span>
-            </button>
-          ))}
+          {sports.map((sportLabel) => {
+            const icon = SPORT_ICONS.get(sportLabel.toLowerCase());
+            return (
+              <button
+                key={sportLabel}
+                type="button"
+                onClick={() => setSport(sportLabel)}
+                style={{
+                  padding: '0.375rem 0.75rem',
+                  background: sport === sportLabel ? 'var(--accent)' : 'var(--bg-2)',
+                  color:      sport === sportLabel ? '#000' : 'var(--text-dim)',
+                  border:    `1px solid ${sport === sportLabel ? 'var(--accent)' : 'var(--line)'}`,
+                  borderRadius: '3px',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
+                  cursor: 'pointer', transition: 'all 0.12s',
+                  display: 'inline-flex', alignItems: 'center', gap: '4px',
+                }}
+              >
+                {icon && <span>{icon}</span>}
+                <span>{sportLabel}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Recently Watched ── */}
-      {history.length > 0 && !query.trim() && sport === 'All' && (
+      {history.length > 0 && !query.trim() && sport === ALL_SPORT_FILTER && (
         <section style={{ marginBottom: '2.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', letterSpacing: '0.04em', color: 'var(--text)', lineHeight: 1 }}>

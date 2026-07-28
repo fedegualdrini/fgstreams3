@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { fetchMatches, fetchSports } from '@/lib/api';
+import { fetchMatches } from '@/lib/api';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
 import SiteHeader from '@/components/SiteHeader';
 import MatchListSkeleton from '@/components/MatchListSkeleton';
@@ -9,10 +9,7 @@ import { REVALIDATE_MATCHES } from '@/lib/constants';
 export const revalidate = REVALIDATE_MATCHES;
 
 export default async function Home() {
-  const [matches, sports] = await Promise.all([
-    fetchMatches(),
-    fetchSports(),
-  ]);
+  const matches = await fetchMatches();
 
   const sortedMatches = [...matches].sort((a, b) => {
     if (a.isLive && !b.isLive) return -1;
