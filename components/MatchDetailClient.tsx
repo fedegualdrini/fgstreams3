@@ -22,6 +22,18 @@ interface MatchDetailClientProps {
 
 type SidebarTab = 'streams' | 'stats';
 
+export function attributeStreamsToSources(
+  sources: Match['sources'],
+  streamArrays: Stream[][]
+): Stream[] {
+  return streamArrays.flatMap((sourceStreams, sourceIndex) =>
+    sourceStreams.map(stream => ({
+      ...stream,
+      source: stream.source || sources[sourceIndex]?.source,
+    }))
+  );
+}
+
 export default function MatchDetailClient({ match }: MatchDetailClientProps) {
   const [streams, setStreams]                   = useState<Stream[]>([]);
   const [currentStream, setCurrentStream]       = useState<Stream | null>(null);
@@ -88,15 +100,12 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
           .catch(() => [])
       )
     ).then((arrays: Stream[][]) => {
-      const all: Stream[] = arrays.flat().map((s, i) => ({
-        ...s,
-        source: s.source || sources[i]?.source,
-      }));
+      const all = attributeStreamsToSources(sources, arrays);
       setStreams(all);
       const best = selectBestStream(all);
       if (best) {
         setCurrentStream(best);
-        setCurrentStreamIndex(Math.max(0, all.findIndex(s => s.url === best.url)));
+        setCurrentStreamIndex(Math.max(0, all.findIndex(s => s === best)));
       }
     });
   }, [sourcesKey, streamsFetchKey]);
