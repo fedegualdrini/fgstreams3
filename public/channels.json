@@ -24,10 +24,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espnpremium"
       },
       {
-        "name": "ESPN Premium - Opción 4",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espnpremium"
-      },
-      {
         "name": "ESPN Premium - Opción 5",
         "iframe": "https://elcanaldeportivo.com/espnpremium.php"
       },
@@ -61,10 +57,6 @@
       {
         "name": "Sky Sports LaLiga",
         "iframe": "https://bestleague.world/mpdk/?get=aHR0cHM6Ly96YXAtbGl2ZTEtb3R0Lml6emlnby50di8yL291dC91L2Rhc2gvU0tZU1BPUlRTMTZIRC9tYW5pZmVzdC5tcGQ=&key=Yzg4ZGM2YzY2OGNhYzNiNDY4ZDRhNGM3ZTE3NmZmM2Q=&key2=MWFlYjczOWRlMmMxNGVkMGFkNjU4Y2E4MDQzMjA4ZDg="
-      },
-      {
-        "name": "Movistar LaLiga",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=movistar"
       },
       {
         "name": "America TV",
@@ -110,10 +102,6 @@
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTjJIRA&lang=1"
       },
       {
-        "name": "ESPN 1 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
-      },
-      {
         "name": "ESPN 1 - Opción 3",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn"
       },
@@ -132,10 +120,6 @@
       {
         "name": "ESPN 2 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn2"
-      },
-      {
-        "name": "ESPN 2 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn2"
       },
       {
         "name": "MAX",
@@ -169,10 +153,6 @@
       {
         "name": "ESPN Deportes - 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espndeportes"
-      },
-      {
-        "name": "ESPN Deportes - 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espndeportes"
       },
       {
         "name": "TSN 2 CA",
@@ -220,10 +200,6 @@
         "iframe": "https://streamfree.to/embed/soccer/z54e6Trc9iuoKbKtGG7enw?server=origin&quality=540p&t=1764705855460"
       },
       {
-        "name": "DSports - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=dsports"
-      },
-      {
         "name": "DSports - Opción 4",
         "iframe": "https://bolaloca.my/player/2/94"
       },
@@ -251,10 +227,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espnpremium"
       },
       {
-        "name": "ESPN Premium - Opción 4",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espnpremium"
-      },
-      {
         "name": "ESPN Premium - Opción 5",
         "iframe": "https://elcanaldeportivo.com/espnpremium.php"
       },
@@ -279,16 +251,8 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn"
       },
       {
-        "name": "ESPN CO - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
-      },
-      {
         "name": "ESPN 1 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTjJIRA&lang=1"
-      },
-      {
-        "name": "ESPN 1 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
       },
       {
         "name": "ESPN 1 - Opción 3",
@@ -313,10 +277,6 @@
       {
         "name": "TNT Sports Premium HD - Opción 5",
         "iframe": "https://streamtpcloud.com/global1.php?stream=tntsports"
-      },
-      {
-        "name": "TNT Sports Premium HD - Opción 6",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=tntsports"
       },
       {
         "name": "TNT Sports Premium HD - Opción 7 (EXTENSION PC)",
@@ -349,10 +309,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=tycsports"
       },
       {
-        "name": "TyC Sports - Opción 4",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=tycsports"
-      },
-      {
         "name": "TyC Sports - Opcion 5 (EXTENSION PC)",
         "iframe": "https://tvlibree.com/pc/dex/?get=VHlDU3BvcnQ"
       }
@@ -372,16 +328,8 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=premiere1"
       },
       {
-        "name": "Premiere 1 - Opcion 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=premiere1"
-      },
-      {
         "name": "Premiere 2 - Opcion 1",
         "iframe": "https://nebunexa.life/mpdk/?get=aHR0cHM6Ly9hYmMzb3J3YWFhYWFhYWFtZTY1NTVoM2I2YWY0NC5vdHRiLmxpdmUuY2Yud3cuYWl2LWNkbi5uZXQvZ3J1LW5pdHJvL2xpdmUvY2xpZW50cy9kYXNoL2VuYy9veTZycDBqd21mL291dC92MS81ODBlY2YxMmJhZDI0OTc5YmFmOGRkOTkzZGNlMDUzZS9jZW5jLm1wZA==&key=OWRjNDA0NjBjOTMwODdhZWE4NGQ2MzE1ZjA4ZWNiNjQ=&key2=ZjY5YzhkNDYyNGZkZGZmNGNhODliZDBiMzFiZGM0YTc="
-      },
-      {
-        "name": "Premiere 2 - Opcion 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=premiere2"
       },
       {
         "name": "Premiere 3 - Opcion 1",
@@ -392,10 +340,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=premiere3"
       },
       {
-        "name": "Premiere 3 - Opcion 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=premiere3"
-      },
-      {
         "name": "Premiere 4 - Opcion 1",
         "iframe": "https://nebunexa.life/mpdk/?get=aHR0cHM6Ly9hYmMzb3J3YWFhYWFhYWFtYWdpZDdkcTZubDdsMy5vdHRiLmxpdmUuY2Yud3cuYWl2LWNkbi5uZXQvZ3J1LW5pdHJvL2xpdmUvY2xpZW50cy9kYXNoL2VuYy90aXJqb3I2NGtoL291dC92MS9mZDJlZDk5MTZkOTk0ZjA5YTNiZDYyYjY0MTQxYjljYi9jZW5jLm1wZA==&key=ZTIzMzY1YzJhZDk3ODcwYzg3MTcxMmI3M2YwZDYxOTU=&key2=NTg3MDljNzE0MzIwYmI4NjJkYmQwNzI3MGRmODFjOTQ="
       },
@@ -404,20 +348,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=premiere4"
       },
       {
-        "name": "Premiere 4 - Opcion 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=premiere4"
-      },
-      {
         "name": "Premiere 5 - Opcion 1",
         "iframe": "https://nebunexa.life/mpdk/?get=aHR0cHM6Ly9hYmMzb3J3YWFhYWFhYWFtaHB1aTd3bG5tZnFnaC5vdHRiLmxpdmUuY2Yud3cuYWl2LWNkbi5uZXQvZ3J1LW5pdHJvL2xpdmUvY2xpZW50cy9kYXNoL2VuYy8xb2JrdHJ5Ymh0L291dC92MS8wODI2NTQ1M2M4ZjY0ZDlmYmViM2NmNDM3NjQ0MDNhOC9jZW5jLm1wZA==&key=MzMyZjYyZWIzY2FlODI0ZTk4YTQxMjRkYTI5YTdkMzE=&key2=ZDE2OThjZGEzZDA0MGY5MDUxMTI1YTYxNzQ1YjU5NmI="
       },
       {
         "name": "Premiere 5 - Opcion 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=premiere5"
-      },
-      {
-        "name": "Premiere 5 - Opcion 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=premiere5"
       },
       {
         "name": "Premiere 7 - Opcion 1",
@@ -443,20 +379,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn"
       },
       {
-        "name": "ESPN 1 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
-      },
-      {
         "name": "ESPN 2 - Opción 1",
         "iframe": "https://www.nebunexa.life/cvatt.html?get=RVNQTjJfVVk=&lang=1"
       },
       {
         "name": "ESPN 2 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn2"
-      },
-      {
-        "name": "ESPN 2 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn2"
       },
       {
         "name": "ESPN 3 - Opción 1",
@@ -467,20 +395,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn3"
       },
       {
-        "name": "ESPN 3 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn3"
-      },
-      {
         "name": "ESPN 4 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTkhE&lang=1"
       },
       {
         "name": "ESPN 4 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn4"
-      },
-      {
-        "name": "ESPN 4 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn4"
       },
       {
         "name": "ESPN 6 - Opción 1",
@@ -491,20 +411,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn6"
       },
       {
-        "name": "ESPN 6 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn6"
-      },
-      {
         "name": "ESPN 7 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1"
       },
       {
         "name": "ESPN 7 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn7"
-      },
-      {
-        "name": "ESPN 7 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn7"
       },
       {
         "name": "FOX Sports - Opción 1",
@@ -515,10 +427,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox1ar"
       },
       {
-        "name": "FOX Sports - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports"
-      },
-      {
         "name": "FOX Sports 2 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=Rm94U3BvcnRzMkhE&lang=1"
       },
@@ -527,20 +435,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox2ar"
       },
       {
-        "name": "FOX Sports 2 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports2"
-      },
-      {
         "name": "FOX Sports 3 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=Rm94U3BvcnRzM0hE&lang=1"
       },
       {
         "name": "FOX Sports 3 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox3ar"
-      },
-      {
-        "name": "FOX Sports 3 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports3"
       },
       {
         "name": "Flow 1",
@@ -566,20 +466,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn"
       },
       {
-        "name": "ESPN 1 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
-      },
-      {
         "name": "ESPN 2 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTjJfQXJn&lang=1"
       },
       {
         "name": "ESPN 2 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn2"
-      },
-      {
-        "name": "ESPN 2 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn2"
       },
       {
         "name": "ESPN 3 - Opción 1",
@@ -590,20 +482,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn3"
       },
       {
-        "name": "ESPN 3 - Opción 3 ",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn3"
-      },
-      {
         "name": "ESPN 4 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTkhE&lang=1"
       },
       {
         "name": "ESPN 4 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn4"
-      },
-      {
-        "name": "ESPN 4 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn4"
       },
       {
         "name": "ESPN 5 - Opción 1",
@@ -614,20 +498,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn5"
       },
       {
-        "name": "ESPN 5 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn5"
-      },
-      {
         "name": "ESPN 6 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1"
       },
       {
         "name": "ESPN 6 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn6"
-      },
-      {
-        "name": "ESPN 6 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn6"
       },
       {
         "name": "ESPN 7 - Opción 1",
@@ -638,20 +514,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn7"
       },
       {
-        "name": "ESPN 7 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn7"
-      },
-      {
         "name": "FOX Sports 1 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=Rm94U3BvcnRz&lang=1"
       },
       {
         "name": "FOX Sports 1- Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox1ar"
-      },
-      {
-        "name": "FOX Sports 1- Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports"
       },
       {
         "name": "FOX Sports 2 - Opción 1",
@@ -662,20 +530,12 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox2ar"
       },
       {
-        "name": "FOX Sports 2 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports2"
-      },
-      {
         "name": "FOX Sports 3 - Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=Rm94U3BvcnRzM0hE&lang=1"
       },
       {
         "name": "FOX Sports 3 - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox3ar"
-      },
-      {
-        "name": "FOX Sports 3 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports3"
       }
     ],
     "show": true
@@ -695,10 +555,6 @@
       {
         "name": "ESPN - Opción 3",
         "iframe": "https://streamttpcloud.com/global1.php?stream=espn"
-      },
-      {
-        "name": "ESPN - Opción 4",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
       },
       {
         "name": "Opcion 1",
@@ -738,10 +594,6 @@
       {
         "name": "Opción 3",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn"
-      },
-      {
-        "name": "Opción 4",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
       },
       {
         "name": "Opción 5",
@@ -793,10 +645,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox1ar"
       },
       {
-        "name": "FOX Sports - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports"
-      },
-      {
         "name": "FOX Sports - Opción 4 (EXTENSION PC)",
         "iframe": "https://nebunexa.life/tok.html?get=Rm94U3BvcnRz"
       },
@@ -817,10 +665,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn"
       },
       {
-        "name": "ESPN 1 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
-      },
-      {
         "name": "ESPN 1 - Opción 4",
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTl9VWQ==&lang=1"
       },
@@ -837,10 +681,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn2"
       },
       {
-        "name": "ESPN 2 - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn2"
-      },
-      {
         "name": "ESPN 2 - Opción 4 (INGLES)",
         "iframe": "https://embedsports.top/embed/alpha/fia-formula-1-2025-brazil-f1gp-sprint-qualifying/2"
       },
@@ -851,10 +691,6 @@
       {
         "name": "ESPN Deportes - Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espndeportes"
-      },
-      {
-        "name": "ESPN Deportes - Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espndeportes"
       },
       {
         "name": "DAZN - Opción 1",
@@ -971,168 +807,84 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney1"
       },
       {
-        "name": "Disney 1 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney1"
-      },
-      {
         "name": "Disney 2 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney2"
-      },
-      {
-        "name": "Disney 2 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney2"
       },
       {
         "name": "Disney 3 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney3"
       },
       {
-        "name": "Disney 3 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney3"
-      },
-      {
         "name": "Disney 4 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney4"
-      },
-      {
-        "name": "Disney 4 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney4"
       },
       {
         "name": "Disney 5 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney5"
       },
       {
-        "name": "Disney 5 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney5"
-      },
-      {
         "name": "Disney 6 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney6"
-      },
-      {
-        "name": "Disney 6 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney6"
       },
       {
         "name": "Disney 7 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney7"
       },
       {
-        "name": "Disney 7 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney7"
-      },
-      {
         "name": "Disney 8 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney8"
-      },
-      {
-        "name": "Disney 8 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney8"
       },
       {
         "name": "Disney 9 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney9"
       },
       {
-        "name": "Disney 9 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney9"
-      },
-      {
         "name": "Disney 10 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney10"
-      },
-      {
-        "name": "Disney 10 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney10"
       },
       {
         "name": "Disney 11 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney11"
       },
       {
-        "name": "Disney 11 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney11"
-      },
-      {
         "name": "Disney 12 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney12"
-      },
-      {
-        "name": "Disney 12 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney12"
       },
       {
         "name": "Disney 13 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney13"
       },
       {
-        "name": "Disney 13 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney13"
-      },
-      {
         "name": "Disney 14 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney14"
-      },
-      {
-        "name": "Disney 14 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney14"
       },
       {
         "name": "Disney 15 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney15"
       },
       {
-        "name": "Disney 15 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney15"
-      },
-      {
         "name": "Disney 16 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney16"
-      },
-      {
-        "name": "Disney 16 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney16"
       },
       {
         "name": "Disney 17 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney17"
       },
       {
-        "name": "Disney 17 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney17"
-      },
-      {
         "name": "Disney 18 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney18"
-      },
-      {
-        "name": "Disney 18 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney18"
       },
       {
         "name": "Disney 19 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney19"
       },
       {
-        "name": "Disney 19 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney19"
-      },
-      {
         "name": "Disney 20 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney20"
       },
       {
-        "name": "Disney 20 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney20"
-      },
-      {
         "name": "Disney 21 - Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=disney21"
-      },
-      {
-        "name": "Disney 21 - Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=disney21"
       },
       {
         "name": "Disney+ (extra)",
@@ -1200,10 +952,6 @@
         "iframe": "https://streamtp10.com/global1.php?stream=espnpremium"
       },
       {
-        "name": "(4)",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espnpremium"
-      },
-      {
         "name": "(5)",
         "iframe": "https://elcanaldeportivo.com/espnpremium.php"
       },
@@ -1237,10 +985,6 @@
       {
         "name": "Opción 1",
         "iframe": "https://nebunexa.life/cvatt.html?get=RVNQTjJIRA&lang=1"
-      },
-      {
-        "name": "Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn"
       },
       {
         "name": "Opción 3",
@@ -1278,10 +1022,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn2"
       },
       {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn2"
-      },
-      {
         "name": "Opción 4 (EXTENSION PC)",
         "iframe": "https://dots.bestleague.world/tok.html?get=RVNQTjJfQXJn"
       }
@@ -1299,10 +1039,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn3"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn3"
       },
       {
         "name": "Opción 4 (EXTENSION PC)",
@@ -1324,10 +1060,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn4"
       },
       {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn4"
-      },
-      {
         "name": "Opción 4 (EXTENSION PC)",
         "iframe": "https://dots.bestleague.world/tok.html?get=RVNQTkhE"
       }
@@ -1345,10 +1077,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn5"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn5"
       },
       {
         "name": "Opción 4 (EXTENSION PC)",
@@ -1370,10 +1098,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn6"
       },
       {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn6"
-      },
-      {
         "name": "Opción 4 (EXTENSION PC)",
         "iframe": "https://dots.bestleague.world/tok.html?get=Rm94U3BvcnRzM19VWQ==&lang=1"
       }
@@ -1391,10 +1115,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn7"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn7"
       },
       {
         "name": "Opción 4 (EXTENSION PC)",
@@ -1426,10 +1146,6 @@
       {
         "name": "(5)",
         "iframe": "https://streamtpcloud.com/global1.php?stream=tntsports"
-      },
-      {
-        "name": "(6)",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=tntsports"
       },
       {
         "name": "(8)",
@@ -1478,10 +1194,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=tycsports"
       },
       {
-        "name": "Opción 5",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=tycsports"
-      },
-      {
         "name": "Opcion 6 (EXTENSION PC)",
         "iframe": "https://nebunexa.life/tok.html?get=VHlDU3BvcnQ"
       }
@@ -1499,10 +1211,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox1ar"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports"
       }
     ],
     "show": true
@@ -1518,10 +1226,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox2ar"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports2"
       }
     ],
     "show": true
@@ -1537,10 +1241,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=fox3ar"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsports3"
       }
     ],
     "show": true
@@ -1556,10 +1256,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=foxsportspremium"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=foxsportspremium"
       }
     ],
     "show": true
@@ -1620,10 +1316,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=tv_publica"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=tvpublica"
       }
     ],
     "show": true
@@ -1635,10 +1327,6 @@
       {
         "name": "Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=goltv"
-      },
-      {
-        "name": "Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=goltv"
       },
       {
         "name": "Opción 3",
@@ -1654,10 +1342,6 @@
       {
         "name": "Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=winsports"
-      },
-      {
-        "name": "Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=winsports"
       }
     ],
     "show": true
@@ -1669,10 +1353,6 @@
       {
         "name": "Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=winplus"
-      },
-      {
-        "name": "Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=winsportsplus"
       }
     ],
     "show": true
@@ -1684,10 +1364,6 @@
       {
         "name": "Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=golperu"
-      },
-      {
-        "name": "Opción 2",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=golperu"
       }
     ],
     "show": true
@@ -1703,10 +1379,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=vtv"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=vtv"
       }
     ],
     "show": true
@@ -1722,10 +1394,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=vtvplus"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=vtvplus"
       }
     ],
     "show": true
@@ -1776,10 +1444,6 @@
       {
         "name": "Opción 6 - ESPN 4 - 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=espn4"
-      },
-      {
-        "name": "Opción 7 - ESPN 4 - 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=espn4"
       }
     ],
     "show": true
@@ -1811,10 +1475,6 @@
         "iframe": "https://streamtpcloud.com/global1.php?stream=dazntv1"
       },
       {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=dazn1"
-      },
-      {
         "name": "Opción 4",
         "iframe": "https://deporte-libre.click/en-vivo-online/dazn-1-es/embed.php"
       }
@@ -1832,10 +1492,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://streamtpcloud.com/global1.php?stream=daznlaliga"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=daznlaliga"
       }
     ],
     "show": false
@@ -1851,10 +1507,6 @@
       {
         "name": "Opción 2 (USA)",
         "iframe": "https://embedsports.top/embed/foxtrot/6570a88ebae85135f61b12d7/1"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=mlb1"
       }
     ],
     "show": true
@@ -1874,10 +1526,6 @@
       {
         "name": "Opción 3",
         "iframe": "https://bolaloca.my/player/2/1"
-      },
-      {
-        "name": "Opción 4",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=nba01"
       },
       {
         "name": "Fox One",
@@ -1903,10 +1551,6 @@
         "iframe": "https://streamfree.to/embed/soccer/z54e6Trc9iuoKbKtGG7enw?server=origin&quality=540p&t=1764705855460"
       },
       {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=dsports"
-      },
-      {
         "name": "Opción 4",
         "iframe": "https://bolaloca.my/player/2/94"
       },
@@ -1924,10 +1568,6 @@
       {
         "name": "Opción 1",
         "iframe": "https://streamtpcloud.com/global1.php?stream=dsports2"
-      },
-      {
-        "name": "Opción 2",
-        "iframe": "https://la14hd.com/vivo/canal.php?stream=dsports2"
       },
       {
         "name": "Opción 3",
@@ -1951,10 +1591,6 @@
       {
         "name": "Opción 2",
         "iframe": "https://bolaloca.my/player/2/96"
-      },
-      {
-        "name": "Opción 3",
-        "iframe": "https://la14hd.com/vivo/canales.php?stream=dsportsplus"
       }
     ],
     "show": true
@@ -6108,6 +5744,321 @@
       {
         "name": "TimStreams",
         "iframe": "https://logic.icelanders.st/embed/willow2-usa"
+      }
+    ],
+    "show": true
+  },
+  {
+    "name": "StreamX HD",
+    "logo": "https://streamx-hd.com/favicon.ico",
+    "options": [
+      {
+        "name": "ESPN 1",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn"
+      },
+      {
+        "name": "ESPN 2",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn2"
+      },
+      {
+        "name": "ESPN 3",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn3"
+      },
+      {
+        "name": "ESPN 4",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn4"
+      },
+      {
+        "name": "ESPN 5",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn5"
+      },
+      {
+        "name": "ESPN 6",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn6"
+      },
+      {
+        "name": "ESPN 7",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn7"
+      },
+      {
+        "name": "DSports 1",
+        "iframe": "https://streamx-hd.com/live1.php?stream=dsports"
+      },
+      {
+        "name": "DSports 2",
+        "iframe": "https://streamx-hd.com/live1.php?stream=dsports2"
+      },
+      {
+        "name": "DSports Plus",
+        "iframe": "https://streamx-hd.com/live1.php?stream=dsportsplus"
+      },
+      {
+        "name": "zapping Sports + | Eventos",
+        "iframe": "https://streamx-hd.com/live1.php?stream=zapping_ec"
+      },
+      {
+        "name": "Movistar Deportes Perú",
+        "iframe": "https://streamx-hd.com/live1.php?stream=movistar_deportes_peru"
+      },
+      {
+        "name": "Liga 1 Max",
+        "iframe": "https://streamx-hd.com/live1.php?stream=liga1max"
+      },
+      {
+        "name": "Universo USA",
+        "iframe": "https://streamx-hd.com/live1.php?stream=universo"
+      },
+      {
+        "name": "TNT Sports",
+        "iframe": "https://streamx-hd.com/live1.php?stream=tntsports"
+      },
+      {
+        "name": "ESPN Premium",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espnpremium"
+      },
+      {
+        "name": "TyC Sports",
+        "iframe": "https://streamx-hd.com/live1.php?stream=tycsports"
+      },
+      {
+        "name": "Fox Sports",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fox1ar"
+      },
+      {
+        "name": "Fox Sports 2",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fox2ar"
+      },
+      {
+        "name": "Fox Sports 3",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fox3ar"
+      },
+      {
+        "name": "Telefe",
+        "iframe": "https://streamx-hd.com/live1.php?stream=telefe"
+      },
+      {
+        "name": "Fox Deportes USA",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fox_deportes_usa"
+      },
+      {
+        "name": "Win Sports Plus",
+        "iframe": "https://streamx-hd.com/live1.php?stream=winplus"
+      },
+      {
+        "name": "TUDN USA",
+        "iframe": "https://streamx-hd.com/live1.php?stream=tudn_usa"
+      },
+      {
+        "name": "Espn 1 MX",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espnmx"
+      },
+      {
+        "name": "Espn 2 MX",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn2mx"
+      },
+      {
+        "name": "Espn 3 MX",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn3mx"
+      },
+      {
+        "name": "Espn 4 MX",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn4mx"
+      },
+      {
+        "name": "Azteca 7",
+        "iframe": "https://streamx-hd.com/live1.php?stream=azteca7"
+      },
+      {
+        "name": "Canal 5 MX",
+        "iframe": "https://streamx-hd.com/live1.php?stream=canal5mx"
+      },
+      {
+        "name": "ESPN Deportes",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espndeportes"
+      },
+      {
+        "name": "Sport TV 1",
+        "iframe": "https://streamx-hd.com/live1.php?stream=sporttvbr1"
+      },
+      {
+        "name": "Win Sports",
+        "iframe": "https://streamx-hd.com/live1.php?stream=winsports"
+      },
+      {
+        "name": "Premiere 1",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere1"
+      },
+      {
+        "name": "Premiere 2",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere2"
+      },
+      {
+        "name": "Espn Colombia",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espnco"
+      },
+      {
+        "name": "Espn 2 Colombia",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn2co"
+      },
+      {
+        "name": "Espn 3 Colombia",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn3co"
+      },
+      {
+        "name": "Sky Sports La Liga",
+        "iframe": "https://streamx-hd.com/live1.php?stream=sky_sports_laliga"
+      },
+      {
+        "name": "Sky Sports F1",
+        "iframe": "https://streamx-hd.com/live1.php?stream=sky_f1"
+      },
+      {
+        "name": "Sport TV 2",
+        "iframe": "https://streamx-hd.com/live1.php?stream=sporttvbr2"
+      },
+      {
+        "name": "Premiere 3",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere3"
+      },
+      {
+        "name": "Premiere 4",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere4"
+      },
+      {
+        "name": "Premiere 5",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere5"
+      },
+      {
+        "name": "Premiere 6",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere6"
+      },
+      {
+        "name": "Premiere 7",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere7"
+      },
+      {
+        "name": "Premiere 8",
+        "iframe": "https://streamx-hd.com/live1.php?stream=premiere8"
+      },
+      {
+        "name": "TUDN MX",
+        "iframe": "https://streamx-hd.com/live1.php?stream=tudnmx"
+      },
+      {
+        "name": "Espn AR",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espnar"
+      },
+      {
+        "name": "Espn 4 AR",
+        "iframe": "https://streamx-hd.com/live1.php?stream=espn4ar"
+      },
+      {
+        "name": "Xsports BR - Real Betis vs Olympique Lyonnais",
+        "iframe": "https://streamx-hd.com/live1.php?stream=evento1"
+      },
+      {
+        "name": "Eventos - Górnik Zabrze vs Fenerbahçe",
+        "iframe": "https://streamx-hd.com/live1.php?stream=evento3"
+      },
+      {
+        "name": "Fanatiz - Defensa y Justicia vs Deportivo Riestra",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz3"
+      },
+      {
+        "name": "Disney+ - Gimnasia La Plata vs River Plate",
+        "iframe": "https://streamx-hd.com/live1.php?stream=disney3"
+      },
+      {
+        "name": "Fanatiz - Gimnasia La Plata vs River Plate",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz6"
+      },
+      {
+        "name": "Fanatiz - Instituto vs Platense",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz10"
+      },
+      {
+        "name": "Fanatiz - Sportivo Luqueño vs Sportivo Trinidense",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz2"
+      },
+      {
+        "name": "Fanatiz - Nacional Asunción vs Olimpia",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz4"
+      },
+      {
+        "name": "Disney+ - Vasco da Gama vs Medellín",
+        "iframe": "https://streamx-hd.com/live1.php?stream=disney2"
+      },
+      {
+        "name": "Fanatiz - Vasco da Gama vs Medellín",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz5"
+      },
+      {
+        "name": "Disney+ - Cienciano vs Lanús",
+        "iframe": "https://streamx-hd.com/live1.php?stream=disney5"
+      },
+      {
+        "name": "Fanatiz - Cienciano vs Lanús",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz13"
+      },
+      {
+        "name": "Fanatiz - RB Bragantino vs Sporting Cristal",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz14"
+      },
+      {
+        "name": "Fanatiz - Internacional vs Flamengo",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz7"
+      },
+      {
+        "name": "Prime Video - Internacional vs Flamengo",
+        "iframe": "https://streamx-hd.com/live1.php?stream=amazon1"
+      },
+      {
+        "name": "Fanatiz - Mirassol vs Remo",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz8"
+      },
+      {
+        "name": "Fanatiz - Fluminense vs Bahia",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz11"
+      },
+      {
+        "name": "Fanatiz - Vitória vs Palmeiras",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz12"
+      },
+      {
+        "name": "Fanatiz - Barranquilla vs Junior",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz9"
+      },
+      {
+        "name": "Fanatiz - Real Cartagena vs América de Cali",
+        "iframe": "https://streamx-hd.com/live1.php?stream=fanatiz15"
+      },
+      {
+        "name": "Claro Sports - Wrexham vs Liverpool",
+        "iframe": "https://streamx-hd.com/live1.php?stream=claro1"
+      },
+      {
+        "name": "Apple TV Español - MLS All-Star Team vs Liga MX All-Stars",
+        "iframe": "https://streamx-hd.com/live1.php?stream=appletv1"
+      },
+      {
+        "name": "Apple TV English - MLS All-Star Team vs Liga MX All-Stars",
+        "iframe": "https://streamx-hd.com/live1.php?stream=appletv2"
+      },
+      {
+        "name": "Disney+ - UMECIT vs Deportivo Saprissa",
+        "iframe": "https://streamx-hd.com/live1.php?stream=disney4"
+      },
+      {
+        "name": "FOX One - UMECIT vs Deportivo Saprissa",
+        "iframe": "https://streamx-hd.com/live1.php?stream=foxone"
+      },
+      {
+        "name": "Disney+ - Alajuelense vs Xelajú",
+        "iframe": "https://streamx-hd.com/live1.php?stream=disney6"
+      },
+      {
+        "name": "Disney+ - Alianza vs Antigua GFC",
+        "iframe": "https://streamx-hd.com/live1.php?stream=disney7"
       }
     ],
     "show": true
