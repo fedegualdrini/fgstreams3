@@ -28,6 +28,17 @@ yarn-error.log*
 # vercel
 .vercel
 
+# claude code (machine-specific permissions)
+.claude/settings.local.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# verification run artifacts
+.claude/verify-evidence/
+
+# local debugging captures (HAR exports, ripped manifests, zipped snapshots)
+*.har
+*.m3u8
+*.zip
