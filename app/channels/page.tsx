@@ -8,7 +8,8 @@ import ChannelsPageClient from '@/components/ChannelsPageClient';
 import MatchListSkeleton from '@/components/MatchListSkeleton';
 
 export const metadata: Metadata = {
-  title: 'Channels | Sports Streaming Mirror',
+  // The root layout applies the '%s | FGStreams' template, so no suffix here.
+  title: 'Channels',
   description: 'Watch live TV channels',
 };
 

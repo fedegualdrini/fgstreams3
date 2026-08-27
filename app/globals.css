@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,8 +17,9 @@
   --red:       #ff3d3d;
   --red-dim:   #cc2929;
 
-  --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
-  --font-body:    'Space Grotesk', system-ui, sans-serif;
+  /* --font-*-src are injected by next/font in app/layout.tsx. */
+  --font-display: var(--font-display-src), 'Arial Narrow', sans-serif;
+  --font-body:    var(--font-body-src), system-ui, sans-serif;
 
   --max-w:    1280px;
   --header-h: 60px;
@@ -99,12 +98,6 @@ body {
   50%       { opacity: 0.25; }
 }
 
-/* ── Screen enter ── */
-@keyframes screen-in {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: none; }
-}
-
 /* ── Spinner ── */
 @keyframes spin {
   to { transform: rotate(360deg); }
@@ -119,15 +112,14 @@ body {
   animation: live-pulse 1.6s ease-in-out infinite;
 }
 
-.screen-enter {
-  animation: screen-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* ── Toast ── */
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
-/* ── Accent line ── */
-.accent-line {
-  width: 2rem;
-  height: 3px;
-  background: var(--accent);
+.toast-enter {
+  animation: toast-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ── Scrollbar ── */
@@ -143,10 +135,6 @@ input { color-scheme: dark; }
 /* ── Mobile ── */
 @media (max-width: 768px) {
   .page-content { padding: 0 1rem; }
-  .player-wrapper {
-    height: 56vw;
-    max-height: 280px;
-  }
   .detail-layout {
     flex-direction: column !important;
     height: auto !important;
@@ -172,4 +160,18 @@ input { color-scheme: dark; }
 
 .score-flash {
   animation: score-flash 0.8s ease-out both;
+}
+
+/* ── Reduced motion ──
+   The live badge and skeleton loops run indefinitely, so they must collapse
+   to a static state for users who ask for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .live-dot { opacity: 1; }
 }

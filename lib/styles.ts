@@ -16,10 +16,3 @@ export function tabButtonStyle(active: boolean): React.CSSProperties {
     transition: 'all 0.12s',
   };
 }
-
-export function hoverButtonStyle(hovered: boolean): React.CSSProperties {
-  return {
-    opacity: hovered ? 1 : 0.6,
-    transition: 'opacity 0.15s',
-  };
-}
