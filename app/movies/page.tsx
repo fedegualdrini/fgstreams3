@@ -3,7 +3,8 @@ import SiteHeader from '@/components/SiteHeader';
 import MoviesPageClient from '@/components/MoviesPageClient';
 
 export const metadata: Metadata = {
-  title: 'Movies & Series | FGStreams',
+  // The root layout applies the '%s | FGStreams' template, so no suffix here.
+  title: 'Movies & Series',
   description: 'Stream movies and TV series online for free.',
 };
 
