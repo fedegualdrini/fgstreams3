@@ -72,14 +72,19 @@ export default function DashVideoPlayer({ src, clearKeys, onPlaying, onError }: 
         streaming: { bufferingGoal: 30, rebufferingGoal: 4, retryParameters: { maxAttempts: 4 } },
       });
 
-      player.addEventListener('error', () => { if (!destroyed) onErrorRef.current(); });
+      player.addEventListener('error', (event: { detail?: { code?: number; category?: number; data?: unknown[] } }) => {
+        const { code, category, data } = event.detail ?? {};
+        console.warn('[DashVideoPlayer] playback error', { category, code, data: data?.slice(0, 2) });
+        if (!destroyed) onErrorRef.current();
+      });
 
       try {
         await player.load(src);
         if (destroyed) return;
         onPlayingRef.current();
         video.play().catch(() => {});
-      } catch {
+      } catch (error) {
+        console.warn('[DashVideoPlayer] load failed', src, error);
         if (!destroyed) onErrorRef.current();
       }
     };

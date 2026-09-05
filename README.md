@@ -84,7 +84,18 @@ into `lib/proxyHosts.ts`. Stations join an existing channel when their names mat
 after normalisation, and a URL already in the list is never added twice.
 Add `--dry-run` to see the counts without writing, `--probe-cache <file>` to reuse
 an earlier run's probe results, and `--mark-new` to prefix the option names it
-adds with `NEW ·` so the additions are easy to find in the channel list. Widevine and PlayReady streams are skipped —
+adds with `NEW ·` so the additions are easy to find in the channel list.
+
+A stream is only imported when it can actually be played:
+
+- Widevine and PlayReady are skipped; only ClearKey can be decrypted in-browser.
+- A ClearKey entry whose key no longer matches the manifest's `default_KID` is
+  dropped — providers rotate keys, and a stale one fails with an opaque error.
+- Entries whose URL holds a `{token}` placeholder are resolved through the
+  `token` endpoint the playlist supplies. The token it returns is a JWT scoped to
+  one directory; when that is not the directory the media sits in, the token
+  only buys the manifest and the segments stay behind the provider's paywall, so
+  those entries are skipped. Widevine and PlayReady streams are skipped —
 only ClearKey DASH can be decrypted in the browser.
 
 Open [http://localhost:3000](http://localhost:3000) after starting the development server.

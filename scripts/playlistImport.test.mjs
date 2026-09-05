@@ -4,6 +4,7 @@ import {
   normalizeName,
   flattenPlaylist,
   parseClearKeys,
+  keyMatchesManifest,
   classifyRow,
   mergePlaylist,
   proxyHostsFrom,
@@ -11,6 +12,8 @@ import {
 
 const hlsProbe = { status: 200, cors: '*', isM3u: true, isMpd: false };
 const mpdProbe = { status: 200, cors: '*', isM3u: false, isMpd: true };
+const TEST_KID = '45bbd582f220f438f896450d8306a3f2';
+const TEST_JWK = '{"keys":[{"kty":"oct","kid":"RbvVgvIg9Dj4lkUNgwaj8g","k":"WCxrp/ZLvA8tkcawwmV2DA"}]}';
 
 describe('decodeMojibake', () => {
   it('restores UTF-8 that was decoded as CP1252', () => {
@@ -83,13 +86,33 @@ describe('classifyRow', () => {
   });
 
   it('accepts ClearKey DASH and refuses the DRM it cannot decrypt', () => {
-    const jwk = '{"keys":[{"kty":"oct","kid":"RbvVgvIg9Dj4lkUNgwaj8g","k":"WCxrp/ZLvA8tkcawwmV2DA"}]}';
+    const jwk = TEST_JWK;
     const verdict = classifyRow({ url: 'https://a/m.mpd', licenseType: 'clearkey', licenseKey: jwk }, mpdProbe);
     expect(verdict.kind).toBe('dash');
     expect(verdict.clearKeys).toHaveProperty('45bbd582f220f438f896450d8306a3f2');
 
     expect(classifyRow({ url: 'https://a/m.mpd', licenseType: 'widevine' }, mpdProbe))
       .toEqual({ kind: null, reason: 'unsupported-drm' });
+  });
+
+  it('drops a ClearKey stream whose key no longer matches the manifest', () => {
+    const row = { url: 'https://a/m.mpd', licenseType: 'clearkey', licenseKey: TEST_JWK };
+    expect(classifyRow(row, { ...mpdProbe, manifestKid: TEST_KID }).kind).toBe('dash');
+    expect(classifyRow(row, { ...mpdProbe, manifestKid: 'ffffffffffffffffffffffffffffffff' }))
+      .toEqual({ kind: null, reason: 'clearkey-stale' });
+  });
+
+  it('drops a token stream whose token only covers the manifest directory', () => {
+    const row = {
+      url: 'https://edge/tok_{token}/live/ch/dash_enc/s.mpd',
+      licenseType: 'clearkey',
+      licenseKey: TEST_JWK,
+      tokenUrl: 'https://cdn/live/ch/dash_cenc/s.mpd',
+    };
+    expect(classifyRow(row, { ...mpdProbe, manifestKid: TEST_KID, tokenCoversMedia: false }))
+      .toEqual({ kind: null, reason: 'token-scoped-to-manifest' });
+    expect(classifyRow(row, { ...mpdProbe, manifestKid: TEST_KID, tokenCoversMedia: true }).kind)
+      .toBe('dash');
   });
 
   it('rejects DASH the browser could not fetch cross-origin', () => {
@@ -103,6 +126,15 @@ describe('classifyRow', () => {
     expect(classifyRow({ url: 'https://radio.example/stream.aac', licenseType: '' }).kind).toBeNull();
     expect(classifyRow({ url: 'http://1.2.3.4:8000/udp/224.0.0.4', licenseType: '' }).kind).toBeNull();
     expect(classifyRow({ url: 'https://linktr.ee/list', licenseType: 'website' }).kind).toBeNull();
+  });
+});
+
+describe('keyMatchesManifest', () => {
+  it('only judges when the probe actually read a key id', () => {
+    expect(keyMatchesManifest({ aabb: 'cc' }, { isMpd: true })).toBe(true);
+    expect(keyMatchesManifest(null, { manifestKid: 'aabb' })).toBe(true);
+    expect(keyMatchesManifest({ aabb: 'cc' }, { manifestKid: 'aabb' })).toBe(true);
+    expect(keyMatchesManifest({ aabb: 'cc' }, { manifestKid: 'ddee' })).toBe(false);
   });
 });
 

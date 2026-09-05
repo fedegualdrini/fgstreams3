@@ -10,10 +10,14 @@
 
 import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
+import { pathToFileURL } from 'url';
 import { flattenPlaylist, mergePlaylist, proxyHostsFrom } from './playlistImport.mjs';
 
 const PROBE_CONCURRENCY = 24;
 const PROBE_TIMEOUT_MS = 9000;
+// Manifests run to tens of kilobytes and the Representation list sits at the end,
+// so the whole document is read; the cap only guards against a huge non-manifest.
+const MANIFEST_PEEK = 512 * 1024;
 const CHANNELS_PATH = path.join(process.cwd(), 'public', 'channels.json');
 const PROXY_HOSTS_PATH = path.join(process.cwd(), 'lib', 'proxyHosts.ts');
 
@@ -28,6 +32,34 @@ function parseArgs(argv) {
   return args;
 }
 
+/**
+ * The path a `tok_<jwt>` token is scoped to. The payload is base64url JSON with
+ * a `path` claim; anything outside that directory is refused by the CDN.
+ */
+export function tokenPathClaim(token) {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+    return typeof payload.path === 'string' ? payload.path : null;
+  } catch {
+    return null;
+  }
+}
+
+const directoryOf = (url) => new URL(url).pathname.replace(/[^/]*$/, '');
+
+/** True when a token's claim covers the directory the stream actually plays from. */
+export function tokenCoversMedia(token, streamUrl) {
+  const claim = tokenPathClaim(token);
+  if (!claim) return false;
+  return directoryOf(streamUrl).endsWith(claim);
+}
+
+/** The key id a DASH manifest is currently encrypted with, as lowercase hex. */
+function manifestKid(body) {
+  const raw = body.match(/default_KID="([^"]+)"/i)?.[1];
+  return raw ? raw.replace(/-/g, '').toLowerCase() : null;
+}
+
 async function probeUrl(url) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
@@ -37,18 +69,78 @@ async function probeUrl(url) {
       redirect: 'follow',
       headers: { 'User-Agent': 'Mozilla/5.0', Accept: '*/*' },
     });
-    const body = response.ok ? (await response.text()).slice(0, 512) : '';
+    const body = response.ok ? (await response.text()).slice(0, MANIFEST_PEEK) : '';
+    const isMpd = body.includes('<MPD');
     return {
       status: response.status,
       cors: response.headers.get('access-control-allow-origin') ?? '',
       isM3u: body.includes('#EXTM3U'),
-      isMpd: body.includes('<MPD'),
+      isMpd,
+      manifestKid: manifestKid(body),
     };
   } catch {
-    return { status: 0, cors: '', isM3u: false };
+    return { status: 0, cors: '', isM3u: false, isMpd: false };
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Token-gated rows cannot be probed directly — the {token} placeholder is not a
+ * real URL. The row's `token` URL redirects to `…/tok_<jwt>/…`; that token goes
+ * into the template, and the substituted URL is what gets probed. The playlist's
+ * own Origin/Referer headers must NOT be sent: the token endpoint answers 403 to
+ * them.
+ */
+export function extractPathToken(redirectedUrl) {
+  return redirectedUrl.match(/\/tok_([^/]+)\//)?.[1] ?? null;
+}
+
+async function probeTokenTemplate(row) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
+  try {
+    const resolved = await fetch(row.tokenUrl, {
+      signal: controller.signal,
+      redirect: 'follow',
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    const token = extractPathToken(resolved.url);
+    if (!token) return { status: resolved.status, cors: '', isM3u: false, isMpd: false };
+    const streamUrl = row.url.replace('{token}', token);
+    const stream = await fetch(streamUrl, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    const body = stream.ok ? (await stream.text()).slice(0, MANIFEST_PEEK) : '';
+    const isMpd = body.includes('<MPD');
+    return {
+      status: stream.status,
+      cors: stream.headers.get('access-control-allow-origin') ?? '',
+      isM3u: body.includes('#EXTM3U'),
+      isMpd,
+      manifestKid: manifestKid(body),
+      tokenCoversMedia: tokenCoversMedia(token, streamUrl),
+    };
+  } catch {
+    return { status: 0, cors: '', isM3u: false, isMpd: false };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function probeTokenRows(rows, probes) {
+  const pending = rows.filter(r => !probes.has(r.url));
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < pending.length) {
+      const row = pending[cursor++];
+      probes.set(row.url, await probeTokenTemplate(row));
+      if (cursor % 25 === 0) process.stderr.write(`  resolved ${cursor}/${pending.length} tokens
+`);
+    }
+  };
+  await Promise.all(Array.from({ length: PROBE_CONCURRENCY }, worker));
 }
 
 async function probeAll(urls, cached) {
@@ -101,13 +193,18 @@ async function main() {
     }
   }
 
+  const tokenRows = rows.filter(r => r.tokenUrl && r.url.includes('{token}'));
+  const tokenUrls = new Set(tokenRows.map(r => r.url));
+
   // Embed pages block server-side fetches, so only stream manifests are probed.
   const candidates = [...new Set(
-    rows.filter(r => r.url && r.licenseType !== 'widevine' && r.licenseType !== 'website')
+    rows.filter(r => r.url && !tokenUrls.has(r.url)
+                  && r.licenseType !== 'widevine' && r.licenseType !== 'website')
         .map(r => r.url)
   )];
-  console.error(`playlist rows: ${rows.length}, probing ${candidates.length} urls…`);
+  console.error(`playlist rows: ${rows.length}, probing ${candidates.length} urls and ${tokenUrls.size} token templates…`);
   const probes = await probeAll(candidates, cached);
+  await probeTokenRows(tokenRows, probes);
   if (args.probeCache) await writeFile(args.probeCache, JSON.stringify([...probes], null, 2));
 
   const { channels, stats } = mergePlaylist(existing, rows, probes, { markNew: args.markNew });
@@ -126,7 +223,10 @@ async function main() {
   console.log(`wrote ${CHANNELS_PATH} and ${PROXY_HOSTS_PATH}`);
 }
 
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+// Importing this module (the tests do) must not run the import.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+}

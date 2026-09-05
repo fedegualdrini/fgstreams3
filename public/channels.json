@@ -7713,21 +7713,6 @@
     "source": "playlist"
   },
   {
-    "name": "Sky Live Event 1",
-    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
-    "options": [
-      {
-        "name": "NEW · Sky Live Event 1",
-        "iframe": "https://aca-live4-ott.izzigo.tv/11/out/u/dash/SKY-LIVE-EVENT-1-HD/default.mpd",
-        "clearKeys": {
-          "a3636a51227fa338cdddf5892d8a621c": "1444ee3c4d08bf39454b914f797968eb"
-        }
-      }
-    ],
-    "show": true,
-    "source": "playlist"
-  },
-  {
     "name": "Sky Live Event 2",
     "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
     "options": [

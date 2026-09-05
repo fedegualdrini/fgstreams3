@@ -59,6 +59,7 @@ export function flattenPlaylist(playlist) {
           logo: option.image ?? station.image ?? '',
           licenseType: option.license_type ?? '',
           licenseKey: option.license_key ?? '',
+          tokenUrl: option.token ?? '',
         });
       }
     }
@@ -97,6 +98,17 @@ export function parseClearKeys(licenseKey) {
 }
 
 /**
+ * Providers rotate ClearKey material, so a playlist's key can be older than the
+ * stream it belongs to. When the probe read a key id out of the manifest, the
+ * listed key has to cover it — otherwise the browser gets a manifest it cannot
+ * decrypt and fails with an opaque "unsupported content" error.
+ */
+export function keyMatchesManifest(clearKeys, probe) {
+  if (!clearKeys || !probe?.manifestKid) return true;
+  return Object.keys(clearKeys).includes(probe.manifestKid);
+}
+
+/**
  * Decides how (or whether) FGStreams can play a playlist row.
  * `probe` is the result of fetching the URL server-side, when available.
  */
@@ -121,6 +133,20 @@ export function classifyRow(row, probe) {
     return { kind: 'hls', proxy: probe.cors !== '*' || parsed.protocol === 'http:' };
   }
 
+  // Some rows carry a `token` URL that redirects to `…/tok_<jwt>/…`, and that
+  // token fills the {token} placeholder in the stream URL. The JWT scopes itself
+  // to one directory: when that is not the directory the media sits in, the token
+  // buys the manifest and nothing else, and only a paid session unlocks the rest.
+  if (row.tokenUrl && url.includes('{token}')) {
+    if (!probe?.isMpd) return { kind: null, reason: 'token-stream-unreachable' };
+    if (!probe.tokenCoversMedia) return { kind: null, reason: 'token-scoped-to-manifest' };
+    if (probe.cors !== '*') return { kind: null, reason: 'dash-no-cors' };
+    const clearKeys = parseClearKeys(row.licenseKey);
+    if (row.licenseType && !clearKeys) return { kind: null, reason: 'clearkey-unparsable' };
+    if (!keyMatchesManifest(clearKeys, probe)) return { kind: null, reason: 'clearkey-stale' };
+    return { kind: 'dash', proxy: false, clearKeys };
+  }
+
   if (url.includes('.mpd')) {
     // Only ClearKey is decryptable in the browser without a licence server, and
     // an MPD the network cannot reach would just spin forever in the player.
@@ -129,6 +155,7 @@ export function classifyRow(row, probe) {
     if (!row.licenseType) return { kind: 'dash', proxy: false, clearKeys: null };
     const clearKeys = parseClearKeys(row.licenseKey);
     if (!clearKeys) return { kind: null, reason: 'clearkey-unparsable' };
+    if (!keyMatchesManifest(clearKeys, probe)) return { kind: null, reason: 'clearkey-stale' };
     return { kind: 'dash', proxy: false, clearKeys };
   }
   if (parsed.protocol !== 'https:') return { kind: null, reason: 'insecure' };
