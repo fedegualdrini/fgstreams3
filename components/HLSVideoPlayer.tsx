@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 interface HLSVideoPlayerProps {
   src: string;
+  /** Set for origins that send no CORS header, so hls.js cannot fetch them directly. */
+  forceProxy?: boolean;
   onPlaying: () => void;
   onError: () => void;
 }
@@ -47,13 +49,13 @@ const BASE_CONFIG = {
 const MAX_NETWORK_RETRIES = 5;
 const MAX_MEDIA_RETRIES = 3;
 
-function toProxyUrl(url: string): string {
-  return url.startsWith('http://')
+function toProxyUrl(url: string, forceProxy: boolean): string {
+  return forceProxy || url.startsWith('http://')
     ? `/api/hls-proxy?url=${encodeURIComponent(url)}`
     : url;
 }
 
-export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlayerProps) {
+export default function HLSVideoPlayer({ src, forceProxy = false, onPlaying, onError }: HLSVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const onPlayingRef = useRef(onPlaying);
   const onErrorRef = useRef(onError);
@@ -110,7 +112,7 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
 
       if (!Hls.isSupported()) {
         if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = toProxyUrl(src);
+          video.src = toProxyUrl(src, forceProxy);
           video.addEventListener('loadedmetadata', () => {
             if (!destroyed) { video.play().catch(() => {}); onPlayingRef.current(); }
           }, { once: true });
@@ -124,7 +126,7 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
       }
 
       hlsInstance = new Hls(config);
-      hlsInstance.loadSource(toProxyUrl(src));
+      hlsInstance.loadSource(toProxyUrl(src, forceProxy));
       hlsInstance.attachMedia(video);
 
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -179,7 +181,7 @@ export default function HLSVideoPlayer({ src, onPlaying, onError }: HLSVideoPlay
       video.removeAttribute('src');
       video.load();
     };
-  }, [src]);
+  }, [src, forceProxy]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>

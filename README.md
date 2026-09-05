@@ -53,9 +53,12 @@ Create a local environment file when using movie or TV search:
 
 ```bash
 TMDB_API_KEY=your_tmdb_api_key
+HLS_PROXY_SECRET=any_long_random_string
 ```
 
-Sports matches and channels do not require this key.
+Sports matches and channels do not require the TMDB key. `HLS_PROXY_SECRET` signs
+the stream URLs `/api/hls-proxy` hands back to the player; set it in production so
+those signatures cannot be produced by anyone else.
 
 ## Commands
 
@@ -66,7 +69,22 @@ npm run test:watch # Run Vitest in watch mode
 npm run lint       # Run Next.js linting
 npm run build      # Build the production app
 npm start          # Start the built production app
+
+npm run import:playlist -- <playlist.json>   # Merge an external channel playlist
 ```
+
+### Importing a channel playlist
+
+`npm run import:playlist -- <playlist.json>` merges an external list (the
+group/station/option JSON that OTT list apps publish) into `public/channels.json`.
+Every candidate stream is fetched first, so unreachable manifests are dropped and
+the ones whose origin sends no CORS header are flagged to go through
+`/api/hls-proxy`; the allowlist of origins that proxy may reach is regenerated
+into `lib/proxyHosts.ts`. Stations join an existing channel when their names match
+after normalisation, and a URL already in the list is never added twice.
+Add `--dry-run` to see the counts without writing, and `--probe-cache <file>` to
+reuse an earlier run's probe results. Widevine and PlayReady streams are skipped —
+only ClearKey DASH can be decrypted in the browser.
 
 Open [http://localhost:3000](http://localhost:3000) after starting the development server.
 

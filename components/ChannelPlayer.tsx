@@ -5,8 +5,9 @@ import type { Channel, ChannelOption } from '@/types/channels';
 import Spinner from '@/components/Spinner';
 import { tabButtonStyle } from '@/lib/styles';
 import { CHANNEL_LOAD_TIMEOUT_MS } from '@/lib/constants';
-import { isValidStreamUrl, isHlsUrl } from '@/lib/urlValidation';
+import { isValidStreamUrl, isHlsUrl, isDashUrl } from '@/lib/urlValidation';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
+import DashVideoPlayer from '@/components/DashVideoPlayer';
 
 interface ChannelPlayerProps {
   channel: Channel;
@@ -135,10 +136,27 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
             ))}
           </div>
         )}
-        {currentOption && isHlsUrl(currentOption.iframe) ? (
+        {currentOption && isDashUrl(currentOption.iframe) ? (
+          <DashVideoPlayer
+            key={`${channel.name}-${selectedIndex}-${reloadKey}`}
+            src={currentOption.iframe}
+            clearKeys={currentOption.clearKeys}
+            onPlaying={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+              setIsLoading(false);
+              setTimedOut(false);
+            }}
+            onError={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+              setIsLoading(false);
+              setTimedOut(true);
+            }}
+          />
+        ) : currentOption && isHlsUrl(currentOption.iframe) ? (
           <HLSVideoPlayer
             key={`${channel.name}-${selectedIndex}-${reloadKey}`}
             src={currentOption.iframe}
+            forceProxy={currentOption.proxy}
             onPlaying={() => {
               if (timeoutRef.current) clearTimeout(timeoutRef.current);
               setIsLoading(false);
