@@ -136,6 +136,12 @@ describe('mergePlaylist', () => {
     expect(existing[0].options).toHaveLength(1);
   });
 
+  it('labels only the options it adds when markNew is set', () => {
+    const rows = [{ station: 'DSports', option: 'Op 2', url: 'https://a/x.m3u8', logo: '', licenseType: '' }];
+    const { channels } = mergePlaylist(existing, rows, new Map([['https://a/x.m3u8', hlsProbe]]), { markNew: true });
+    expect(channels[0].options.map(o => o.name)).toEqual(['Op 1', 'NEW · Op 2']);
+  });
+
   it('disambiguates option names that repeat inside one channel', () => {
     const rows = [
       { station: 'DSports', option: 'Op 1', url: 'https://a/x.m3u8', logo: '', licenseType: '' },

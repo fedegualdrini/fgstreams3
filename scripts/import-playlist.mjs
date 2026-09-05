@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Imports an external channel playlist into public/channels.json.
 //
-//   node scripts/import-playlist.mjs <playlist.json> [--probe-cache <file>] [--dry-run]
+//   node scripts/import-playlist.mjs <playlist.json> [--probe-cache <file>]
+//                                     [--mark-new] [--dry-run]
 //
 // Every candidate stream is fetched first: a manifest we cannot reach is dead
 // for the browser too, and whether the host sends `Access-Control-Allow-Origin`
@@ -17,9 +18,10 @@ const CHANNELS_PATH = path.join(process.cwd(), 'public', 'channels.json');
 const PROXY_HOSTS_PATH = path.join(process.cwd(), 'lib', 'proxyHosts.ts');
 
 function parseArgs(argv) {
-  const args = { playlist: null, probeCache: null, dryRun: false };
+  const args = { playlist: null, probeCache: null, dryRun: false, markNew: false };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--dry-run') args.dryRun = true;
+    else if (argv[i] === '--mark-new') args.markNew = true;
     else if (argv[i] === '--probe-cache') args.probeCache = argv[++i];
     else if (!args.playlist) args.playlist = argv[i];
   }
@@ -82,7 +84,7 @@ function renderProxyHosts(hosts) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.playlist) {
-    console.error('usage: node scripts/import-playlist.mjs <playlist.json> [--probe-cache <file>] [--dry-run]');
+    console.error('usage: node scripts/import-playlist.mjs <playlist.json> [--probe-cache <file>] [--mark-new] [--dry-run]');
     process.exit(1);
   }
 
@@ -108,7 +110,7 @@ async function main() {
   const probes = await probeAll(candidates, cached);
   if (args.probeCache) await writeFile(args.probeCache, JSON.stringify([...probes], null, 2));
 
-  const { channels, stats } = mergePlaylist(existing, rows, probes);
+  const { channels, stats } = mergePlaylist(existing, rows, probes, { markNew: args.markNew });
 
   console.log(`channels: ${existing.length} -> ${channels.length} (+${stats.newChannels} new)`);
   console.log(`options added: ${stats.added}, already present: ${stats.duplicates}`);

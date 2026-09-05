@@ -82,8 +82,9 @@ the ones whose origin sends no CORS header are flagged to go through
 `/api/hls-proxy`; the allowlist of origins that proxy may reach is regenerated
 into `lib/proxyHosts.ts`. Stations join an existing channel when their names match
 after normalisation, and a URL already in the list is never added twice.
-Add `--dry-run` to see the counts without writing, and `--probe-cache <file>` to
-reuse an earlier run's probe results. Widevine and PlayReady streams are skipped —
+Add `--dry-run` to see the counts without writing, `--probe-cache <file>` to reuse
+an earlier run's probe results, and `--mark-new` to prefix the option names it
+adds with `NEW ·` so the additions are easy to find in the channel list. Widevine and PlayReady streams are skipped —
 only ClearKey DASH can be decrypted in the browser.
 
 Open [http://localhost:3000](http://localhost:3000) after starting the development server.

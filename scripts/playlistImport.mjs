@@ -151,7 +151,9 @@ function uniqueOptionName(taken, name) {
  * channel when the station name normalizes to the same thing, otherwise they
  * create one. URLs already present anywhere in the list are never duplicated.
  */
-export function mergePlaylist(existingChannels, rows, probes = new Map()) {
+export const NEW_OPTION_PREFIX = 'NEW · ';
+
+export function mergePlaylist(existingChannels, rows, probes = new Map(), { markNew = false } = {}) {
   const channels = existingChannels.map(c => ({ ...c, options: [...c.options] }));
   const byName = new Map();
   const knownUrls = new Set();
@@ -193,7 +195,8 @@ export function mergePlaylist(existingChannels, rows, probes = new Map()) {
     }
 
     const taken = optionNames.get(channel);
-    const name = uniqueOptionName(taken, row.option);
+    const label = markNew ? `${NEW_OPTION_PREFIX}${row.option.trim()}` : row.option;
+    const name = uniqueOptionName(taken, label);
     taken.add(name);
     knownUrls.add(row.url);
     const option = { name, iframe: row.url };
