@@ -6,9 +6,11 @@ A Next.js sports streaming app with match listings, match detail playback, live 
 
 ## Features
 
-- **Matches**: Lists live and upcoming matches from the Streamed API, grouped with live matches first and upcoming matches by start time.
+- **Matches**: Lists live and upcoming matches from the Streamed API, grouped with live matches first and upcoming matches by start time. Rendered per request, so the first load always reflects the current schedule.
+- **Source-Verified Listings**: Every listed match has its stream endpoints resolved server-side before render. Matches with no working stream and no TV channel carrying them are not listed at all.
+- **TV Channel Detection**: Fixtures are matched against promiedos.com.ar to find the broadcaster, which is then resolved against the local channel catalog. Argentine league and Latin American cup matches show the carrying channel (ESPN Premium, TNT Sports, Superliga Argentina, …) as a playable source on the match page and as a badge on the card.
 - **Match Search and Sport Filter**: Filters matches by team, league, or sport, with quick sport buttons for common categories.
-- **Match Detail Playback**: Fetches all stream sources for a match and starts with the preferred stream based on language, quality, and original source order.
+- **Match Detail Playback**: Stream sources arrive with the server-rendered page, so the player and the source list are populated on first paint. The preferred stream is chosen by language, quality, and original source order.
 - **Stream Fallback**: If a match stream fails to load, the player rotates to the next untried stream. When all streams fail, the UI shows a Try Again action that refetches streams.
 - **Multi-Match View**: Lets a user watch up to four matches from one match page, choose grid or side-by-side layout, mute individual streams, remove matches, and switch each match's selected stream.
 - **Live Scores**: Polls live score data for active matches and displays matched score/minute data on match cards.
@@ -29,7 +31,8 @@ A Next.js sports streaming app with match listings, match detail playback, live 
 
 ## External Data Sources
 
-- **Streamed API** (`https://streamed.pk/api`) for sports, matches, streams, and Streamed-hosted images.
+- **Streamed API** (`https://streamed.pk/api`) for matches (`/matches/all-today`), the live feed (`/matches/live`), per-match streams, and Streamed-hosted images.
+- **Promiedos** (`https://www.promiedos.com.ar`) for fixture broadcasters, read from the `__NEXT_DATA__` payload embedded in the page.
 - **Flashscore mobile pages** through local API routes for live scores and match detail data.
 - **TMDB API** for movie and TV search metadata. Set `TMDB_API_KEY` before using the Movies page search routes.
 - **Local channel catalog** from `public/channels.json`.
@@ -121,7 +124,12 @@ lib/
   constants.ts                     Cache and timeout constants
   dateUtils.ts                     Client-safe date formatting helpers
   flashscore.ts                    Flashscore scraping/parsing helpers
-  matchUtils.ts                    Match normalization helpers
+  broadcasters.ts                  Promiedos network → local channel resolution
+  catalog.ts                       Cached match catalog with resolved streams and broadcasts
+  channelCatalog.ts                Shared channels.json loader
+  matchUtils.ts                    Match normalization, liveness, and image helpers
+  promiedos.ts                     Promiedos fixture/broadcaster scraping
+  teamMatch.ts                     Fuzzy fixture matching between feeds
   scoreAliases.ts                  Team alias data for score matching
   scoreUtils.ts                    Score matching helpers
   schemas.ts                       Zod schemas for external API data
@@ -151,7 +159,7 @@ vitest.setup.ts                    Vitest setup
 
 ## Testing
 
-Unit tests currently cover stream selection, match normalization, score matching, and Flashscore parsing helpers.
+Unit tests currently cover stream selection, match normalization, score matching, Flashscore parsing, Promiedos parsing, cross-feed fixture matching, and broadcaster-to-channel resolution.
 
 ## License
 

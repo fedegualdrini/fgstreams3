@@ -127,9 +127,23 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
           </div>
         )}
         {fillContainer && !hideTabs && validOptions.length > 1 && (
-          <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', zIndex: 20, display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          // A single scrolling strip, not a wrapping grid: some channels carry
+          // twenty-odd mirrors, which wrapped would cover most of the video.
+          <div
+            style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20,
+              display: 'flex', gap: '4px', flexWrap: 'nowrap',
+              overflowX: 'auto', padding: '0.5rem 0.75rem',
+              background: 'linear-gradient(to top, rgba(7,8,12,0.9), transparent)',
+            }}
+          >
             {validOptions.map((option, i) => (
-              <button key={i} type="button" onClick={() => selectOption(i)} style={tabButtonStyle(i === selectedIndex)}>
+              <button
+                key={i}
+                type="button"
+                onClick={() => selectOption(i)}
+                style={{ ...tabButtonStyle(i === selectedIndex), flexShrink: 0, whiteSpace: 'nowrap' }}
+              >
                 {option.name}
               </button>
             ))}

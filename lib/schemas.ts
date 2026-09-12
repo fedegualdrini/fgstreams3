@@ -17,10 +17,20 @@ export const RawMatchSourceSchema = z.object({
   id: z.string(),
 });
 
+const RawMatchTeamSchema = z.object({
+  name: z.string().optional(),
+  badge: z.string().optional(),
+}).passthrough();
+
 export const RawMatchSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
   category: z.string().optional(),
+  // The feed sends `teams: null` for non-team events (races, fight cards).
+  teams: z.object({
+    home: RawMatchTeamSchema.nullish(),
+    away: RawMatchTeamSchema.nullish(),
+  }).passthrough().nullish(),
   date: z.union([z.number(), z.string()]).optional(),
   time: z.string().optional(),
   sources: z.array(RawMatchSourceSchema).optional(),

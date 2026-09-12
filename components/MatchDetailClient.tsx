@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import type { Match, Stream } from '@/types/api';
+import type { BroadcastChannel, Match, Stream } from '@/types/api';
+import type { Channel } from '@/types/channels';
 import StreamPlayer from './StreamPlayer';
+import ChannelPlayer from './ChannelPlayer';
 import StreamList from './StreamList';
 import MultiMatchView from './MultiMatchView';
 import { selectBestStream } from '@/lib/streamSelector';
@@ -18,6 +20,19 @@ import { useMatchStats } from '@/lib/useMatchStats';
 
 interface MatchDetailClientProps {
   match: Match;
+  /**
+   * Streams resolved on the server. When present the player and the source
+   * list are populated on first paint; the client only refetches on retry.
+   */
+  initialStreams?: Stream[];
+  /**
+   * True when `initialStreams` is the server's final answer — an empty array
+   * then means "this match has no playable stream", not "not looked up yet",
+   * so the client neither shows a spinner nor refetches.
+   */
+  streamsResolved?: boolean;
+  /** Channels from the local catalog that are carrying this match. */
+  broadcasts?: BroadcastChannel[];
 }
 
 type SidebarTab = 'streams' | 'stats';
@@ -34,10 +49,35 @@ export function attributeStreamsToSources(
   );
 }
 
-export default function MatchDetailClient({ match }: MatchDetailClientProps) {
-  const [streams, setStreams]                   = useState<Stream[]>([]);
-  const [currentStream, setCurrentStream]       = useState<Stream | null>(null);
-  const [currentStreamIndex, setCurrentStreamIndex] = useState(0);
+export default function MatchDetailClient({
+  match,
+  initialStreams,
+  streamsResolved = false,
+  broadcasts = [],
+}: MatchDetailClientProps) {
+  const [streams, setStreams]                   = useState<Stream[]>(initialStreams ?? []);
+  const [currentStream, setCurrentStream]       = useState<Stream | null>(
+    () => selectBestStream(initialStreams ?? []),
+  );
+  const [currentStreamIndex, setCurrentStreamIndex] = useState(() => {
+    const best = selectBestStream(initialStreams ?? []);
+    return best ? Math.max(0, (initialStreams ?? []).indexOf(best)) : 0;
+  });
+  // Pick the TV channel up front when the server already told us there is no
+  // direct stream, so the player renders it on first paint instead of briefly
+  // showing an empty player.
+  const [selectedChannel, setSelectedChannel]   = useState<BroadcastChannel | null>(
+    () => (streamsResolved && (initialStreams?.length ?? 0) === 0 && broadcasts.length > 0)
+      ? broadcasts[0]
+      : null,
+  );
+  // 'loading' only while a fetch is genuinely in flight, so the sidebar never
+  // claims a match has no sources before anything has been looked up.
+  const [isResolvingStreams, setIsResolvingStreams] = useState(
+    () => !streamsResolved
+      && (initialStreams?.length ?? 0) === 0
+      && (match.sources?.length ?? 0) > 0,
+  );
   const [allStreamsFailed, setAllStreamsFailed] = useState(false);
   const [streamsFetchKey, setStreamsFetchKey]   = useState(0);
   const [multiStreamMode, setMultiStreamMode]   = useState(false);
@@ -58,6 +98,10 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
    * cannot ping-pong between two broken sources; "Try Again" clears the set.
    */
   const handleStreamError = useCallback(() => {
+    // Nothing to rotate through, and nothing failed: a match with no direct
+    // stream is a normal state when a TV channel is carrying it.
+    if (streams.length === 0) return;
+
     triedIndexesRef.current.add(currentStreamIndex);
     const tried = triedIndexesRef.current;
 
@@ -87,12 +131,29 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
     setStreamsFetchKey(k => k + 1);
   }, []);
 
+  // The server already resolved this match's streams, so the first mount has
+  // nothing to fetch. Later runs (a retry, or a different match) do.
+  const skipInitialFetchRef = useRef(streamsResolved || (initialStreams?.length ?? 0) > 0);
+
   useEffect(() => {
     setAllStreamsFailed(false);
     // Indexes refer to the incoming stream list, so reset them alongside it.
     triedIndexesRef.current = new Set();
+
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false;
+      return;
+    }
+
     const { sources } = matchRef.current;
-    if (!sources?.length) return;
+    if (!sources?.length) {
+      setIsResolvingStreams(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsResolvingStreams(true);
+
     Promise.all(
       sources.map(({ source, id }) =>
         fetch(`/api/streams/${encodeURIComponent(source)}/${encodeURIComponent(id)}`)
@@ -100,22 +161,51 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
           .catch(() => [])
       )
     ).then((arrays: Stream[][]) => {
+      if (cancelled) return;
       const all = attributeStreamsToSources(sources, arrays);
       setStreams(all);
+      setIsResolvingStreams(false);
       const best = selectBestStream(all);
       if (best) {
         setCurrentStream(best);
         setCurrentStreamIndex(Math.max(0, all.findIndex(s => s === best)));
       }
     });
+
+    return () => { cancelled = true; };
   }, [sourcesKey, streamsFetchKey]);
 
   const handleSelectStream = (stream: Stream, index: number) => {
+    setSelectedChannel(null);
     setCurrentStream(stream);
     setCurrentStreamIndex(index);
     // An explicit pick overrides an earlier failure on that stream.
     triedIndexesRef.current.delete(index);
   };
+
+  // With no direct stream to play, fall back to the first TV channel carrying
+  // the match instead of leaving an empty player.
+  useEffect(() => {
+    if (isResolvingStreams || selectedChannel || currentStream) return;
+    if (streams.length > 0 || broadcasts.length === 0) return;
+    setSelectedChannel(broadcasts[0]);
+  }, [isResolvingStreams, selectedChannel, currentStream, streams.length, broadcasts]);
+
+  const handleSelectChannel = useCallback((channel: BroadcastChannel) => {
+    setSelectedChannel(prev => (prev?.channel === channel.channel ? null : channel));
+    setAllStreamsFailed(false);
+  }, []);
+
+  // ChannelPlayer takes a catalog Channel; a broadcast is the same data with
+  // the match's broadcaster attached.
+  const channelForPlayer: Channel | null = selectedChannel
+    ? {
+        name: selectedChannel.channel,
+        logo: selectedChannel.logo,
+        options: selectedChannel.options,
+        show: true,
+      }
+    : null;
 
   const handleShare = useCallback(async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
@@ -345,14 +435,22 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
               className="detail-player"
               style={{ flex: 1, background: '#000', position: 'relative', minWidth: 0 }}
             >
-              {allStreamsFailed ? (
+              {channelForPlayer ? (
+                <ChannelPlayer
+                  key={channelForPlayer.name}
+                  channel={channelForPlayer}
+                  fillContainer
+                />
+              ) : allStreamsFailed || streams.length === 0 ? (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'var(--bg)', padding: '1rem' }}>
                   <div style={{ fontSize: '2rem' }}>📡</div>
                   <p style={{ color: 'var(--text)', fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 600, textAlign: 'center' }}>
                     No streams available right now
                   </p>
                   <p style={{ color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.75rem', textAlign: 'center', maxWidth: '240px' }}>
-                    All stream sources failed. Try again in a few minutes.
+                    {allStreamsFailed
+                      ? 'All stream sources failed. Try again in a few minutes.'
+                      : 'No source is carrying this match yet — streams usually appear close to kickoff.'}
                   </p>
                   <button
                     type="button"
@@ -410,6 +508,10 @@ export default function MatchDetailClient({ match }: MatchDetailClientProps) {
                     streams={streams}
                     currentStreamIndex={currentStream ? currentStreamIndex : null}
                     onSelectStream={handleSelectStream}
+                    broadcasts={broadcasts}
+                    selectedChannel={selectedChannel?.channel ?? null}
+                    onSelectChannel={handleSelectChannel}
+                    isLoading={isResolvingStreams}
                   />
                 )}
                 {sidebarTab === 'stats' && matchStats && (
