@@ -1,5 +1,5 @@
 import type { PromiedosGame } from '@/types/api';
-import { REVALIDATE_BROADCASTS } from './constants';
+import { PROMIEDOS_TIMEOUT_MS, REVALIDATE_BROADCASTS } from './constants';
 
 /**
  * promiedos.com.ar publishes, per fixture, the TV networks carrying it — the
@@ -105,39 +105,70 @@ export function parsePromiedosPayload(payload: unknown): PromiedosGame[] {
   return games;
 }
 
-async function fetchPage(path: string): Promise<PromiedosGame[]> {
+/** null distinguishes "the page failed" from "the page listed no fixtures". */
+async function fetchPage(path: string): Promise<PromiedosGame[] | null> {
   try {
     const response = await fetch(`${PROMIEDOS_BASE}${path}`, {
       headers: BROWSER_HEADERS,
+      // Without a deadline a hung request would stall the whole catalog build,
+      // which runs inside a request.
+      signal: AbortSignal.timeout(PROMIEDOS_TIMEOUT_MS),
       next: { revalidate: REVALIDATE_BROADCASTS },
     });
     if (!response.ok) {
       console.warn(`promiedos: ${path} responded ${response.status}`);
-      return [];
+      return null;
     }
     const payload = extractNextData(await response.text());
     if (!payload) {
       console.warn(`promiedos: no __NEXT_DATA__ payload on ${path}`);
-      return [];
+      return null;
     }
     return parsePromiedosPayload(payload);
   } catch (error) {
     console.error(`promiedos: failed to load ${path}:`, error);
-    return [];
+    return null;
   }
 }
 
+export interface PromiedosSnapshot {
+  games: PromiedosGame[];
+  /**
+   * Whether this snapshot reflects a successful lookup. When false the caller
+   * knows nothing about broadcasters — which is not the same as knowing a match
+   * has none, and callers must not treat it as such.
+   */
+  ok: boolean;
+  /** True when `games` came from the last good lookup rather than this one. */
+  stale: boolean;
+}
+
+// Last successful lookup, reused when a refresh fails. Warm instances keep this
+// across requests, so one bad response cannot blank the broadcast map.
+let lastGood: PromiedosGame[] | null = null;
+
 /**
  * Every fixture Promiedos knows about for yesterday, today and tomorrow that
- * has at least one TV network attached. Failures degrade to an empty list:
- * broadcast data is an enhancement, never a prerequisite for the page.
+ * has at least one TV network attached.
  */
-export async function fetchPromiedosGames(): Promise<PromiedosGame[]> {
+export async function fetchPromiedosGames(): Promise<PromiedosSnapshot> {
   const pages = await Promise.all(PROMIEDOS_PAGES.map(fetchPage));
+  const succeeded = pages.filter((page): page is PromiedosGame[] => page !== null);
+
+  if (succeeded.length === 0) {
+    if (lastGood) {
+      console.warn('promiedos: all pages failed, reusing the last good snapshot');
+      return { games: lastGood, ok: true, stale: true };
+    }
+    return { games: [], ok: false, stale: false };
+  }
 
   const byId = new Map<string, PromiedosGame>();
-  for (const game of pages.flat()) {
+  for (const game of succeeded.flat()) {
     if (!byId.has(game.id)) byId.set(game.id, game);
   }
-  return [...byId.values()];
+
+  const games = [...byId.values()];
+  lastGood = games;
+  return { games, ok: true, stale: false };
 }

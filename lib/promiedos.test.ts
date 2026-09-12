@@ -1,5 +1,10 @@
-import { describe, it, expect } from 'vitest';
-import { parsePromiedosStartTime, extractNextData, parsePromiedosPayload } from './promiedos';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import {
+  parsePromiedosStartTime,
+  extractNextData,
+  parsePromiedosPayload,
+  fetchPromiedosGames,
+} from './promiedos';
 
 describe('parsePromiedosStartTime', () => {
   it('reads Argentina local time as UTC-3', () => {
@@ -85,5 +90,52 @@ describe('parsePromiedosPayload', () => {
     expect(parsePromiedosPayload({})).toEqual([]);
     expect(parsePromiedosPayload(null)).toEqual([]);
     expect(parsePromiedosPayload({ props: { pageProps: { data: { leagues: 'nope' } } } })).toEqual([]);
+  });
+});
+
+describe('fetchPromiedosGames', () => {
+  const page = (games: unknown[]) =>
+    `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+      props: { pageProps: { data: { leagues: [{ id: 'hc', name: 'LPF', country_id: 'ba', games }] } } },
+    })}</script>`;
+
+  const fixture = {
+    id: 'g1',
+    teams: [{ name: 'Talleres de Córdoba' }, { name: 'Unión de Santa Fe' }],
+    start_time: '12-09-2026 20:00',
+    tv_networks: [{ name: 'ESPN Premium' }],
+  };
+
+  afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+
+  it('reports a successful lookup', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, text: async () => page([fixture]) })));
+    const snapshot = await fetchPromiedosGames();
+    expect(snapshot.ok).toBe(true);
+    expect(snapshot.stale).toBe(false);
+    expect(snapshot.games).toHaveLength(1);
+  });
+
+  it('reuses the last good snapshot when every page fails', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, text: async () => page([fixture]) })));
+    await fetchPromiedosGames();
+
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('blocked'); }));
+    const snapshot = await fetchPromiedosGames();
+    expect(snapshot.ok).toBe(true);
+    expect(snapshot.stale).toBe(true);
+    expect(snapshot.games).toHaveLength(1);
+  });
+
+  it('survives a partial outage using the pages that did respond', async () => {
+    let call = 0;
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      call += 1;
+      if (call === 1) throw new Error('blocked');
+      return { ok: true, text: async () => page([fixture]) };
+    }));
+    const snapshot = await fetchPromiedosGames();
+    expect(snapshot.ok).toBe(true);
+    expect(snapshot.games).toHaveLength(1);
   });
 });

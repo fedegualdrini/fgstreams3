@@ -1,10 +1,11 @@
 import { unstable_cache } from 'next/cache';
-import type { BroadcastChannel, CatalogMatch, Match, Stream } from '@/types/api';
+import type { BroadcastChannel, CatalogMatch, Match, PromiedosGame, Stream } from '@/types/api';
 import { fetchAllMatches, fetchLiveMatchIds, fetchStreams } from './api';
 import { normalizeMatches, matchStartMs } from './matchUtils';
 import { fetchPromiedosGames } from './promiedos';
 import { findPromiedosGame } from './teamMatch';
 import { getChannelCatalog } from './channelCatalog';
+import type { Channel } from '@/types/channels';
 import { resolveBroadcastChannels } from './broadcasters';
 import {
   CATALOG_CONCURRENCY,
@@ -78,13 +79,17 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
   const deadline = now + CATALOG_TIME_BUDGET_MS;
 
-  const [rawMatches, liveIds, promiedosGames, channels] = await Promise.all([
+  const [rawMatches, liveIds, broadcastSnapshot, channels] = await Promise.all([
     fetchAllMatches(),
     fetchLiveMatchIds(),
     // Broadcast data is a bonus; never let it fail the catalog.
-    fetchPromiedosGames().catch(() => []),
-    getChannelCatalog().catch(() => []),
+    fetchPromiedosGames().catch(() => ({ games: [], ok: false, stale: false })),
+    getChannelCatalog().catch(() => [] as Channel[]),
   ]);
+
+  // Only with both halves of the lookup can we say a match has no broadcaster.
+  // Without them we know nothing, which is a different thing entirely.
+  const broadcastsKnown = broadcastSnapshot.ok && channels.length > 0;
 
   const matches = normalizeMatches(rawMatches, now)
     .filter(match => isListable(match, now))
@@ -122,12 +127,16 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
 
   matches.forEach((match, matchIndex) => {
     const streams = streamsByMatch.get(matchIndex) ?? [];
-    const broadcasts = resolveBroadcastsFor(match, promiedosGames, channels, now);
+    const broadcasts = resolveBroadcastsFor(match, broadcastSnapshot.games, channels, now);
 
     // Drop matches nobody can watch: no working Streamed source and no channel
-    // carrying it. Unresolved matches are kept and re-checked next rebuild.
+    // carrying it. Two cases are deliberately kept instead:
+    //   - sources we ran out of time to resolve (re-checked next rebuild);
+    //   - every match, when the broadcast lookup itself failed. A live fixture
+    //     whose only route is a TV channel would otherwise vanish from the site
+    //     because an optional enrichment was unavailable.
     const playable = streams.length > 0 || broadcasts.length > 0;
-    if (!playable && !unresolvedMatches.has(matchIndex)) return;
+    if (!playable && !unresolvedMatches.has(matchIndex) && broadcastsKnown) return;
 
     catalog.push({ ...match, streams, broadcasts, isLive: currentLiveState(match, now) });
   });
@@ -137,8 +146,8 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
 
 function resolveBroadcastsFor(
   match: Match,
-  games: Awaited<ReturnType<typeof fetchPromiedosGames>>,
-  channels: Awaited<ReturnType<typeof getChannelCatalog>>,
+  games: PromiedosGame[],
+  channels: Channel[],
   now: number,
 ): BroadcastChannel[] {
   if (games.length === 0 || channels.length === 0) return [];
