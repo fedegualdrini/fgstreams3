@@ -130,7 +130,49 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
   return normalizeMatches(await fetchAllMatches());
 }
 
-export async function fetchStreams(source: string, id: string): Promise<Stream[]> {
+/**
+ * The outcome of a stream lookup.
+ *
+ * `ok: false` means the lookup failed, which is emphatically not the same as a
+ * source carrying no streams: over half of them legitimately return nothing,
+ * and callers decide whether a match is watchable on exactly that basis. A
+ * failed request reported as "empty" silently removes a live event.
+ */
+export interface StreamLookup {
+  streams: Stream[];
+  ok: boolean;
+}
+
+function toStreams(raw: unknown, source: string): Stream[] | null {
+  // streamed.pk returns either an array of streams or a single stream object.
+  // Both shapes are validated with Zod then normalized to Stream[].
+  const arrayResult = RawStreamArraySchema.safeParse(raw);
+  if (arrayResult.success) {
+    return arrayResult.data.map((stream) => ({
+      url: stream.url || stream.embedUrl || '',
+      embedUrl: stream.embedUrl || stream.url || '',
+      language: stream.language,
+      quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
+      source: stream.source || source,
+    }));
+  }
+
+  const singleResult = RawStreamSchema.safeParse(raw);
+  if (singleResult.success) {
+    const stream = singleResult.data;
+    return [{
+      url: stream.url || stream.embedUrl || '',
+      embedUrl: stream.embedUrl || stream.url || '',
+      language: stream.language,
+      quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
+      source: stream.source || source,
+    }];
+  }
+
+  return null;
+}
+
+export async function fetchStreamLookup(source: string, id: string): Promise<StreamLookup> {
   try {
     const response = await fetchWithRetry(`${API_BASE}/stream/${source}/${id}`, {
       next: { revalidate: REVALIDATE_STREAMS },
@@ -138,41 +180,24 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
     });
     if (!response.ok) {
       console.error(`Failed to fetch streams for ${source}/${id}: ${response.status} ${response.statusText}`);
-      return [];
-    }
-    const raw = await response.json();
-
-    // streamed.pk returns either an array of streams or a single stream object.
-    // Both shapes are validated with Zod then normalized to Stream[].
-    const arrayResult = RawStreamArraySchema.safeParse(raw);
-    if (arrayResult.success) {
-      return arrayResult.data.map((stream) => ({
-        url: stream.url || stream.embedUrl || '',
-        embedUrl: stream.embedUrl || stream.url || '',
-        language: stream.language,
-        quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
-        source: stream.source || source,
-      }));
+      return { streams: [], ok: false };
     }
 
-    const singleResult = RawStreamSchema.safeParse(raw);
-    if (singleResult.success) {
-      const stream = singleResult.data;
-      return [{
-        url: stream.url || stream.embedUrl || '',
-        embedUrl: stream.embedUrl || stream.url || '',
-        language: stream.language,
-        quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
-        source: stream.source || source,
-      }];
+    const streams = toStreams(await response.json(), source);
+    if (streams === null) {
+      console.warn(`fetchStreams: unexpected response shape for ${source}/${id}`);
+      return { streams: [], ok: false };
     }
-
-    console.warn(`fetchStreams: unexpected response shape for ${source}/${id}`);
-    return [];
+    return { streams, ok: true };
   } catch (error) {
     console.error(`Error fetching streams for ${source}/${id}:`, error);
-    return [];
+    return { streams: [], ok: false };
   }
+}
+
+/** Streams only. Use `fetchStreamLookup` where a failed lookup must be told apart from an empty one. */
+export async function fetchStreams(source: string, id: string): Promise<Stream[]> {
+  return (await fetchStreamLookup(source, id)).streams;
 }
 
 export async function fetchSports(): Promise<Sport[]> {

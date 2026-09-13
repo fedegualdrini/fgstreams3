@@ -7,12 +7,13 @@ vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
 
 const fetchAllMatches = vi.fn<() => Promise<RawMatch[]>>();
 const fetchLiveMatchIds = vi.fn(async () => new Set<string>());
-const fetchStreams = vi.fn(async () => [{ url: 'https://a.example/s', embedUrl: 'https://a.example/s' }]);
+const stream = { url: 'https://a.example/s', embedUrl: 'https://a.example/s' };
+const fetchStreamLookup = vi.fn(async () => ({ streams: [stream], ok: true }));
 
 vi.mock('./api', () => ({
   fetchAllMatches: () => fetchAllMatches(),
   fetchLiveMatchIds: () => fetchLiveMatchIds(),
-  fetchStreams: () => fetchStreams(),
+  fetchStreamLookup: () => fetchStreamLookup(),
 }));
 vi.mock('./promiedos', () => ({
   fetchPromiedosGames: async () => ({ games: [], ok: true, stale: false }),
@@ -39,7 +40,8 @@ const match = (id: string): RawMatch => ({
 describe('getCatalog', () => {
   beforeEach(() => {
     fetchAllMatches.mockReset();
-    fetchStreams.mockClear();
+    fetchStreamLookup.mockClear();
+    fetchStreamLookup.mockResolvedValue({ streams: [stream], ok: true });
   });
 
   it('returns the listable matches when the feed is healthy', async () => {
@@ -79,5 +81,19 @@ describe('getCatalog', () => {
     fetchAllMatches.mockResolvedValue([]);
     const fallback = await getCatalog();
     expect(fallback.map(m => m.id)).toEqual(['recent']);
+  });
+
+  it('drops a match whose sources genuinely carry nothing', async () => {
+    fetchAllMatches.mockResolvedValue([match('a')]);
+    fetchStreamLookup.mockResolvedValue({ streams: [], ok: true });
+    expect(await getCatalog()).toEqual([]);
+  });
+
+  it('keeps a match whose stream lookup failed', async () => {
+    fetchAllMatches.mockResolvedValue([match('a')]);
+    // A failed request carries no information about what the source holds, so
+    // judging the match unwatchable on it would remove a live event.
+    fetchStreamLookup.mockResolvedValue({ streams: [], ok: false });
+    expect((await getCatalog()).map(m => m.id)).toEqual(['a']);
   });
 });
