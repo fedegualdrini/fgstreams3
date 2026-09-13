@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { extractNextData, parsePromiedosPayload, fetchPromiedosGames } from '@/lib/promiedos';
-import { getChannelCatalog } from '@/lib/channelCatalog';
+import { getChannelCatalog, getStaticChannelCatalog } from '@/lib/channelCatalog';
+import { fetchAngulismoData } from '@/lib/angulismo';
 import { getCatalog } from '@/lib/catalog';
 import { fetchAllMatches, fetchStreams } from '@/lib/api';
 import { normalizeMatches, matchStartMs } from '@/lib/matchUtils';
-import { estimateFeedOffsetMs, findPromiedosGame } from '@/lib/teamMatch';
-import { resolveBroadcastChannels } from '@/lib/broadcasters';
+import { estimateFeedOffsetMs, findFixture } from '@/lib/teamMatch';
+import { broadcastsFromEvent, mergeBroadcasts, resolveBroadcastChannels } from '@/lib/broadcasters';
 
 /**
  * Reports whether the broadcast pipeline can reach its upstream from wherever
@@ -68,9 +69,11 @@ const hit = (query: string, ...fields: Array<string | undefined>) =>
 export async function GET(request: Request) {
   const query = (new URL(request.url).searchParams.get('q') ?? '').toLowerCase().trim();
 
-  const [pages, channels] = await Promise.all([
+  const [pages, channels, staticChannels, angulismo] = await Promise.all([
     Promise.all(PAGES.map(probe)),
-    getChannelCatalog().then(c => c).catch(() => []),
+    getChannelCatalog().catch(() => []),
+    getStaticChannelCatalog().catch(() => []),
+    fetchAngulismoData().catch(() => ({ events: [], channels: [], ok: false, stale: false })),
   ]);
 
   // The same call the catalog makes, rather than a hand-rolled fetch.
@@ -83,13 +86,23 @@ export async function GET(request: Request) {
 
   const base = {
     region: process.env.VERCEL_REGION ?? 'local',
-    channelCatalogSize: channels.length,
+    channelCatalog: {
+      shipped: staticChannels.length,
+      afterLiveRefresh: channels.length,
+      refreshed: channels.length !== staticChannels.length || angulismo.ok,
+    },
     pageProbes: pages,
-    pipelineLookup: {
+    promiedos: {
       ok: snapshot.ok,
       stale: snapshot.stale,
       fixtures: snapshot.games.length,
       error: 'error' in snapshot ? snapshot.error : undefined,
+    },
+    angulismo: {
+      ok: angulismo.ok,
+      stale: angulismo.stale,
+      events: angulismo.events.length,
+      channels: angulismo.channels.length,
     },
   };
 
@@ -103,22 +116,27 @@ export async function GET(request: Request) {
 
   // Promiedos localises kickoff to the requesting IP, so the feeds' clocks are
   // aligned by measurement. A non-zero value here is the region showing itself.
-  const offsetMs = estimateFeedOffsetMs(
-    normalized.flatMap(m => {
-      const startMs = matchStartMs(m, now);
-      return startMs === undefined ? [] : [{ team1: m.team1, team2: m.team2, startMs }];
-    }),
-    snapshot.games,
-  );
+  const datedMatches = normalized.flatMap(m => {
+    const startMs = matchStartMs(m, now);
+    return startMs === undefined ? [] : [{ team1: m.team1, team2: m.team2, startMs }];
+  });
+  const offsetMs = estimateFeedOffsetMs(datedMatches, snapshot.games);
+  const angulismoOffsetMs = estimateFeedOffsetMs(datedMatches, angulismo.events) ?? 0;
 
   const traced = await Promise.all(
     rawHits.slice(0, 3).map(async match => {
       const streams = (
         await Promise.all((match.sources ?? []).map(s => fetchStreams(s.source, s.id)))
       ).flat();
-      const fixture = findPromiedosGame(
-        match.team1, match.team2, matchStartMs(match, now), snapshot.games, { offsetMs },
+      const startMs = matchStartMs(match, now);
+      const fixture = findFixture(match.team1, match.team2, startMs, snapshot.games, { offsetMs });
+      const event = findFixture(
+        match.team1, match.team2, startMs, angulismo.events, { offsetMs: angulismoOffsetMs },
       );
+
+      const fromEvent = event ? broadcastsFromEvent(event, channels) : [];
+      const fromPromiedos = fixture ? resolveBroadcastChannels(fixture, channels) : [];
+
       return {
         id: match.id,
         teams: `${match.team1} vs ${match.team2}`,
@@ -128,9 +146,11 @@ export async function GET(request: Request) {
         promiedosFixture: fixture
           ? { league: fixture.league, leagueId: fixture.leagueId, networks: fixture.networks }
           : null,
-        resolvedBroadcasts: fixture
-          ? resolveBroadcastChannels(fixture, channels).map(b => b.channel)
-          : [],
+        angulismoEvent: event
+          ? { competition: event.competition, channels: event.channels.map(c => `${c.name}(${c.options.length})`) }
+          : null,
+        resolvedBroadcasts: mergeBroadcasts(fromEvent, fromPromiedos)
+          .map(b => `${b.channel}(${b.options.length})`),
       };
     }),
   );
@@ -142,8 +162,9 @@ export async function GET(request: Request) {
       ...base,
       query,
       feedOffset: {
-        ms: offsetMs,
-        hours: offsetMs === null ? null : offsetMs / 3_600_000,
+        promiedosMs: offsetMs,
+        promiedosHours: offsetMs === null ? null : offsetMs / 3_600_000,
+        angulismoHours: angulismoOffsetMs / 3_600_000,
       },
       promiedosFixturesMatching: snapshot.games
         .filter(g => hit(query, g.homeTeam, g.awayTeam))

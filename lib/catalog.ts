@@ -1,12 +1,15 @@
 import { unstable_cache } from 'next/cache';
-import type { BroadcastChannel, CatalogMatch, Match, PromiedosGame, Stream } from '@/types/api';
+import type {
+  AngulismoEvent, BroadcastChannel, CatalogMatch, Match, PromiedosGame, Stream,
+} from '@/types/api';
 import { fetchAllMatches, fetchLiveMatchIds, fetchStreams } from './api';
 import { normalizeMatches, matchStartMs } from './matchUtils';
 import { fetchPromiedosGames } from './promiedos';
-import { estimateFeedOffsetMs, findPromiedosGame } from './teamMatch';
+import { fetchAngulismoData } from './angulismo';
+import { estimateFeedOffsetMs, findFixture } from './teamMatch';
 import { getChannelCatalog } from './channelCatalog';
 import type { Channel } from '@/types/channels';
-import { resolveBroadcastChannels } from './broadcasters';
+import { broadcastsFromEvent, mergeBroadcasts, resolveBroadcastChannels } from './broadcasters';
 import {
   CATALOG_CONCURRENCY,
   CATALOG_FUTURE_HOURS,
@@ -79,17 +82,19 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
   const deadline = now + CATALOG_TIME_BUDGET_MS;
 
-  const [rawMatches, liveIds, broadcastSnapshot, channels] = await Promise.all([
+  const [rawMatches, liveIds, broadcastSnapshot, angulismo, channels] = await Promise.all([
     fetchAllMatches(),
     fetchLiveMatchIds(),
-    // Broadcast data is a bonus; never let it fail the catalog.
+    // Broadcast data is a bonus; never let either source fail the catalog.
     fetchPromiedosGames().catch(() => ({ games: [], ok: false, stale: false })),
+    fetchAngulismoData().catch(() => ({ events: [], channels: [], ok: false, stale: false })),
     getChannelCatalog().catch(() => [] as Channel[]),
   ]);
 
-  // Only with both halves of the lookup can we say a match has no broadcaster.
-  // Without them we know nothing, which is a different thing entirely.
-  const broadcastsKnown = broadcastSnapshot.ok && channels.length > 0;
+  // Only with a working lookup and a channel catalog can we say a match has no
+  // broadcaster. Without them we know nothing, which is a different thing.
+  const broadcastsKnown =
+    (broadcastSnapshot.ok || angulismo.ok) && channels.length > 0;
 
   const matches = normalizeMatches(rawMatches, now)
     .filter(match => isListable(match, now))
@@ -123,23 +128,28 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
     streamsByMatch.set(ref.matchIndex, bucket);
   });
 
+  const datedMatches = matches.flatMap(match => {
+    const startMs = matchStartMs(match, now);
+    return startMs === undefined ? [] : [{ team1: match.team1, team2: match.team2, startMs }];
+  });
+
   // Promiedos renders kickoff in the requesting IP's timezone, so the offset
   // between the feeds is measured once per build rather than assumed.
-  const broadcastOffsetMs = estimateFeedOffsetMs(
-    matches.flatMap(match => {
-      const startMs = matchStartMs(match, now);
-      return startMs === undefined ? [] : [{ team1: match.team1, team2: match.team2, startMs }];
-    }),
-    broadcastSnapshot.games,
-  );
+  const promiedosOffsetMs = estimateFeedOffsetMs(datedMatches, broadcastSnapshot.games);
+  // The angulismo feed is a static file, so its Argentina-local times are the
+  // same for every caller and zero is the known-correct fallback.
+  const angulismoOffsetMs = estimateFeedOffsetMs(datedMatches, angulismo.events) ?? 0;
 
   const catalog: CatalogMatch[] = [];
 
   matches.forEach((match, matchIndex) => {
     const streams = streamsByMatch.get(matchIndex) ?? [];
-    const broadcasts = resolveBroadcastsFor(
-      match, broadcastSnapshot.games, channels, now, broadcastOffsetMs,
-    );
+    const broadcasts = resolveBroadcastsFor(match, channels, now, {
+      promiedosGames: broadcastSnapshot.games,
+      promiedosOffsetMs,
+      angulismoEvents: angulismo.events,
+      angulismoOffsetMs,
+    });
 
     // Drop matches nobody can watch: no working Streamed source and no channel
     // carrying it. Two cases are deliberately kept instead:
@@ -156,20 +166,46 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
   return catalog;
 }
 
+interface BroadcastSources {
+  promiedosGames: PromiedosGame[];
+  promiedosOffsetMs: number | null;
+  angulismoEvents: AngulismoEvent[];
+  angulismoOffsetMs: number | null;
+}
+
+/**
+ * Channels carrying this match, angulismo first.
+ *
+ * Order matters: the angulismo feed supplies working URLs for the fixture
+ * itself, whereas Promiedos supplies a broadcaster name that we then resolve
+ * against a catalog that may be out of date. Promiedos still contributes the
+ * channels angulismo did not list, and covers far more competitions.
+ */
 function resolveBroadcastsFor(
   match: Match,
-  games: PromiedosGame[],
   channels: Channel[],
   now: number,
-  offsetMs: number | null,
+  sources: BroadcastSources,
 ): BroadcastChannel[] {
-  if (games.length === 0 || channels.length === 0) return [];
   if (!match.team2) return [];
 
-  const game = findPromiedosGame(
-    match.team1, match.team2, matchStartMs(match, now), games, { offsetMs },
+  const startMs = matchStartMs(match, now);
+
+  const event = findFixture(
+    match.team1, match.team2, startMs, sources.angulismoEvents,
+    { offsetMs: sources.angulismoOffsetMs },
   );
-  return game ? resolveBroadcastChannels(game, channels) : [];
+  const fromEvent = event ? broadcastsFromEvent(event, channels) : [];
+
+  if (channels.length === 0) return fromEvent;
+
+  const game = findFixture(
+    match.team1, match.team2, startMs, sources.promiedosGames,
+    { offsetMs: sources.promiedosOffsetMs },
+  );
+  const fromPromiedos = game ? resolveBroadcastChannels(game, channels) : [];
+
+  return mergeBroadcasts(fromEvent, fromPromiedos);
 }
 
 /**

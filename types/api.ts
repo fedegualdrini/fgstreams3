@@ -174,3 +174,28 @@ export interface CatalogMatch extends Match {
   // Whether the upstream live feed listed this match when the catalog was built.
   liveHint: boolean;
 }
+
+// ─── angulismotv feed ────────────────────────────────────────────────────────
+
+// A fixture from the angulismo feed, already paired with the channels carrying
+// it and the iframe URLs that play them.
+export interface AngulismoEvent {
+  id: string;
+  title: string;
+  competition: string;
+  homeTeam: string;
+  awayTeam: string;
+  // Kickoff in epoch ms. The feed is a static file, so its Argentina-local
+  // times mean the same thing to every caller.
+  startTimeMs: number;
+  channels: import('./channels').Channel[];
+}
+
+export interface AngulismoSnapshot {
+  events: AngulismoEvent[];
+  channels: import('./channels').Channel[];
+  /** Whether the lookup succeeded; false means "unknown", not "nothing there". */
+  ok: boolean;
+  /** True when the data came from the last good lookup rather than this one. */
+  stale: boolean;
+}

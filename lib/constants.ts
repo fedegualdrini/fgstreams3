@@ -11,9 +11,14 @@ export const REVALIDATE_CATALOG = 60;
 // Promiedos broadcast data changes slowly — a fixture's TV network is set days
 // ahead — so it is cached far longer than live match data.
 export const REVALIDATE_BROADCASTS = 900;
-// Broadcast data is optional, so it gets a short leash: a slow Promiedos must
+// Broadcast data is optional, so it gets a short leash: a slow upstream must
 // never hold up a render.
 export const PROMIEDOS_TIMEOUT_MS = 6_000;
+export const ANGULISMO_TIMEOUT_MS = 6_000;
+
+// The angulismo feed carries today's and tomorrow's fixtures with live stream
+// URLs, so it is refreshed more eagerly than the Promiedos broadcaster list.
+export const REVALIDATE_ANGULISMO = 600;
 
 // Catalog build limits. 64 parallel requests resolve ~470 stream endpoints in
 // under 3s; the budget caps a slow upstream so a render can never hang.

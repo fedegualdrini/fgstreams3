@@ -78,3 +78,25 @@ export const RawStreamArraySchema = z.array(RawStreamSchema);
 export const RawMatchArraySchema = z.array(RawMatchSchema);
 export const SportArraySchema = z.array(SportSchema);
 export const ChannelArraySchema = z.array(ChannelSchema);
+
+// ─── angulismotv feed ────────────────────────────────────────────────────────
+
+const AngulismoChannelSchema = z.object({
+  name: z.string(),
+  logo: z.string().optional(),
+  options: z.array(ChannelOptionSchema).optional(),
+}).passthrough();
+
+const AngulismoEventSchema = z.object({
+  id: z.union([z.number(), z.string()]).optional(),
+  evento: z.string().optional(),
+  fecha: z.string().optional(),
+  competencia: z.string().optional(),
+  logoUrl: z.string().optional(),
+  canales: z.array(AngulismoChannelSchema).optional(),
+}).passthrough();
+
+export const AngulismoDataSchema = z.object({
+  events: z.array(AngulismoEventSchema).default([]),
+  channels: z.array(AngulismoChannelSchema).default([]),
+}).passthrough();

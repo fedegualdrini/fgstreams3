@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeNetworkName, resolveBroadcastChannels } from './broadcasters';
-import type { PromiedosGame } from '@/types/api';
+import {
+  normalizeNetworkName,
+  resolveBroadcastChannels,
+  broadcastsFromEvent,
+  mergeBroadcasts,
+} from './broadcasters';
+import type { AngulismoEvent, BroadcastChannel, PromiedosGame } from '@/types/api';
 import type { Channel } from '@/types/channels';
 
 const channels: Channel[] = [
@@ -87,5 +92,64 @@ describe('resolveBroadcastChannels', () => {
       channels,
     );
     expect(resolved.map(r => r.channel)).toEqual(['ESPN Premium']);
+  });
+});
+
+describe('broadcastsFromEvent', () => {
+  const event = (channelName: string, urls: string[]): AngulismoEvent => ({
+    id: '58',
+    title: 'Liga Profesional: Talleres Córdoba vs. Unión Santa Fe',
+    competition: 'Liga Profesional Argentina',
+    homeTeam: 'Talleres Córdoba',
+    awayTeam: 'Unión Santa Fe',
+    startTimeMs: Date.parse('2026-09-12T23:00:00.000Z'),
+    channels: [{
+      name: channelName,
+      logo: 'event.png',
+      show: true,
+      options: urls.map((iframe, i) => ({ name: `Opción ${i + 1}`, iframe })),
+    }],
+  });
+
+  it('puts the feed URLs ahead of the ones we already hold', () => {
+    const resolved = broadcastsFromEvent(event('ESPN Premium', ['https://fresh.example/a']), channels);
+    expect(resolved).toHaveLength(1);
+    expect(resolved[0].channel).toBe('ESPN Premium');
+    expect(resolved[0].options.map(o => o.iframe)).toEqual([
+      'https://fresh.example/a',
+      'https://a.example/espnp',
+    ]);
+  });
+
+  it('offers channels missing from our catalog on their own', () => {
+    const resolved = broadcastsFromEvent(event('Win+ Fútbol', ['https://fresh.example/w']), channels);
+    expect(resolved[0]).toMatchObject({ channel: 'Win+ Fútbol', logo: 'event.png' });
+    expect(resolved[0].options).toHaveLength(1);
+  });
+
+  it('skips a channel whose options are all unplayable', () => {
+    expect(broadcastsFromEvent(event('Nowhere', ['undefined']), channels)).toEqual([]);
+  });
+
+  it('prefers our display name when the channel is one we know', () => {
+    const resolved = broadcastsFromEvent(event('espn  premium', ['https://fresh.example/a']), channels);
+    expect(resolved[0].channel).toBe('ESPN Premium');
+    expect(resolved[0].network).toBe('espn  premium');
+  });
+});
+
+describe('mergeBroadcasts', () => {
+  const b = (channel: string): BroadcastChannel => ({
+    network: channel, channel, logo: '', options: [{ name: 'o', iframe: 'https://a.example/x' }],
+  });
+
+  it('appends only channels not already present', () => {
+    const merged = mergeBroadcasts([b('ESPN Premium')], [b('ESPN Premium'), b('Superliga Argentina')]);
+    expect(merged.map(x => x.channel)).toEqual(['ESPN Premium', 'Superliga Argentina']);
+  });
+
+  it('compares names loosely', () => {
+    const merged = mergeBroadcasts([b('TyC Sports')], [b('TYC  Sports')]);
+    expect(merged).toHaveLength(1);
   });
 });

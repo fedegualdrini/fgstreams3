@@ -32,7 +32,8 @@ A Next.js sports streaming app with match listings, match detail playback, live 
 ## External Data Sources
 
 - **Streamed API** (`https://streamed.pk/api`) for matches (`/matches/all-today`), the live feed (`/matches/live`), per-match streams, and Streamed-hosted images.
-- **Promiedos** (`https://www.promiedos.com.ar`) for fixture broadcasters, read from the `__NEXT_DATA__` payload embedded in the page. Promiedos renders kickoff in the requesting IP's timezone, so the offset between the two feeds is measured per build rather than assumed — see `estimateFeedOffsetMs` in `lib/teamMatch.ts`.
+- **Promiedos** (`https://www.promiedos.com.ar`) for fixture broadcasters, read from the `__NEXT_DATA__` payload embedded in the page. Broad competition coverage, but it only names the broadcaster. Promiedos renders kickoff in the requesting IP's timezone, so the offset between feeds is measured per build rather than assumed — see `estimateFeedOffsetMs` in `lib/teamMatch.ts`.
+- **angulismotv feed** (`datos.json`, the file behind angulismotv.pages.dev) for both a channel catalog and a fixture→channel mapping that already carries playable URLs. Narrower coverage than Promiedos, so the two are merged with this one first.
 - **Flashscore mobile pages** through local API routes for live scores and match detail data.
 - **TMDB API** for movie and TV search metadata. Set `TMDB_API_KEY` before using the Movies page search routes.
 - **Local channel catalog** from `public/channels.json`.
@@ -126,9 +127,10 @@ lib/
   constants.ts                     Cache and timeout constants
   dateUtils.ts                     Client-safe date formatting helpers
   flashscore.ts                    Flashscore scraping/parsing helpers
-  broadcasters.ts                  Promiedos network → local channel resolution
+  angulismo.ts                     angulismotv feed: live channels and fixture broadcasters
+  broadcasters.ts                  Broadcaster → local channel resolution for both feeds
   catalog.ts                       Cached match catalog with resolved streams and broadcasts
-  channelCatalog.ts                Shared channels.json loader
+  channelCatalog.ts                Shipped channels.json merged with the live catalog
   matchUtils.ts                    Match normalization, liveness, and image helpers
   promiedos.ts                     Promiedos fixture/broadcaster scraping
   teamMatch.ts                     Fuzzy fixture matching and feed clock alignment

@@ -4,7 +4,7 @@ import {
   teamTokens,
   tokenOverlap,
   teamPairScore,
-  findPromiedosGame,
+  findFixture,
   estimateFeedOffsetMs,
   KICKOFF_TOLERANCE_MS,
 } from './teamMatch';
@@ -64,7 +64,7 @@ describe('teamPairScore', () => {
   });
 });
 
-describe('findPromiedosGame', () => {
+describe('findFixture', () => {
   const kickoff = Date.parse('2026-09-12T23:00:00.000Z');
 
   const game = (overrides: Partial<PromiedosGame> = {}): PromiedosGame => ({
@@ -80,12 +80,12 @@ describe('findPromiedosGame', () => {
   });
 
   it('finds the fixture despite different spellings', () => {
-    const found = findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', kickoff, [game()]);
+    const found = findFixture('Talleres Cordoba', 'Union Santa Fe', kickoff, [game()]);
     expect(found?.id).toBe('g1');
   });
 
   it('rejects the same clubs at a different kickoff', () => {
-    const found = findPromiedosGame(
+    const found = findFixture(
       'Talleres Cordoba',
       'Union Santa Fe',
       kickoff + KICKOFF_TOLERANCE_MS + 60_000,
@@ -95,24 +95,24 @@ describe('findPromiedosGame', () => {
   });
 
   it('tolerates small kickoff drift between feeds', () => {
-    const found = findPromiedosGame(
+    const found = findFixture(
       'Talleres Cordoba', 'Union Santa Fe', kickoff + 10 * 60 * 1000, [game()],
     );
     expect(found?.id).toBe('g1');
   });
 
   it('returns null when no fixture is similar enough', () => {
-    const found = findPromiedosGame('Arsenal', 'Chelsea', kickoff, [game()]);
+    const found = findFixture('Arsenal', 'Chelsea', kickoff, [game()]);
     expect(found).toBeNull();
   });
 
   it('ignores kickoff when the match has no start time', () => {
-    const found = findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', undefined, [game()]);
+    const found = findFixture('Talleres Cordoba', 'Union Santa Fe', undefined, [game()]);
     expect(found?.id).toBe('g1');
   });
 
   it('returns null without both team names', () => {
-    expect(findPromiedosGame('Talleres Cordoba', '', kickoff, [game()])).toBeNull();
+    expect(findFixture('Talleres Cordoba', '', kickoff, [game()])).toBeNull();
   });
 });
 
@@ -170,16 +170,16 @@ describe('estimateFeedOffsetMs', () => {
     const offsetMs = estimateFeedOffsetMs(streamedMatches, games);
 
     // Without the correction the fixture is two hours out and is rejected.
-    expect(findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', base, games)).toBeNull();
+    expect(findFixture('Talleres Cordoba', 'Union Santa Fe', base, games)).toBeNull();
     expect(
-      findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', base, games, { offsetMs })?.id,
+      findFixture('Talleres Cordoba', 'Union Santa Fe', base, games, { offsetMs })?.id,
     ).toBe('g0');
   });
 
   it('falls back to name-only matching when the offset is unknown', () => {
     const games = gamesShiftedBy(-2 * HOUR);
     expect(
-      findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', base, games, { offsetMs: null })?.id,
+      findFixture('Talleres Cordoba', 'Union Santa Fe', base, games, { offsetMs: null })?.id,
     ).toBe('g0');
   });
 });

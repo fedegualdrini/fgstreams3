@@ -1,14 +1,19 @@
-import type { PromiedosGame } from '@/types/api';
-
 /**
- * Fuzzy matching between Streamed match titles and Promiedos fixtures.
+ * Fuzzy matching between Streamed match titles and an external fixture list.
  *
- * The two feeds name the same club differently: Streamed strips accents and
- * particles ("Talleres Cordoba", "Union Santa Fe") while Promiedos writes them
- * out ("Talleres de Córdoba", "Unión de Santa Fe"). Comparing raw strings never
- * matches, so both sides are folded to accent-free token sets and scored by
- * overlap, with kickoff time used as a hard gate.
+ * Feeds name the same club differently: Streamed strips accents and particles
+ * ("Talleres Cordoba", "Union Santa Fe") where others write them out ("Talleres
+ * de Córdoba", "Unión de Santa Fe"). Comparing raw strings never matches, so
+ * both sides are folded to accent-free token sets and scored by overlap, with
+ * kickoff time used as a hard gate.
  */
+
+/** The minimum any fixture list must provide to be matched against. */
+export interface Fixture {
+  homeTeam: string;
+  awayTeam: string;
+  startTimeMs: number;
+}
 
 // Words that carry no identifying information for a club name.
 const NOISE_TOKENS = new Set([
@@ -101,14 +106,14 @@ const MIN_OFFSET_SAMPLES = 3;
  */
 export function estimateFeedOffsetMs(
   matches: Array<{ team1: string; team2: string; startMs: number }>,
-  games: PromiedosGame[],
+  games: Fixture[],
 ): number | null {
   const votes = new Map<number, number>();
 
   for (const match of matches) {
     if (!match.team1 || !match.team2 || !Number.isFinite(match.startMs)) continue;
 
-    let best: PromiedosGame | null = null;
+    let best: Fixture | null = null;
     let bestScore = 0;
     let ambiguous = false;
 
@@ -146,7 +151,7 @@ export function estimateFeedOffsetMs(
   return winningVotes >= MIN_OFFSET_SAMPLES ? winner : null;
 }
 
-export interface FindPromiedosGameOptions {
+export interface FindFixtureOptions {
   /**
    * Clock offset to add to Promiedos kickoffs before comparing, from
    * `estimateFeedOffsetMs`. null disables the time gate — the offset is unknown,
@@ -157,17 +162,17 @@ export interface FindPromiedosGameOptions {
 }
 
 /**
- * Find the Promiedos fixture for a Streamed match. A wrong match attaches the
- * wrong TV channel, which is worse than attaching none, so the names must agree
- * and — when the feeds' clocks can be aligned — so must the kickoff.
+ * Find the fixture matching a Streamed match. A wrong match attaches the wrong
+ * TV channel, which is worse than attaching none, so the names must agree and —
+ * when the feeds' clocks can be aligned — so must the kickoff.
  */
-export function findPromiedosGame(
+export function findFixture<T extends Fixture>(
   team1: string,
   team2: string,
   startTimeMs: number | undefined,
-  games: PromiedosGame[],
-  options: FindPromiedosGameOptions = {},
-): PromiedosGame | null {
+  games: T[],
+  options: FindFixtureOptions = {},
+): T | null {
   if (!team1 || !team2) return null;
 
   const { offsetMs = 0 } = options;
@@ -176,7 +181,7 @@ export function findPromiedosGame(
   const threshold =
     options.threshold ?? (compareTimes ? TEAM_MATCH_THRESHOLD : STRONG_TEAM_MATCH_THRESHOLD);
 
-  let best: PromiedosGame | null = null;
+  let best: T | null = null;
   let bestScore = 0;
 
   for (const game of games) {

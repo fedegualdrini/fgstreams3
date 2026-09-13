@@ -1,4 +1,4 @@
-import type { BroadcastChannel, PromiedosGame } from '@/types/api';
+import type { AngulismoEvent, BroadcastChannel, PromiedosGame } from '@/types/api';
 import type { Channel } from '@/types/channels';
 import { isValidStreamUrl } from './urlValidation';
 import { normalizeText } from './teamMatch';
@@ -167,4 +167,57 @@ export function resolveBroadcastChannels(
   }
 
   return resolved;
+}
+
+/**
+ * Channels for a fixture the angulismo feed already knows about.
+ *
+ * This path is stronger than the Promiedos one because the feed carries the
+ * playable URLs itself: there is no name to resolve and no chance of resolving
+ * it wrongly. Where we also hold the channel locally, the two option lists are
+ * merged — live URLs first, ours behind them — and where we do not, the feed's
+ * channel is offered on its own, which is how channels missing from our catalog
+ * (regional feeds, pay-per-view) become available at all.
+ */
+export function broadcastsFromEvent(
+  event: AngulismoEvent,
+  channels: Channel[],
+): BroadcastChannel[] {
+  const resolved: BroadcastChannel[] = [];
+  const seen = new Set<string>();
+
+  for (const eventChannel of event.channels) {
+    const local = findChannel(channels, eventChannel.name);
+    const name = local?.name ?? eventChannel.name;
+    if (seen.has(name)) continue;
+
+    const liveUrls = new Set(eventChannel.options.map((option) => option.iframe));
+    const options = [
+      ...eventChannel.options,
+      ...(local?.options ?? []).filter((option) => !liveUrls.has(option.iframe)),
+    ].filter((option) => isValidStreamUrl(option.iframe));
+    if (options.length === 0) continue;
+
+    seen.add(name);
+    resolved.push({
+      network: eventChannel.name,
+      channel: name,
+      logo: local?.logo || eventChannel.logo,
+      options,
+    });
+  }
+
+  return resolved;
+}
+
+/** Append `extra` entries for channels not already present in `primary`. */
+export function mergeBroadcasts(
+  primary: BroadcastChannel[],
+  extra: BroadcastChannel[],
+): BroadcastChannel[] {
+  const seen = new Set(primary.map((broadcast) => normalizeText(broadcast.channel)));
+  return [
+    ...primary,
+    ...extra.filter((broadcast) => !seen.has(normalizeText(broadcast.channel))),
+  ];
 }
