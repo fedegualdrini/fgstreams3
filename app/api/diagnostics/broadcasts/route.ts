@@ -1,19 +1,24 @@
 import { NextResponse } from 'next/server';
-import { extractNextData, parsePromiedosPayload } from '@/lib/promiedos';
+import { extractNextData, parsePromiedosPayload, fetchPromiedosGames } from '@/lib/promiedos';
 import { getChannelCatalog } from '@/lib/channelCatalog';
+import { getCatalog, buildCatalogUncached } from '@/lib/catalog';
+import { fetchAllMatches, fetchStreams } from '@/lib/api';
+import { normalizeMatches, matchStartMs } from '@/lib/matchUtils';
+import { findPromiedosGame } from '@/lib/teamMatch';
+import { resolveBroadcastChannels } from '@/lib/broadcasters';
 
 /**
  * Reports whether the broadcast pipeline can reach its upstream from wherever
- * this is deployed.
+ * this is deployed, and — with `?q=` — traces one match through every stage.
  *
- * The Promiedos lookup works from a residential connection but not from every
- * host, and a failure is invisible in the UI — it just means fewer matches show
- * a channel. This endpoint makes the failure mode legible: per page, what came
- * back and how far parsing got.
+ * The stages are reported separately on purpose. A raw page probe only proves
+ * the host is reachable; it says nothing about the same fetch running inside
+ * `unstable_cache`, and a fresh build compared against the cached one separates
+ * a resolution failure from a stale-cache failure.
  */
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const PROMIEDOS_BASE = 'https://www.promiedos.com.ar';
 const PAGES = ['/ayer', '/', '/man'];
@@ -42,14 +47,9 @@ async function probe(path: string) {
       ms: Date.now() - startedAt,
       status: response.status,
       bytes: body.length,
-      server: response.headers.get('server'),
-      cfRay: response.headers.get('cf-ray'),
-      contentType: response.headers.get('content-type'),
       nextDataFound: payload !== null,
       fixturesWithTv: games.length,
-      // The first 300 characters say whether this is the site, a challenge
-      // page, or a block notice.
-      bodyHead: body.slice(0, 300),
+      bodyHead: body.slice(0, 160),
     };
   } catch (error) {
     return {
@@ -60,17 +60,86 @@ async function probe(path: string) {
   }
 }
 
-export async function GET() {
+const hit = (query: string, ...fields: Array<string | undefined>) =>
+  fields.some(field => (field ?? '').toLowerCase().includes(query));
+
+export async function GET(request: Request) {
+  const query = (new URL(request.url).searchParams.get('q') ?? '').toLowerCase().trim();
+
   const [pages, channels] = await Promise.all([
     Promise.all(PAGES.map(probe)),
-    getChannelCatalog().then(c => c.length).catch(e => `failed: ${String(e)}`),
+    getChannelCatalog().then(c => c).catch(() => []),
   ]);
+
+  // The same call the catalog makes, rather than a hand-rolled fetch.
+  const snapshot = await fetchPromiedosGames().catch(error => ({
+    games: [],
+    ok: false,
+    stale: false,
+    error: String(error),
+  }));
+
+  const base = {
+    region: process.env.VERCEL_REGION ?? 'local',
+    channelCatalogSize: channels.length,
+    pageProbes: pages,
+    pipelineLookup: {
+      ok: snapshot.ok,
+      stale: snapshot.stale,
+      fixtures: snapshot.games.length,
+      error: 'error' in snapshot ? snapshot.error : undefined,
+    },
+  };
+
+  if (!query) return NextResponse.json(base, { headers: { 'Cache-Control': 'no-store' } });
+
+  const now = Date.now();
+
+  const rawMatches = await fetchAllMatches();
+  const rawHits = normalizeMatches(rawMatches, now).filter(m => hit(query, m.team1, m.team2));
+
+  const traced = await Promise.all(
+    rawHits.slice(0, 3).map(async match => {
+      const streams = (
+        await Promise.all((match.sources ?? []).map(s => fetchStreams(s.source, s.id)))
+      ).flat();
+      const fixture = findPromiedosGame(
+        match.team1, match.team2, matchStartMs(match, now), snapshot.games,
+      );
+      return {
+        id: match.id,
+        teams: `${match.team1} vs ${match.team2}`,
+        startTime: match.startTime,
+        sources: match.sources,
+        resolvedStreams: streams.length,
+        promiedosFixture: fixture
+          ? { league: fixture.league, leagueId: fixture.leagueId, networks: fixture.networks }
+          : null,
+        resolvedBroadcasts: fixture
+          ? resolveBroadcastChannels(fixture, channels).map(b => b.channel)
+          : [],
+      };
+    }),
+  );
+
+  const [cached, fresh] = await Promise.all([getCatalog(), buildCatalogUncached()]);
+  const summarize = (list: Awaited<ReturnType<typeof getCatalog>>) => ({
+    size: list.length,
+    matching: list
+      .filter(m => hit(query, m.team1, m.team2))
+      .map(m => ({ id: m.id, streams: m.streams.length, broadcasts: m.broadcasts.map(b => b.channel) })),
+  });
 
   return NextResponse.json(
     {
-      region: process.env.VERCEL_REGION ?? 'local',
-      channelCatalogSize: channels,
-      pages,
+      ...base,
+      query,
+      promiedosFixturesMatching: snapshot.games
+        .filter(g => hit(query, g.homeTeam, g.awayTeam))
+        .map(g => ({ teams: `${g.homeTeam} vs ${g.awayTeam}`, start: g.startTimeMs, tv: g.networks })),
+      rawFeed: traced,
+      cachedCatalog: summarize(cached),
+      freshCatalog: summarize(fresh),
     },
     { headers: { 'Cache-Control': 'no-store' } },
   );
