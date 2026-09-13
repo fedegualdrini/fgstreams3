@@ -3,7 +3,7 @@ import { extractNextData, parsePromiedosPayload, fetchPromiedosGames } from '@/l
 import { getChannelCatalog, getStaticChannelCatalog } from '@/lib/channelCatalog';
 import { fetchAngulismoData } from '@/lib/angulismo';
 import { getCatalog } from '@/lib/catalog';
-import { fetchAllMatches, fetchStreams } from '@/lib/api';
+import { fetchAllMatches, fetchStreamLookup } from '@/lib/api';
 import { normalizeMatches, matchStartMs } from '@/lib/matchUtils';
 import { estimateFeedOffsetMs, findFixture } from '@/lib/teamMatch';
 import { broadcastsFromEvent, mergeBroadcasts, resolveBroadcastChannels } from '@/lib/broadcasters';
@@ -128,9 +128,13 @@ export async function GET(request: Request) {
 
   const traced = await Promise.all(
     rawHits.slice(0, 3).map(async match => {
-      const streams = (
-        await Promise.all((match.sources ?? []).map(s => fetchStreams(s.source, s.id)))
-      ).flat();
+      const lookups = await Promise.all(
+        (match.sources ?? []).map(s => fetchStreamLookup(s.source, s.id)),
+      );
+      const streams = lookups.flatMap(l => l.streams);
+      // A source whose lookup failed tells us nothing; one that succeeded with
+      // no streams tells us the source is genuinely carrying nothing.
+      const failedLookups = lookups.filter(l => !l.ok).length;
       const startMs = matchStartMs(match, now);
       const fixture = findFixture(match.team1, match.team2, startMs, snapshot.games, { offsetMs });
       const event = findFixture(
@@ -146,6 +150,7 @@ export async function GET(request: Request) {
         startTime: match.startTime,
         sources: match.sources,
         resolvedStreams: streams.length,
+        failedLookups,
         promiedosFixture: fixture
           ? { league: fixture.league, leagueId: fixture.leagueId, networks: fixture.networks }
           : null,

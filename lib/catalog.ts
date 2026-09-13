@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache';
 import type {
   AngulismoEvent, BroadcastChannel, CatalogMatch, Match, PromiedosGame, Stream,
 } from '@/types/api';
-import { fetchAllMatches, fetchLiveMatchIds, fetchStreams } from './api';
+import { fetchAllMatches, fetchLiveMatchIds, fetchStreamLookup } from './api';
 import { normalizeMatches, matchStartMs } from './matchUtils';
 import { fetchPromiedosGames } from './promiedos';
 import { fetchAngulismoData } from './angulismo';
@@ -129,20 +129,23 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
     refs,
     CATALOG_CONCURRENCY,
     deadline,
-    async ({ source }) => fetchStreams(source.source, source.id),
+    async ({ source }) => fetchStreamLookup(source.source, source.id),
   );
 
   const streamsByMatch = new Map<number, Stream[]>();
   const unresolvedMatches = new Set<number>();
 
   refs.forEach((ref, index) => {
-    const streams = resolved[index];
-    if (streams === undefined) {
+    const lookup = resolved[index];
+    // Undefined means we ran out of time budget; ok:false means the request
+    // itself failed. Either way we do not know what this source carries, so the
+    // match must not be judged unwatchable on the strength of it.
+    if (lookup === undefined || !lookup.ok) {
       unresolvedMatches.add(ref.matchIndex);
       return;
     }
     const bucket = streamsByMatch.get(ref.matchIndex) ?? [];
-    for (const stream of streams) {
+    for (const stream of lookup.streams) {
       bucket.push({ ...stream, source: stream.source || ref.source.source });
     }
     streamsByMatch.set(ref.matchIndex, bucket);
