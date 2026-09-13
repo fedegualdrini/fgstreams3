@@ -1,23 +1,22 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { fetchMatches } from '@/lib/api';
+import { getCatalog, sortCatalog } from '@/lib/catalog';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
 import SiteHeader from '@/components/SiteHeader';
 import MatchListSkeleton from '@/components/MatchListSkeleton';
-import { REVALIDATE_MATCHES } from '@/lib/constants';
 
-export const revalidate = REVALIDATE_MATCHES;
+// Rendered per request. Under ISR this page served the previous snapshot while
+// revalidating behind it, which is why a first visit showed a stale (often
+// empty) list and a manual refresh "fixed" it. The upstream calls behind
+// getCatalog are cached instead, so a fresh render stays cheap.
+export const dynamic = 'force-dynamic';
+
+// Resolving stream availability for the whole listing costs a few seconds the
+// first time after a deploy; every later render reads the cached catalog.
+export const maxDuration = 60;
 
 export default async function Home() {
-  const matches = await fetchMatches();
-
-  const sortedMatches = [...matches].sort((a, b) => {
-    if (a.isLive && !b.isLive) return -1;
-    if (!a.isLive && b.isLive) return 1;
-    const aTime = a.startTime ? new Date(a.startTime).getTime() : 0;
-    const bTime = b.startTime ? new Date(b.startTime).getTime() : 0;
-    return aTime - bTime;
-  });
+  const sortedMatches = sortCatalog(await getCatalog());
 
   const liveMatches = sortedMatches.filter(m => m.isLive);
   const upcomingMatches = sortedMatches.filter(m => !m.isLive);
