@@ -75,14 +75,6 @@ function isListable(match: Match, now: number): boolean {
   return offsetHours <= CATALOG_PAST_HOURS && offsetHours >= -CATALOG_FUTURE_HOURS;
 }
 
-/**
- * Exported for the broadcast diagnostic, which compares a fresh build against
- * the cached one to tell a resolution problem apart from a caching problem.
- */
-export async function buildCatalogUncached(): Promise<CatalogMatch[]> {
-  return buildCatalog();
-}
-
 async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
   const deadline = now + CATALOG_TIME_BUDGET_MS;

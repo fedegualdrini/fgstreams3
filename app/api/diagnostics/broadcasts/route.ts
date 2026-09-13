@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { extractNextData, parsePromiedosPayload, fetchPromiedosGames } from '@/lib/promiedos';
 import { getChannelCatalog } from '@/lib/channelCatalog';
-import { getCatalog, buildCatalogUncached } from '@/lib/catalog';
+import { getCatalog } from '@/lib/catalog';
 import { fetchAllMatches, fetchStreams } from '@/lib/api';
 import { normalizeMatches, matchStartMs } from '@/lib/matchUtils';
 import { estimateFeedOffsetMs, findPromiedosGame } from '@/lib/teamMatch';
@@ -11,14 +11,16 @@ import { resolveBroadcastChannels } from '@/lib/broadcasters';
  * Reports whether the broadcast pipeline can reach its upstream from wherever
  * this is deployed, and — with `?q=` — traces one match through every stage.
  *
- * The stages are reported separately on purpose. A raw page probe only proves
- * the host is reachable; it says nothing about the same fetch running inside
- * `unstable_cache`, and a fresh build compared against the cached one separates
- * a resolution failure from a stale-cache failure.
+ * The stages are reported separately on purpose: a raw page probe only proves
+ * the host is reachable, and says nothing about whether a fixture then matched
+ * or which channels resolved from it.
+ *
+ * Everything here reads through the same caches the site uses, so the endpoint
+ * stays cheap enough to leave unauthenticated.
  */
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+export const maxDuration = 30;
 
 const PROMIEDOS_BASE = 'https://www.promiedos.com.ar';
 const PAGES = ['/ayer', '/', '/man'];
@@ -133,13 +135,7 @@ export async function GET(request: Request) {
     }),
   );
 
-  const [cached, fresh] = await Promise.all([getCatalog(), buildCatalogUncached()]);
-  const summarize = (list: Awaited<ReturnType<typeof getCatalog>>) => ({
-    size: list.length,
-    matching: list
-      .filter(m => hit(query, m.team1, m.team2))
-      .map(m => ({ id: m.id, streams: m.streams.length, broadcasts: m.broadcasts.map(b => b.channel) })),
-  });
+  const catalog = await getCatalog();
 
   return NextResponse.json(
     {
@@ -153,8 +149,16 @@ export async function GET(request: Request) {
         .filter(g => hit(query, g.homeTeam, g.awayTeam))
         .map(g => ({ teams: `${g.homeTeam} vs ${g.awayTeam}`, start: g.startTimeMs, tv: g.networks })),
       rawFeed: traced,
-      cachedCatalog: summarize(cached),
-      freshCatalog: summarize(fresh),
+      catalog: {
+        size: catalog.length,
+        matching: catalog
+          .filter(m => hit(query, m.team1, m.team2))
+          .map(m => ({
+            id: m.id,
+            streams: m.streams.length,
+            broadcasts: m.broadcasts.map(b => b.channel),
+          })),
+      },
     },
     { headers: { 'Cache-Control': 'no-store' } },
   );
