@@ -78,6 +78,21 @@ function isListable(match: Match, now: number): boolean {
   return offsetHours <= CATALOG_PAST_HOURS && offsetHours >= -CATALOG_FUTURE_HOURS;
 }
 
+/**
+ * Thrown when the upstream match feed gave us nothing at all.
+ *
+ * It exists to keep that result *out* of the cache. `unstable_cache` stores
+ * whatever its callback returns, so returning an empty list would pin "no
+ * matches available" across every visitor for a full revalidation window on the
+ * strength of one failed request.
+ */
+class EmptyUpstreamError extends Error {
+  constructor() {
+    super('upstream match feed returned no matches');
+    this.name = 'EmptyUpstreamError';
+  }
+}
+
 async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
   const deadline = now + CATALOG_TIME_BUDGET_MS;
@@ -90,6 +105,11 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
     fetchAngulismoData().catch(() => ({ events: [], channels: [], ok: false, stale: false })),
     getChannelCatalog().catch(() => [] as Channel[]),
   ]);
+
+  // An empty feed is a failed fetch, not a quiet day: streamed.pk lists a few
+  // hundred fixtures around the clock. A day with nothing *listable* is
+  // plausible and cacheable; a day with nothing at all is not.
+  if (rawMatches.length === 0) throw new EmptyUpstreamError();
 
   // Only with a working lookup and a channel catalog can we say a match has no
   // broadcaster. Without them we know nothing, which is a different thing.
@@ -228,13 +248,34 @@ const getCachedCatalog = unstable_cache(buildCatalog, ['match-catalog'], {
   tags: ['match-catalog'],
 });
 
+// Last catalog that built successfully. A warm instance can serve this while
+// the upstream is down instead of showing an empty site.
+let lastGoodCatalog: CatalogMatch[] | null = null;
+
 /**
  * The catalog, with liveness recomputed against the current clock so a cached
  * entry never shows a stale live badge.
+ *
+ * When the upstream feed is unreachable this serves the last good catalog
+ * rather than nothing: stale fixtures are a smaller failure than an empty site,
+ * and the window filter below still drops anything that has since aged out.
  */
 export async function getCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
-  const catalog = await getCachedCatalog();
+
+  let catalog: CatalogMatch[];
+  try {
+    catalog = await getCachedCatalog();
+    lastGoodCatalog = catalog;
+  } catch (error) {
+    if (!lastGoodCatalog) {
+      console.error('catalog: upstream unavailable and nothing cached to fall back on:', error);
+      return [];
+    }
+    console.warn('catalog: upstream unavailable, serving the last good catalog:', error);
+    catalog = lastGoodCatalog;
+  }
+
   return catalog
     .filter(match => isListable(match, now))
     .map(match => ({ ...match, isLive: currentLiveState(match, now) }));

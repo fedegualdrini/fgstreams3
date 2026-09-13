@@ -112,6 +112,9 @@ export async function GET(request: Request) {
 
   const rawMatches = await fetchAllMatches();
   const normalized = normalizeMatches(rawMatches, now);
+  // An empty feed here is what empties the site, so it is worth reporting on
+  // its own rather than inferring it from a zero-length catalog.
+  const upstreamFeed = { matches: rawMatches.length, listable: normalized.length };
   const rawHits = normalized.filter(m => hit(query, m.team1, m.team2));
 
   // Promiedos localises kickoff to the requesting IP, so the feeds' clocks are
@@ -161,6 +164,7 @@ export async function GET(request: Request) {
     {
       ...base,
       query,
+      upstreamFeed,
       feedOffset: {
         promiedosMs: offsetMs,
         promiedosHours: offsetMs === null ? null : offsetMs / 3_600_000,
