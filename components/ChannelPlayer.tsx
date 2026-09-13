@@ -27,7 +27,15 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
   const [reloadKey, setReloadKey] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Option picker: one pill, dimmed until pointed at, so it never sits between
+  // the user and the embed.
+  const [optionsExpanded, setOptionsExpanded] = useState(false);
+  const [pickerHovered, setPickerHovered] = useState(false);
+
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
+
+  // Switching channel or option collapses the list again.
+  useEffect(() => { setOptionsExpanded(false); }, [channel.name]);
 
   useEffect(() => {
     const clamped = Math.min(initialOptionIndex, Math.max(validOptions.length - 1, 0));
@@ -127,26 +135,75 @@ export default function ChannelPlayer({ channel, initialOptionIndex = 0, onOptio
           </div>
         )}
         {fillContainer && !hideTabs && validOptions.length > 1 && (
-          // A single scrolling strip, not a wrapping grid: some channels carry
-          // twenty-odd mirrors, which wrapped would cover most of the video.
+          /*
+           * Anchored to the top, not the bottom: every embed puts its own
+           * play/volume/fullscreen bar along the bottom edge, and an overlay
+           * there intercepts the clicks meant for it.
+           *
+           * Collapsed to one pill by default — some channels carry twenty-odd
+           * mirrors — and hidden altogether once the pointer goes idle.
+           */
           <div
             style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20,
-              display: 'flex', gap: '4px', flexWrap: 'nowrap',
-              overflowX: 'auto', padding: '0.5rem 0.75rem',
-              background: 'linear-gradient(to top, rgba(7,8,12,0.9), transparent)',
+              position: 'absolute', top: 0, left: 0, right: 0, zIndex: 20,
+              display: 'flex', alignItems: 'flex-start', gap: '4px',
+              padding: '0.5rem 0.75rem',
+              // Only the control itself is interactive; the rest of this strip
+              // must stay transparent to clicks meant for the embed.
+              pointerEvents: 'none',
+              background: optionsExpanded
+                ? 'linear-gradient(to bottom, rgba(7,8,12,0.92), transparent)'
+                : 'none',
             }}
+            onMouseEnter={() => setPickerHovered(true)}
+            onMouseLeave={() => setPickerHovered(false)}
           >
-            {validOptions.map((option, i) => (
+            {optionsExpanded ? (
+              <div style={{ display: 'flex', gap: '4px', flexWrap: 'nowrap', overflowX: 'auto', flex: 1, pointerEvents: 'auto' }}>
+                <button
+                  type="button"
+                  onClick={() => setOptionsExpanded(false)}
+                  aria-label="Hide stream options"
+                  style={{ ...tabButtonStyle(false), flexShrink: 0 }}
+                >
+                  ✕
+                </button>
+                {validOptions.map((option, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => { selectOption(i); setOptionsExpanded(false); }}
+                    style={{ ...tabButtonStyle(i === selectedIndex), flexShrink: 0, whiteSpace: 'nowrap' }}
+                  >
+                    {option.name}
+                  </button>
+                ))}
+              </div>
+            ) : (
               <button
-                key={i}
                 type="button"
-                onClick={() => selectOption(i)}
-                style={{ ...tabButtonStyle(i === selectedIndex), flexShrink: 0, whiteSpace: 'nowrap' }}
+                onClick={() => setOptionsExpanded(true)}
+                aria-label={`Change stream option (${selectedIndex + 1} of ${validOptions.length})`}
+                aria-expanded={false}
+                onFocus={() => setPickerHovered(true)}
+                onBlur={() => setPickerHovered(false)}
+                style={{
+                  ...tabButtonStyle(false),
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                  maxWidth: '100%', whiteSpace: 'nowrap',
+                  background: 'rgba(7,8,12,0.78)',
+                  // Dimmed while unattended so it reads as chrome, not content.
+                  opacity: pickerHovered ? 1 : 0.4,
+                  transition: 'opacity 0.15s',
+                  pointerEvents: 'auto',
+                }}
               >
-                {option.name}
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {currentOption?.name ?? `Opción ${selectedIndex + 1}`}
+                </span>
+                <span style={{ opacity: 0.65 }}>{selectedIndex + 1}/{validOptions.length} ▾</span>
               </button>
-            ))}
+            )}
           </div>
         )}
         {currentOption && isHlsUrl(currentOption.iframe) ? (
