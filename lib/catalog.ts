@@ -3,7 +3,7 @@ import type { BroadcastChannel, CatalogMatch, Match, PromiedosGame, Stream } fro
 import { fetchAllMatches, fetchLiveMatchIds, fetchStreams } from './api';
 import { normalizeMatches, matchStartMs } from './matchUtils';
 import { fetchPromiedosGames } from './promiedos';
-import { findPromiedosGame } from './teamMatch';
+import { estimateFeedOffsetMs, findPromiedosGame } from './teamMatch';
 import { getChannelCatalog } from './channelCatalog';
 import type { Channel } from '@/types/channels';
 import { resolveBroadcastChannels } from './broadcasters';
@@ -131,11 +131,23 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
     streamsByMatch.set(ref.matchIndex, bucket);
   });
 
+  // Promiedos renders kickoff in the requesting IP's timezone, so the offset
+  // between the feeds is measured once per build rather than assumed.
+  const broadcastOffsetMs = estimateFeedOffsetMs(
+    matches.flatMap(match => {
+      const startMs = matchStartMs(match, now);
+      return startMs === undefined ? [] : [{ team1: match.team1, team2: match.team2, startMs }];
+    }),
+    broadcastSnapshot.games,
+  );
+
   const catalog: CatalogMatch[] = [];
 
   matches.forEach((match, matchIndex) => {
     const streams = streamsByMatch.get(matchIndex) ?? [];
-    const broadcasts = resolveBroadcastsFor(match, broadcastSnapshot.games, channels, now);
+    const broadcasts = resolveBroadcastsFor(
+      match, broadcastSnapshot.games, channels, now, broadcastOffsetMs,
+    );
 
     // Drop matches nobody can watch: no working Streamed source and no channel
     // carrying it. Two cases are deliberately kept instead:
@@ -157,11 +169,14 @@ function resolveBroadcastsFor(
   games: PromiedosGame[],
   channels: Channel[],
   now: number,
+  offsetMs: number | null,
 ): BroadcastChannel[] {
   if (games.length === 0 || channels.length === 0) return [];
   if (!match.team2) return [];
 
-  const game = findPromiedosGame(match.team1, match.team2, matchStartMs(match, now), games);
+  const game = findPromiedosGame(
+    match.team1, match.team2, matchStartMs(match, now), games, { offsetMs },
+  );
   return game ? resolveBroadcastChannels(game, channels) : [];
 }
 

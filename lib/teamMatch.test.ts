@@ -5,6 +5,7 @@ import {
   tokenOverlap,
   teamPairScore,
   findPromiedosGame,
+  estimateFeedOffsetMs,
   KICKOFF_TOLERANCE_MS,
 } from './teamMatch';
 import type { PromiedosGame } from '@/types/api';
@@ -112,5 +113,73 @@ describe('findPromiedosGame', () => {
 
   it('returns null without both team names', () => {
     expect(findPromiedosGame('Talleres Cordoba', '', kickoff, [game()])).toBeNull();
+  });
+});
+
+describe('estimateFeedOffsetMs', () => {
+  const HOUR = 60 * 60 * 1000;
+  const base = Date.parse('2026-09-12T23:00:00.000Z');
+
+  const pairs: Array<[string, string]> = [
+    ['Talleres de Córdoba', 'Unión de Santa Fe'],
+    ['Independiente Rivadavia', 'Aldosivi'],
+    ['Estudiantes de La Plata', 'Platense'],
+    ['Atlético Tucumán', 'River Plate'],
+  ];
+
+  // Promiedos fixtures as rendered in some unknown timezone.
+  const gamesShiftedBy = (shift: number): PromiedosGame[] =>
+    pairs.map(([home, away], i) => ({
+      id: `g${i}`,
+      league: 'Liga Profesional Argentina',
+      leagueId: 'hc',
+      countryId: 'ba',
+      homeTeam: home,
+      awayTeam: away,
+      startTimeMs: base + i * HOUR - shift,
+      networks: ['ESPN Premium'],
+    }));
+
+  // The same fixtures as Streamed names them, at their true kickoff.
+  const streamedMatches = pairs.map(([home, away], i) => ({
+    team1: home.replace(/ de /g, ' ').normalize('NFD').replace(/[̀-ͯ]/g, ''),
+    team2: away.replace(/ de /g, ' ').normalize('NFD').replace(/[̀-ͯ]/g, ''),
+    startMs: base + i * HOUR,
+  }));
+
+  it('recovers the offset when the feed renders in another timezone', () => {
+    expect(estimateFeedOffsetMs(streamedMatches, gamesShiftedBy(-2 * HOUR))).toBe(-2 * HOUR);
+  });
+
+  it('reports zero when the feeds already agree', () => {
+    expect(estimateFeedOffsetMs(streamedMatches, gamesShiftedBy(0))).toBe(0);
+  });
+
+  it('returns null without enough agreeing fixtures', () => {
+    expect(estimateFeedOffsetMs(streamedMatches.slice(0, 2), gamesShiftedBy(0))).toBeNull();
+  });
+
+  it('ignores matches with no kickoff time', () => {
+    const noTimes = streamedMatches.map(m => ({ ...m, startMs: NaN }));
+    expect(estimateFeedOffsetMs(noTimes, gamesShiftedBy(0))).toBeNull();
+  });
+
+  it('feeds the recovered offset back into matching', () => {
+    const shift = -2 * HOUR;
+    const games = gamesShiftedBy(shift);
+    const offsetMs = estimateFeedOffsetMs(streamedMatches, games);
+
+    // Without the correction the fixture is two hours out and is rejected.
+    expect(findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', base, games)).toBeNull();
+    expect(
+      findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', base, games, { offsetMs })?.id,
+    ).toBe('g0');
+  });
+
+  it('falls back to name-only matching when the offset is unknown', () => {
+    const games = gamesShiftedBy(-2 * HOUR);
+    expect(
+      findPromiedosGame('Talleres Cordoba', 'Union Santa Fe', base, games, { offsetMs: null })?.id,
+    ).toBe('g0');
   });
 });

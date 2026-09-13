@@ -41,10 +41,16 @@ interface RawPromiedosLeague {
 }
 
 /**
- * Promiedos writes kickoff as "DD-MM-YYYY HH:mm" in Argentina local time, which
- * has no DST — a fixed UTC-3 — so the offset can be applied directly.
+ * Promiedos writes kickoff as "DD-MM-YYYY HH:mm" with no timezone, rendered in
+ * the *viewer's* zone as inferred from the requesting IP: the same fixture
+ * reads 20:00 from Buenos Aires and 18:00 from a US datacenter.
+ *
+ * So this offset is nominal, not authoritative — it only fixes a consistent
+ * reference point. Any constant error it introduces is measured and corrected
+ * downstream by `estimateFeedOffsetMs`, which is what makes the matching work
+ * from any region.
  */
-const ARGENTINA_UTC_OFFSET_MS = 3 * 60 * 60 * 1000;
+const NOMINAL_UTC_OFFSET_MS = 3 * 60 * 60 * 1000;
 
 export function parsePromiedosStartTime(value: string | undefined): number {
   if (!value) return NaN;
@@ -53,7 +59,7 @@ export function parsePromiedosStartTime(value: string | undefined): number {
   const [, day, month, year, hour, minute] = m;
   return (
     Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)) +
-    ARGENTINA_UTC_OFFSET_MS
+    NOMINAL_UTC_OFFSET_MS
   );
 }
 

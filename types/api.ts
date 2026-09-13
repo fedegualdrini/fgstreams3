@@ -148,7 +148,9 @@ export interface PromiedosGame {
   countryId: string;
   homeTeam: string;
   awayTeam: string;
-  // Kickoff in epoch ms. Promiedos publishes Argentina local time (UTC-3).
+  // Kickoff in epoch ms against a nominal UTC-3. Promiedos localises times to
+  // the requesting IP, so any constant error here is corrected by
+  // estimateFeedOffsetMs rather than assumed away.
   startTimeMs: number;
   networks: string[];
 }

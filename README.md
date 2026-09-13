@@ -32,7 +32,7 @@ A Next.js sports streaming app with match listings, match detail playback, live 
 ## External Data Sources
 
 - **Streamed API** (`https://streamed.pk/api`) for matches (`/matches/all-today`), the live feed (`/matches/live`), per-match streams, and Streamed-hosted images.
-- **Promiedos** (`https://www.promiedos.com.ar`) for fixture broadcasters, read from the `__NEXT_DATA__` payload embedded in the page.
+- **Promiedos** (`https://www.promiedos.com.ar`) for fixture broadcasters, read from the `__NEXT_DATA__` payload embedded in the page. Promiedos renders kickoff in the requesting IP's timezone, so the offset between the two feeds is measured per build rather than assumed — see `estimateFeedOffsetMs` in `lib/teamMatch.ts`.
 - **Flashscore mobile pages** through local API routes for live scores and match detail data.
 - **TMDB API** for movie and TV search metadata. Set `TMDB_API_KEY` before using the Movies page search routes.
 - **Local channel catalog** from `public/channels.json`.
@@ -98,6 +98,8 @@ app/
     scores/match/[flashscoreId]/route.ts
                                     Match detail/statistics endpoint
     streams/[source]/[id]/route.ts Stream proxy endpoint for Streamed sources
+    diagnostics/broadcasts/route.ts
+                                    Broadcast pipeline health; ?q=<team> traces one match
 
 components/
   AdBlockBanner.tsx                Ad-block notice
@@ -129,7 +131,7 @@ lib/
   channelCatalog.ts                Shared channels.json loader
   matchUtils.ts                    Match normalization, liveness, and image helpers
   promiedos.ts                     Promiedos fixture/broadcaster scraping
-  teamMatch.ts                     Fuzzy fixture matching between feeds
+  teamMatch.ts                     Fuzzy fixture matching and feed clock alignment
   scoreAliases.ts                  Team alias data for score matching
   scoreUtils.ts                    Score matching helpers
   schemas.ts                       Zod schemas for external API data

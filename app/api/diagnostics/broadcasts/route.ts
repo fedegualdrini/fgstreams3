@@ -4,7 +4,7 @@ import { getChannelCatalog } from '@/lib/channelCatalog';
 import { getCatalog, buildCatalogUncached } from '@/lib/catalog';
 import { fetchAllMatches, fetchStreams } from '@/lib/api';
 import { normalizeMatches, matchStartMs } from '@/lib/matchUtils';
-import { findPromiedosGame } from '@/lib/teamMatch';
+import { estimateFeedOffsetMs, findPromiedosGame } from '@/lib/teamMatch';
 import { resolveBroadcastChannels } from '@/lib/broadcasters';
 
 /**
@@ -96,7 +96,18 @@ export async function GET(request: Request) {
   const now = Date.now();
 
   const rawMatches = await fetchAllMatches();
-  const rawHits = normalizeMatches(rawMatches, now).filter(m => hit(query, m.team1, m.team2));
+  const normalized = normalizeMatches(rawMatches, now);
+  const rawHits = normalized.filter(m => hit(query, m.team1, m.team2));
+
+  // Promiedos localises kickoff to the requesting IP, so the feeds' clocks are
+  // aligned by measurement. A non-zero value here is the region showing itself.
+  const offsetMs = estimateFeedOffsetMs(
+    normalized.flatMap(m => {
+      const startMs = matchStartMs(m, now);
+      return startMs === undefined ? [] : [{ team1: m.team1, team2: m.team2, startMs }];
+    }),
+    snapshot.games,
+  );
 
   const traced = await Promise.all(
     rawHits.slice(0, 3).map(async match => {
@@ -104,7 +115,7 @@ export async function GET(request: Request) {
         await Promise.all((match.sources ?? []).map(s => fetchStreams(s.source, s.id)))
       ).flat();
       const fixture = findPromiedosGame(
-        match.team1, match.team2, matchStartMs(match, now), snapshot.games,
+        match.team1, match.team2, matchStartMs(match, now), snapshot.games, { offsetMs },
       );
       return {
         id: match.id,
@@ -134,6 +145,10 @@ export async function GET(request: Request) {
     {
       ...base,
       query,
+      feedOffset: {
+        ms: offsetMs,
+        hours: offsetMs === null ? null : offsetMs / 3_600_000,
+      },
       promiedosFixturesMatching: snapshot.games
         .filter(g => hit(query, g.homeTeam, g.awayTeam))
         .map(g => ({ teams: `${g.homeTeam} vs ${g.awayTeam}`, start: g.startTimeMs, tv: g.networks })),

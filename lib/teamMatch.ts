@@ -72,30 +72,117 @@ export function teamPairScore(
 }
 
 export const TEAM_MATCH_THRESHOLD = 0.6;
+// Names alone have to carry the decision when kickoff cannot be compared, so
+// the bar is higher there.
+export const STRONG_TEAM_MATCH_THRESHOLD = 0.85;
 // Feeds disagree on kickoff by a few minutes; anything past this is a different
 // fixture between the same clubs (e.g. a rematch later in the week).
 export const KICKOFF_TOLERANCE_MS = 45 * 60 * 1000;
 
+const MINUTE_MS = 60 * 1000;
+// Timezone offsets are whole quarter-hours, so candidate deltas round to these.
+const OFFSET_BUCKET_MS = 15 * MINUTE_MS;
+const MAX_PLAUSIBLE_OFFSET_MS = 14 * 60 * MINUTE_MS;
+const MIN_OFFSET_SAMPLES = 3;
+
 /**
- * Find the Promiedos fixture for a Streamed match. Returns null unless both the
- * team names and the kickoff time agree — a wrong match would attach the wrong
- * TV channel, which is worse than attaching none.
+ * Estimate the constant clock offset between the two feeds.
+ *
+ * Promiedos renders kickoff in the *viewer's* timezone, inferred from the
+ * requesting IP — so the same fixture reads 20:00 from Buenos Aires and 18:00
+ * from a US datacenter. Hard-coding a timezone therefore breaks the moment the
+ * code runs anywhere else, and a serverless region is not ours to pin.
+ *
+ * Instead the offset is measured: fixtures whose names match unambiguously vote
+ * on the delta, and the most popular quarter-hour bucket wins. That is correct
+ * from any region and survives DST on either side.
+ *
+ * Returns null when too few fixtures agree to be confident.
+ */
+export function estimateFeedOffsetMs(
+  matches: Array<{ team1: string; team2: string; startMs: number }>,
+  games: PromiedosGame[],
+): number | null {
+  const votes = new Map<number, number>();
+
+  for (const match of matches) {
+    if (!match.team1 || !match.team2 || !Number.isFinite(match.startMs)) continue;
+
+    let best: PromiedosGame | null = null;
+    let bestScore = 0;
+    let ambiguous = false;
+
+    for (const game of games) {
+      const score = teamPairScore(match.team1, match.team2, game.homeTeam, game.awayTeam);
+      if (score > bestScore) {
+        bestScore = score;
+        best = game;
+        ambiguous = false;
+      } else if (score === bestScore && score > 0) {
+        ambiguous = true;
+      }
+    }
+
+    // Only unambiguous, high-confidence pairs get a vote: one bad pairing
+    // should never be able to shift the whole feed.
+    if (!best || ambiguous || bestScore < STRONG_TEAM_MATCH_THRESHOLD) continue;
+
+    const delta = match.startMs - best.startTimeMs;
+    if (Math.abs(delta) > MAX_PLAUSIBLE_OFFSET_MS) continue;
+
+    const bucket = Math.round(delta / OFFSET_BUCKET_MS) * OFFSET_BUCKET_MS;
+    votes.set(bucket, (votes.get(bucket) ?? 0) + 1);
+  }
+
+  let winner: number | null = null;
+  let winningVotes = 0;
+  for (const [bucket, count] of votes) {
+    if (count > winningVotes) {
+      winningVotes = count;
+      winner = bucket;
+    }
+  }
+
+  return winningVotes >= MIN_OFFSET_SAMPLES ? winner : null;
+}
+
+export interface FindPromiedosGameOptions {
+  /**
+   * Clock offset to add to Promiedos kickoffs before comparing, from
+   * `estimateFeedOffsetMs`. null disables the time gate — the offset is unknown,
+   * so comparing times would reject every correct match.
+   */
+  offsetMs?: number | null;
+  threshold?: number;
+}
+
+/**
+ * Find the Promiedos fixture for a Streamed match. A wrong match attaches the
+ * wrong TV channel, which is worse than attaching none, so the names must agree
+ * and — when the feeds' clocks can be aligned — so must the kickoff.
  */
 export function findPromiedosGame(
   team1: string,
   team2: string,
   startTimeMs: number | undefined,
   games: PromiedosGame[],
-  threshold = TEAM_MATCH_THRESHOLD,
+  options: FindPromiedosGameOptions = {},
 ): PromiedosGame | null {
   if (!team1 || !team2) return null;
+
+  const { offsetMs = 0 } = options;
+  const compareTimes =
+    offsetMs !== null && startTimeMs !== undefined && Number.isFinite(startTimeMs);
+  const threshold =
+    options.threshold ?? (compareTimes ? TEAM_MATCH_THRESHOLD : STRONG_TEAM_MATCH_THRESHOLD);
 
   let best: PromiedosGame | null = null;
   let bestScore = 0;
 
   for (const game of games) {
-    if (startTimeMs !== undefined && Number.isFinite(startTimeMs)) {
-      if (Math.abs(game.startTimeMs - startTimeMs) > KICKOFF_TOLERANCE_MS) continue;
+    if (compareTimes) {
+      const fixtureStart = game.startTimeMs + (offsetMs as number);
+      if (Math.abs(fixtureStart - (startTimeMs as number)) > KICKOFF_TOLERANCE_MS) continue;
     }
 
     const score = teamPairScore(team1, team2, game.homeTeam, game.awayTeam);

@@ -7,8 +7,9 @@ import {
 } from './promiedos';
 
 describe('parsePromiedosStartTime', () => {
-  it('reads Argentina local time as UTC-3', () => {
-    // 20:00 in Buenos Aires is 23:00 UTC the same day.
+  it('reads the wall clock against the nominal UTC-3 reference', () => {
+    // The absolute value is only a reference point — Promiedos localises times
+    // to the viewer, and estimateFeedOffsetMs corrects any constant error.
     expect(parsePromiedosStartTime('12-09-2026 20:00')).toBe(
       Date.parse('2026-09-12T23:00:00.000Z'),
     );
