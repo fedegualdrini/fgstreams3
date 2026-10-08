@@ -1,6 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import type shaka from 'shaka-player/dist/shaka-player.compiled.js';
+import PlayerSurface from '@/components/players/PlayerSurface';
+import { usePlayerCallbacks } from '@/components/players/usePlayerCallbacks';
 
 interface DashVideoPlayerProps {
   src: string;
@@ -10,36 +13,20 @@ interface DashVideoPlayerProps {
   onError: () => void;
 }
 
+const STREAMING_CONFIG = {
+  bufferingGoal: 30,
+  rebufferingGoal: 4,
+  retryParameters: { maxAttempts: 4 },
+};
+
+/** shaka's `error` event carries its `shaka.util.Error` in `detail`; the compiled typings only expose a bare Event. */
+interface ShakaErrorEvent extends Event {
+  detail?: shaka.util.Error;
+}
+
 export default function DashVideoPlayer({ src, clearKeys, onPlaying, onError }: DashVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const onPlayingRef = useRef(onPlaying);
-  const onErrorRef = useRef(onError);
-
-  const [pipActive, setPipActive] = useState(false);
-  const [pipSupported, setPipSupported] = useState(false);
-
-  useEffect(() => { onPlayingRef.current = onPlaying; }, [onPlaying]);
-  useEffect(() => { onErrorRef.current = onError; }, [onError]);
-
-  useEffect(() => {
-    setPipSupported(typeof document !== 'undefined' && !!document.pictureInPictureEnabled);
-  }, []);
-
-  const togglePip = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-    try {
-      if (document.pictureInPictureElement) {
-        await document.exitPictureInPicture();
-        setPipActive(false);
-      } else {
-        await video.requestPictureInPicture();
-        setPipActive(true);
-      }
-    } catch {
-      // PiP not available for this video
-    }
-  };
+  const { onPlayingRef, onErrorRef } = usePlayerCallbacks(onPlaying, onError);
 
   // Serialised so a new object identity with the same keys does not reload the
   // player on every parent render.
@@ -50,36 +37,38 @@ export default function DashVideoPlayer({ src, clearKeys, onPlaying, onError }: 
     if (!video) return;
 
     let destroyed = false;
-    let player: any = null; // shaka's compiled bundle ships loose types
+    let player: shaka.Player | null = null;
 
     const setup = async () => {
-      const shaka = (await import('shaka-player/dist/shaka-player.compiled.js')).default;
+      // Loaded on demand: shaka is heavy and only DASH channels need it.
+      const engine = (await import('shaka-player/dist/shaka-player.compiled.js')).default;
       if (destroyed) return;
 
-      shaka.polyfill.installAll();
-      if (!shaka.Player.isBrowserSupported()) {
+      engine.polyfill.installAll();
+      if (!engine.Player.isBrowserSupported()) {
         onErrorRef.current();
         return;
       }
 
-      player = new shaka.Player();
-      await player.attach(video);
+      const instance = new engine.Player();
+      player = instance;
+      await instance.attach(video);
       if (destroyed) return;
 
-      const keys = keySignature ? JSON.parse(keySignature) : null;
-      player.configure({
-        drm: keys ? { clearKeys: keys } : {},
-        streaming: { bufferingGoal: 30, rebufferingGoal: 4, retryParameters: { maxAttempts: 4 } },
+      const clearKeyConfig: Record<string, string> | null = keySignature ? JSON.parse(keySignature) : null;
+      instance.configure({
+        drm: clearKeyConfig ? { clearKeys: clearKeyConfig } : {},
+        streaming: STREAMING_CONFIG,
       });
 
-      player.addEventListener('error', (event: { detail?: { code?: number; category?: number; data?: unknown[] } }) => {
-        const { code, category, data } = event.detail ?? {};
+      instance.addEventListener('error', (event) => {
+        const { code, category, data } = (event as ShakaErrorEvent).detail ?? {};
         console.warn('[DashVideoPlayer] playback error', { category, code, data: data?.slice(0, 2) });
         if (!destroyed) onErrorRef.current();
       });
 
       try {
-        await player.load(src);
+        await instance.load(src);
         if (destroyed) return;
         onPlayingRef.current();
         video.play().catch(() => {});
@@ -89,51 +78,14 @@ export default function DashVideoPlayer({ src, clearKeys, onPlaying, onError }: 
       }
     };
 
-    const handleEnterPip = () => setPipActive(true);
-    const handleLeavePip = () => setPipActive(false);
-    video.addEventListener('enterpictureinpicture', handleEnterPip);
-    video.addEventListener('leavepictureinpicture', handleLeavePip);
-
     setup();
 
     return () => {
       destroyed = true;
-      video.removeEventListener('enterpictureinpicture', handleEnterPip);
-      video.removeEventListener('leavepictureinpicture', handleLeavePip);
-      if (player) { player.destroy(); player = null; }
+      player?.destroy();
+      player = null;
     };
-  }, [src, keySignature]);
+  }, [src, keySignature, onPlayingRef, onErrorRef]);
 
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        controls
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: '#000' }}
-      />
-      {pipSupported && (
-        <button
-          type="button"
-          onClick={togglePip}
-          title={pipActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
-          aria-label={pipActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
-          style={{
-            position: 'absolute', bottom: '48px', right: '8px', zIndex: 10,
-            background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '4px', color: '#fff', cursor: 'pointer',
-            padding: '4px 8px', fontSize: '0.65rem', fontFamily: 'var(--font-body)',
-            fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
-            backdropFilter: 'blur(4px)',
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.85)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; }}
-        >
-          {pipActive ? '⊡ Exit PiP' : '⧉ PiP'}
-        </button>
-      )}
-    </div>
-  );
+  return <PlayerSurface videoRef={videoRef} />;
 }

@@ -4,6 +4,9 @@ import type { Channel } from '@/types/channels';
 import { isValidStreamUrl } from './urlValidation';
 import { normalizeText } from './teamMatch';
 import { fetchAngulismoData } from './angulismo';
+import { createLogger } from './logger';
+
+const log = createLogger('channelCatalog');
 
 let staticCatalog: Channel[] | null = null;
 
@@ -71,7 +74,7 @@ export async function getChannelCatalog(): Promise<Channel[]> {
     const { channels, ok } = await fetchAngulismoData();
     return ok && channels.length > 0 ? mergeChannelCatalogs(base, channels) : base;
   } catch (error) {
-    console.error('channelCatalog: live refresh failed, serving the shipped catalog:', error);
+    log.error('live refresh failed, serving the shipped catalog', error);
     return base;
   }
 }

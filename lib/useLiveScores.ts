@@ -5,63 +5,62 @@ import type { Match, FlashscoreEntry } from '@/types/api';
 import { findMatchingEntry } from './scoreUtils';
 import { SCORES_POLL_INTERVAL_MS } from './constants';
 
-// Returns a Map<matchId, FlashscoreEntry> for live matches.
-// Polling only runs when there are live matches; pauses when tab is hidden.
+async function fetchSportEntries(sport: string): Promise<FlashscoreEntry[]> {
+  try {
+    const response = await fetch(`/api/scores/${encodeURIComponent(sport)}`);
+    return response.ok ? ((await response.json()) as FlashscoreEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Pairs each live match with its best-matching score entry, keyed by match id. */
+function pairMatchesWithEntries(matches: Match[], entries: FlashscoreEntry[]): Map<string, FlashscoreEntry> {
+  const scores = new Map<string, FlashscoreEntry>();
+  for (const match of matches) {
+    const entry = findMatchingEntry(match.team1, match.team2, entries);
+    if (entry) scores.set(match.id, entry);
+  }
+  return scores;
+}
+
+/**
+ * Live scores keyed by match id. Polling only runs while there are live
+ * matches and is skipped while the tab is hidden.
+ */
 export function useLiveScores(liveMatches: Match[]): Map<string, FlashscoreEntry> {
   const [scoreMap, setScoreMap] = useState<Map<string, FlashscoreEntry>>(new Map());
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Keep a stable ref to liveMatches so the polling callback always reads
-  // the latest list without needing liveMatches in the effect's dep array.
+  // The polling callback reads the latest list through a ref, so the effect
+  // restarts only when the set of live ids changes, not on every new array.
   const liveMatchesRef = useRef(liveMatches);
   liveMatchesRef.current = liveMatches;
-
-  // Derive a stable string key that changes only when the set of live match IDs changes.
-  const matchesKey = liveMatches.map((m) => m.id).join(',');
+  const liveIdsKey = liveMatches.map((match) => match.id).join(',');
 
   useEffect(() => {
-    const currentMatches = liveMatchesRef.current;
-    if (currentMatches.length === 0) {
+    const matches = liveMatchesRef.current;
+    if (matches.length === 0) {
       setScoreMap(new Map());
       return;
     }
 
-    // Deduplicate sports present in live matches
-    const sports = [...new Set(currentMatches.map((m) => m.sport.toLowerCase()))];
+    const sports = [...new Set(matches.map((match) => match.sport.toLowerCase()))];
 
-    async function fetchAndMatch() {
+    async function refresh() {
       if (document.visibilityState !== 'visible') return;
 
       try {
-        // Fetch all sports in parallel
-        const results = await Promise.all(
-          sports.map((sport) =>
-            fetch(`/api/scores/${encodeURIComponent(sport)}`)
-              .then((r) => (r.ok ? (r.json() as Promise<FlashscoreEntry[]>) : []))
-              .catch(() => [] as FlashscoreEntry[]),
-          ),
-        );
-        const allEntries: FlashscoreEntry[] = results.flat();
-
-        // Pre-match each live Streamed match to a flashscore entry
-        const map = new Map<string, FlashscoreEntry>();
-        for (const match of liveMatchesRef.current) {
-          const entry = findMatchingEntry(match.team1, match.team2, allEntries);
-          if (entry) map.set(match.id, entry);
-        }
-        setScoreMap(map);
+        const entries = (await Promise.all(sports.map(fetchSportEntries))).flat();
+        setScoreMap(pairMatchesWithEntries(liveMatchesRef.current, entries));
       } catch {
-        // Keep stale data on error; avoids clearing scores on transient network issues
+        // Keep stale scores on error; a transient network issue should not clear them.
       }
     }
 
-    fetchAndMatch();
-    intervalRef.current = setInterval(fetchAndMatch, SCORES_POLL_INTERVAL_MS);
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [matchesKey]);
+    refresh();
+    const interval = setInterval(refresh, SCORES_POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [liveIdsKey]);
 
   return scoreMap;
 }

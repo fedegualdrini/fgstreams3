@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import type Hls from 'hls.js';
+import { buildHlsConfig, toProxyUrl } from '@/lib/playerHls';
+import PlayerSurface from '@/components/players/PlayerSurface';
+import { usePlayerCallbacks } from '@/components/players/usePlayerCallbacks';
 
 interface HLSVideoPlayerProps {
   src: string;
@@ -10,209 +14,98 @@ interface HLSVideoPlayerProps {
   onError: () => void;
 }
 
-const EXTERNAL_IPS = [
-  '45.5.151.147',
-  '190.61.41.181',
-  '138.59.227.20',
-  '177.74.205.189',
-  '201.217.246.42',
-  '191.97.59.33',
-];
-
-const BASE_CONFIG = {
-  maxBufferLength: 45,
-  maxMaxBufferLength: 90,
-  maxBufferSize: 120 * 1000 * 1000,
-  maxBufferHole: 1.5,
-  highBufferWatchdogPeriod: 5,
-  enableWorker: true,
-  abrEwmaDefaultEstimate: 5000,
-  abrEwmaFastLive: 1,
-  abrEwmaSlowLive: 3,
-  abrBandWidthFactor: 1.2,
-  abrBandWidthUpFactor: 1.5,
-  nudgeMaxRetry: 8,
-  nudgeOffset: 0.05,
-  fragLoadingMaxRetry: 6,
-  fragLoadingRetryDelay: 500,
-  fragLoadingMaxRetryTimeout: 12000,
-  manifestLoadingMaxRetry: 4,
-  manifestLoadingRetryDelay: 500,
-  manifestLoadingTimeOut: 10000,
-  levelLoadingMaxRetry: 4,
-  levelLoadingRetryDelay: 500,
-  backBufferLength: 60,
-  fragLoadingTimeOut: 20000,
-  xhrSetup: (xhr: XMLHttpRequest) => { xhr.withCredentials = false; },
-};
-
 const MAX_NETWORK_RETRIES = 5;
 const MAX_MEDIA_RETRIES = 3;
-
-function toProxyUrl(url: string, forceProxy: boolean): string {
-  return forceProxy || url.startsWith('http://')
-    ? `/api/hls-proxy?url=${encodeURIComponent(url)}`
-    : url;
-}
+const NETWORK_RETRY_DELAY_MS = 1000;
+const NATIVE_HLS_MIME = 'application/vnd.apple.mpegurl';
 
 export default function HLSVideoPlayer({ src, forceProxy = false, onPlaying, onError }: HLSVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const onPlayingRef = useRef(onPlaying);
-  const onErrorRef = useRef(onError);
-
-  const [pipActive, setPipActive] = useState(false);
-  const [pipSupported, setPipSupported] = useState(false);
-
-  useEffect(() => {
-    setPipSupported(typeof document !== 'undefined' && !!document.pictureInPictureEnabled);
-  }, []);
-
-  const togglePip = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-    try {
-      if (document.pictureInPictureElement) {
-        await document.exitPictureInPicture();
-        setPipActive(false);
-      } else {
-        await video.requestPictureInPicture();
-        setPipActive(true);
-      }
-    } catch {
-      // PiP not available for this video
-    }
-  };
-
-  useEffect(() => { onPlayingRef.current = onPlaying; }, [onPlaying]);
-  useEffect(() => { onErrorRef.current = onError; }, [onError]);
+  const { onPlayingRef, onErrorRef } = usePlayerCallbacks(onPlaying, onError);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     let destroyed = false;
+    let hls: Hls | null = null;
     // Tracked separately: a stream that survives 5 network blips is not the same
     // as one that also hit 3 media errors, and a single shared counter that never
     // reset meant later recoverable errors were treated as fatal.
     let networkRetries = 0;
     let mediaRetries = 0;
 
-    let hlsInstance: any = null; // hls.js types require dynamic import
-
-    const isExternal = EXTERNAL_IPS.some(ip => src.includes(ip));
-    const config = isExternal
-      ? { ...BASE_CONFIG, maxBufferLength: 90, maxMaxBufferLength: 180, maxBufferSize: 200 * 1000 * 1000, abrBandWidthFactor: 0.8 }
-      : BASE_CONFIG;
+    const playNatively = () => {
+      video.src = toProxyUrl(src, forceProxy);
+      video.addEventListener('loadedmetadata', () => {
+        if (!destroyed) { video.play().catch(() => {}); onPlayingRef.current(); }
+      }, { once: true });
+      video.addEventListener('error', () => {
+        if (!destroyed) onErrorRef.current();
+      }, { once: true });
+    };
 
     const setupHls = async () => {
-      const HlsModule = await import('hls.js');
-      const Hls = HlsModule.default;
-
+      // Loaded on demand: hls.js is heavy and only HLS channels need it.
+      const { default: HlsEngine } = await import('hls.js');
       if (destroyed) return;
 
-      if (!Hls.isSupported()) {
-        if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = toProxyUrl(src, forceProxy);
-          video.addEventListener('loadedmetadata', () => {
-            if (!destroyed) { video.play().catch(() => {}); onPlayingRef.current(); }
-          }, { once: true });
-          video.addEventListener('error', () => {
-            if (!destroyed) onErrorRef.current();
-          }, { once: true });
-        } else {
-          onErrorRef.current();
-        }
+      if (!HlsEngine.isSupported()) {
+        if (video.canPlayType(NATIVE_HLS_MIME)) playNatively();
+        else onErrorRef.current();
         return;
       }
 
-      hlsInstance = new Hls(config);
-      hlsInstance.loadSource(toProxyUrl(src, forceProxy));
-      hlsInstance.attachMedia(video);
+      const instance = new HlsEngine(buildHlsConfig(src));
+      hls = instance;
+      instance.loadSource(toProxyUrl(src, forceProxy));
+      instance.attachMedia(video);
 
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      instance.on(HlsEngine.Events.MANIFEST_PARSED, () => {
         if (destroyed) return;
         onPlayingRef.current();
         video.play().catch(() => {});
-        if (hlsInstance.levels && hlsInstance.levels.length > 1) {
-          hlsInstance.currentLevel = -1;
-        }
+        if (instance.levels.length > 1) instance.currentLevel = -1;
       });
 
       // A buffered fragment means the stream is healthy again, so the retry
       // budget resets — otherwise a long session exhausts it and dies on a blip.
-      hlsInstance.on(Hls.Events.FRAG_BUFFERED, () => {
+      instance.on(HlsEngine.Events.FRAG_BUFFERED, () => {
         networkRetries = 0;
         mediaRetries = 0;
       });
 
-      hlsInstance.on(Hls.Events.ERROR, (_: unknown, data: { fatal: boolean; type: string }) => {
+      instance.on(HlsEngine.Events.ERROR, (_event, data) => {
         if (!data.fatal || destroyed) return;
 
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && networkRetries < MAX_NETWORK_RETRIES) {
+        if (data.type === HlsEngine.ErrorTypes.NETWORK_ERROR && networkRetries < MAX_NETWORK_RETRIES) {
           networkRetries++;
-          setTimeout(() => { if (!destroyed && hlsInstance) hlsInstance.startLoad(); }, 1000);
+          setTimeout(() => { if (!destroyed && hls) hls.startLoad(); }, NETWORK_RETRY_DELAY_MS);
           return;
         }
 
-        if (data.type === Hls.ErrorTypes.MEDIA_ERROR && mediaRetries < MAX_MEDIA_RETRIES) {
+        if (data.type === HlsEngine.ErrorTypes.MEDIA_ERROR && mediaRetries < MAX_MEDIA_RETRIES) {
           mediaRetries++;
-          hlsInstance.recoverMediaError();
+          instance.recoverMediaError();
           return;
         }
 
-        hlsInstance.destroy();
-        hlsInstance = null;
-        if (!destroyed) onErrorRef.current();
+        instance.destroy();
+        hls = null;
+        onErrorRef.current();
       });
     };
-
-    const handleEnterPip = () => setPipActive(true);
-    const handleLeavePip = () => setPipActive(false);
-    video.addEventListener('enterpictureinpicture', handleEnterPip);
-    video.addEventListener('leavepictureinpicture', handleLeavePip);
 
     setupHls();
 
     return () => {
       destroyed = true;
-      if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-      video.removeEventListener('enterpictureinpicture', handleEnterPip);
-      video.removeEventListener('leavepictureinpicture', handleLeavePip);
+      hls?.destroy();
+      hls = null;
       video.removeAttribute('src');
       video.load();
     };
-  }, [src, forceProxy]);
+  }, [src, forceProxy, onPlayingRef, onErrorRef]);
 
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        controls
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: '#000' }}
-      />
-      {pipSupported && (
-        <button
-          type="button"
-          onClick={togglePip}
-          title={pipActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
-          aria-label={pipActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
-          style={{
-            position: 'absolute', bottom: '48px', right: '8px', zIndex: 10,
-            background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '4px', color: '#fff', cursor: 'pointer',
-            padding: '4px 8px', fontSize: '0.65rem', fontFamily: 'var(--font-body)',
-            fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
-            backdropFilter: 'blur(4px)',
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.85)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; }}
-        >
-          {pipActive ? '⊡ Exit PiP' : '⧉ PiP'}
-        </button>
-      )}
-    </div>
-  );
+  return <PlayerSurface videoRef={videoRef} />;
 }

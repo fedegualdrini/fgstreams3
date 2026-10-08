@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseScoreData } from './flashscore';
+import { parseScoreData } from './flashscoreParse';
 
 // Minimal HTML fixtures mirroring the actual flashscore.mobi #score-data structure
 const FIXTURE_WITH_LIVE_MATCH = `

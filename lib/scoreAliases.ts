@@ -24,11 +24,9 @@ export const TEAM_ALIASES: Record<string, string> = {
   'sheffield united': 'sheffield utd',
   'sheffield wednesday': 'sheffield wed',
   'nottm forest': 'nottingham forest',
-  'nottingham forest': 'nottingham forest',
   // Basketball
   'la lakers': 'los angeles lakers',
   'la clippers': 'los angeles clippers',
   'golden state': 'golden state warriors',
   'new york': 'new york knicks',
-  // Add more as encountered in the wild
 };

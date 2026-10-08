@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
-// Zod schemas mirror the TypeScript interfaces in types/api.ts and types/channels.ts,
-// providing runtime validation of external API responses.
+// Runtime validation of the external API responses. The matching TypeScript
+// shapes in types/api.ts are written out by hand rather than derived with
+// z.infer: `.passthrough()` (we keep unknown upstream fields) adds a string
+// index signature to the inferred type, which would leak into every consumer.
 
-export const RawStreamSchema = z.object({
+const RawStreamSchema = z.object({
   url: z.string().optional(),
   embedUrl: z.string().optional(),
   language: z.string().optional(),
@@ -12,7 +14,7 @@ export const RawStreamSchema = z.object({
   source: z.string().optional(),
 }).passthrough();
 
-export const RawMatchSourceSchema = z.object({
+const RawMatchSourceSchema = z.object({
   source: z.string(),
   id: z.string(),
 });
@@ -22,7 +24,7 @@ const RawMatchTeamSchema = z.object({
   badge: z.string().optional(),
 }).passthrough();
 
-export const RawMatchSchema = z.object({
+const RawMatchSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
   category: z.string().optional(),
@@ -56,28 +58,24 @@ export const RawMatchSchema = z.object({
   posterUrl: z.string().optional(),
 }).passthrough();
 
-export const ChannelOptionSchema = z.object({
+const ChannelOptionSchema = z.object({
   name: z.string(),
   iframe: z.string(),
 });
 
-export const ChannelSchema = z.object({
-  name: z.string(),
-  logo: z.string(),
-  options: z.array(ChannelOptionSchema),
-  show: z.boolean(),
-});
-
-export const SportSchema = z.object({
+const SportSchema = z.object({
   id: z.string(),
   name: z.string(),
   slug: z.string().optional(),  // not always present in the API response
 }).passthrough();
 
-export const RawStreamArraySchema = z.array(RawStreamSchema);
+const RawStreamArraySchema = z.array(RawStreamSchema);
 export const RawMatchArraySchema = z.array(RawMatchSchema);
 export const SportArraySchema = z.array(SportSchema);
-export const ChannelArraySchema = z.array(ChannelSchema);
+
+// `/stream/{source}/{id}` answers with either a list of streams or a single
+// stream object. The array is tried first, so a list is never read as an object.
+export const RawStreamResponseSchema = z.union([RawStreamArraySchema, RawStreamSchema]);
 
 // ─── angulismotv feed ────────────────────────────────────────────────────────
 
@@ -100,3 +98,5 @@ export const AngulismoDataSchema = z.object({
   events: z.array(AngulismoEventSchema).default([]),
   channels: z.array(AngulismoChannelSchema).default([]),
 }).passthrough();
+
+export type AngulismoData = z.infer<typeof AngulismoDataSchema>;

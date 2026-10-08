@@ -1,50 +1,45 @@
-import { NextResponse } from 'next/server';
 import { fetchLiveScoresCached } from '@/lib/flashscore';
+import { jsonWithCache, withErrorResponse } from '@/lib/httpRoute';
 import type { FlashscoreEntry } from '@/types/api';
-import { SCORE_DEDUP_WINDOW_MS, SCORE_CACHE_MAX_AGE_MS } from '@/lib/constants';
+import {
+  SCORE_CACHE_MAX_AGE_MS,
+  SCORE_DEDUP_WINDOW_MS,
+  SCORES_CDN_MAX_AGE,
+  SCORES_CDN_STALE_WHILE_REVALIDATE,
+} from '@/lib/constants';
 
-type CacheEntry = { data: FlashscoreEntry[]; timestamp: number };
+interface CacheEntry {
+  data: FlashscoreEntry[];
+  timestamp: number;
+}
 
 // Module-level cache: avoids hammering flashscore.mobi when multiple concurrent
 // requests arrive during cold-start. Entries are pruned when they exceed
 // SCORE_CACHE_MAX_AGE_MS to prevent unbounded memory growth.
 const cache = new Map<string, CacheEntry>();
 
-function pruneCache(): void {
-  const cutoff = Date.now() - SCORE_CACHE_MAX_AGE_MS;
+function pruneCache(now: number): void {
+  const cutoff = now - SCORE_CACHE_MAX_AGE_MS;
   for (const [key, entry] of cache) {
     if (entry.timestamp < cutoff) cache.delete(key);
   }
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ sport: string }> },
-) {
-  try {
+export const GET = withErrorResponse<{ params: Promise<{ sport: string }> }>(
+  'scores route',
+  'Failed to fetch scores',
+  async (_req, { params }) => {
     const { sport } = await params;
     const now = Date.now();
 
-    pruneCache();
+    pruneCache(now);
 
     const cached = cache.get(sport);
-    if (cached && now - cached.timestamp < SCORE_DEDUP_WINDOW_MS) {
-      return NextResponse.json(cached.data, {
-        headers: { 'Cache-Control': 's-maxage=30, stale-while-revalidate=60' },
-      });
-    }
+    const isFresh = cached !== undefined && now - cached.timestamp < SCORE_DEDUP_WINDOW_MS;
 
-    const entries = await fetchLiveScoresCached(sport);
-    cache.set(sport, { data: entries, timestamp: now });
+    const entries = isFresh ? cached.data : await fetchLiveScoresCached(sport);
+    if (!isFresh) cache.set(sport, { data: entries, timestamp: now });
 
-    return NextResponse.json(entries, {
-      headers: { 'Cache-Control': 's-maxage=30, stale-while-revalidate=60' },
-    });
-  } catch (err) {
-    console.error('scores route error:', err);
-    return NextResponse.json(
-      { error: 'Failed to fetch scores' },
-      { status: 502 },
-    );
-  }
-}
+    return jsonWithCache(entries, SCORES_CDN_MAX_AGE, SCORES_CDN_STALE_WHILE_REVALIDATE);
+  },
+);

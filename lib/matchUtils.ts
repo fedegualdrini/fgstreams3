@@ -23,19 +23,23 @@ export function generateMatchId(match: Partial<Match>): string {
     parts.push(match.sources[0].id);
   }
 
-  const idString = parts.join('-').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  return hashToBase36(parts.join('-').toLowerCase().replace(/[^a-z0-9-]/g, '-'));
+}
+
+/** 32-bit string hash (`h * 31 + c`), rendered compactly for use in URLs. */
+function hashToBase36(input: string): string {
   let hash = 0;
-  for (let i = 0; i < idString.length; i++) {
-    const char = idString.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
     hash = hash & hash;
   }
   return Math.abs(hash).toString(36);
 }
 
+const TITLE_SEPARATORS = [' - ', ' vs. ', ' vs ', ' VS ', ' v ', ' V '];
+
 function parseTeamsFromTitle(title: string): { team1: string; team2: string } {
-  const separators = [' - ', ' vs. ', ' vs ', ' VS ', ' v ', ' V '];
-  for (const sep of separators) {
+  for (const sep of TITLE_SEPARATORS) {
     if (title.includes(sep)) {
       const parts = title.split(sep);
       return {
@@ -92,46 +96,50 @@ function derivedPosterPath(match: RawMatch): string | undefined {
   return home && away ? `/api/images/poster/${home}/${away}.webp` : undefined;
 }
 
+/**
+ * `teams` is the structured form on the all-today feed; the title only has to
+ * be split when the feed omits it.
+ */
+function resolveTeams(raw: RawMatch): { team1: string; team2: string } {
+  const fromTitle = raw.title
+    ? parseTeamsFromTitle(raw.title)
+    : { team1: raw.team1 || '', team2: raw.team2 || '' };
+  return {
+    team1: raw.teams?.home?.name || raw.team1 || fromTitle.team1,
+    team2: raw.teams?.away?.name || raw.team2 || fromTitle.team2,
+  };
+}
+
+/** `date` (epoch ms or string) wins; the other time fields are only read when it is absent. */
+function resolveStartTime(raw: RawMatch): string | undefined {
+  if (!raw.date) return raw.startTime || raw.start_time || raw.time;
+  if (typeof raw.date === 'number') return new Date(raw.date).toISOString();
+  return raw.date;
+}
+
+function normalizeMatch(raw: RawMatch, now: number): Match {
+  const { team1, team2 } = resolveTeams(raw);
+
+  const normalized: Match = {
+    id: raw.id ? String(raw.id) : generateMatchId(raw),
+    sport: raw.sport || raw.category || '',
+    league: raw.league || raw.tournament || raw.competition || '',
+    team1,
+    team2,
+    startTime: resolveStartTime(raw),
+    isLive: raw.isLive !== undefined ? raw.isLive : (raw.is_live || raw.live || false),
+    sources: raw.sources || [],
+    image1: raw.image1 || raw.homeImage || raw.team1Image || badgePath(raw.teams?.home?.badge),
+    image2: raw.image2 || raw.awayImage || raw.team2Image || badgePath(raw.teams?.away?.badge),
+    poster: raw.poster || raw.posterImage || raw.posterUrl || derivedPosterPath(raw),
+  };
+
+  // Streamed has no explicit live flag on the per-sport feeds, so seed it from
+  // the kickoff window; callers with the live feed refine it via deriveIsLive.
+  normalized.isLive = deriveIsLive(normalized, undefined, now);
+  return normalized;
+}
+
 export function normalizeMatches(matches: RawMatch[], now = Date.now()): Match[] {
-  return matches.map(match => {
-    const id = match.id ? String(match.id) : generateMatchId(match);
-
-    // `teams` is the structured form on the all-today feed; the title only has
-    // to be split when the feed omits it.
-    const teamsFromTitle = match.title
-      ? parseTeamsFromTitle(match.title)
-      : { team1: match.team1 || '', team2: match.team2 || '' };
-    const team1 = match.teams?.home?.name || match.team1 || teamsFromTitle.team1;
-    const team2 = match.teams?.away?.name || match.team2 || teamsFromTitle.team2;
-
-    let startTime: string | undefined;
-    if (match.date) {
-      if (typeof match.date === 'number') {
-        startTime = new Date(match.date).toISOString();
-      } else if (typeof match.date === 'string') {
-        startTime = match.date;
-      }
-    } else {
-      startTime = match.startTime || match.start_time || match.time;
-    }
-
-    const normalized: Match = {
-      id,
-      sport: match.sport || match.category || '',
-      league: match.league || match.tournament || match.competition || '',
-      team1,
-      team2,
-      startTime,
-      isLive: match.isLive !== undefined ? match.isLive : (match.is_live || match.live || false),
-      sources: match.sources || [],
-      image1: match.image1 || match.homeImage || match.team1Image || badgePath(match.teams?.home?.badge),
-      image2: match.image2 || match.awayImage || match.team2Image || badgePath(match.teams?.away?.badge),
-      poster: match.poster || match.posterImage || match.posterUrl || derivedPosterPath(match),
-    };
-
-    // Streamed has no explicit live flag on the per-sport feeds, so seed it from
-    // the kickoff window; callers with the live feed refine it via deriveIsLive.
-    normalized.isLive = deriveIsLive(normalized, undefined, now);
-    return normalized;
-  });
+  return matches.map((raw) => normalizeMatch(raw, now));
 }

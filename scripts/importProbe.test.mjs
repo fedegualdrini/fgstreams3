@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractPathToken, tokenPathClaim, tokenCoversMedia } from './import-playlist.mjs';
+import { extractPathToken, tokenPathClaim, tokenCoversMedia } from './libProbe.mjs';
 
 // A `tok_<jwt>` whose payload claims the directory "/live/ch/dash_cenc/".
 const payload = Buffer.from(JSON.stringify({ path: '/live/ch/dash_cenc/' })).toString('base64url');

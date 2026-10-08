@@ -1,5 +1,9 @@
 import type { PromiedosGame } from '@/types/api';
 import { PROMIEDOS_TIMEOUT_MS, REVALIDATE_BROADCASTS } from './constants';
+import { fetchText } from './httpClient';
+import { createLogger } from './logger';
+
+const log = createLogger('promiedos');
 
 /**
  * promiedos.com.ar publishes, per fixture, the TV networks carrying it — the
@@ -9,13 +13,13 @@ import { PROMIEDOS_TIMEOUT_MS, REVALIDATE_BROADCASTS } from './constants';
  * __NEXT_DATA__ script of every page. We parse that instead of scraping markup.
  */
 
-const PROMIEDOS_BASE = 'https://www.promiedos.com.ar';
+export const PROMIEDOS_BASE = 'https://www.promiedos.com.ar';
 
 // Yesterday / today / tomorrow. Streamed lists fixtures a day or two out and
 // timezone skew can push an Argentine evening game onto the next UTC day.
-const PROMIEDOS_PAGES = ['/ayer', '/', '/man'];
+export const PROMIEDOS_PAGES = ['/ayer', '/', '/man'];
 
-const BROWSER_HEADERS = {
+export const PROMIEDOS_HEADERS = {
   // The site returns a bot interstitial without a browser-shaped UA.
   'User-Agent':
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
@@ -113,26 +117,27 @@ export function parsePromiedosPayload(payload: unknown): PromiedosGame[] {
 
 /** null distinguishes "the page failed" from "the page listed no fixtures". */
 async function fetchPage(path: string): Promise<PromiedosGame[] | null> {
+  const html = await fetchText(`${PROMIEDOS_BASE}${path}`, {
+    log,
+    label: `GET ${path}`,
+    revalidate: REVALIDATE_BROADCASTS,
+    headers: PROMIEDOS_HEADERS,
+    // Without a deadline a hung request would stall the whole catalog build,
+    // which runs inside a request.
+    timeoutMs: PROMIEDOS_TIMEOUT_MS,
+  });
+  if (html === null) return null;
+
+  const payload = extractNextData(html);
+  if (!payload) {
+    log.warn(`no __NEXT_DATA__ payload on ${path}`);
+    return null;
+  }
+
   try {
-    const response = await fetch(`${PROMIEDOS_BASE}${path}`, {
-      headers: BROWSER_HEADERS,
-      // Without a deadline a hung request would stall the whole catalog build,
-      // which runs inside a request.
-      signal: AbortSignal.timeout(PROMIEDOS_TIMEOUT_MS),
-      next: { revalidate: REVALIDATE_BROADCASTS },
-    });
-    if (!response.ok) {
-      console.warn(`promiedos: ${path} responded ${response.status}`);
-      return null;
-    }
-    const payload = extractNextData(await response.text());
-    if (!payload) {
-      console.warn(`promiedos: no __NEXT_DATA__ payload on ${path}`);
-      return null;
-    }
     return parsePromiedosPayload(payload);
   } catch (error) {
-    console.error(`promiedos: failed to load ${path}:`, error);
+    log.error(`could not read fixtures from ${path}`, error);
     return null;
   }
 }
@@ -163,7 +168,7 @@ export async function fetchPromiedosGames(): Promise<PromiedosSnapshot> {
 
   if (succeeded.length === 0) {
     if (lastGood) {
-      console.warn('promiedos: all pages failed, reusing the last good snapshot');
+      log.warn('all pages failed, reusing the last good snapshot');
       return { games: lastGood, ok: true, stale: true };
     }
     return { games: [], ok: false, stale: false };

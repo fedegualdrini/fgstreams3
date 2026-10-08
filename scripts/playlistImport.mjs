@@ -108,9 +108,46 @@ export function keyMatchesManifest(clearKeys, probe) {
   return Object.keys(clearKeys).includes(probe.manifestKid);
 }
 
+/** HLS is playable only when we could fetch the manifest ourselves. */
+function classifyHls(parsed, probe) {
+  // A manifest we cannot fetch ourselves is dead for the browser too, and an
+  // unfetched .m3u8 would render as an iframe showing raw playlist text.
+  if (!probe?.isM3u) return { kind: null, reason: 'hls-unreachable' };
+  return { kind: 'hls', proxy: probe.cors !== '*' || parsed.protocol === 'http:' };
+}
+
+/**
+ * Rows with a `token` URL redirect to `…/tok_<jwt>/…`, and that token fills the
+ * {token} placeholder in the stream URL. The JWT scopes itself to one directory:
+ * when that is not the directory the media sits in, the token buys the manifest
+ * and nothing else, and only a paid session unlocks the rest.
+ */
+function classifyTokenDash(row, probe) {
+  if (!probe?.isMpd) return { kind: null, reason: 'token-stream-unreachable' };
+  if (!probe.tokenCoversMedia) return { kind: null, reason: 'token-scoped-to-manifest' };
+  if (probe.cors !== '*') return { kind: null, reason: 'dash-no-cors' };
+  const clearKeys = parseClearKeys(row.licenseKey);
+  if (row.licenseType && !clearKeys) return { kind: null, reason: 'clearkey-unparsable' };
+  if (!keyMatchesManifest(clearKeys, probe)) return { kind: null, reason: 'clearkey-stale' };
+  return { kind: 'dash', proxy: false, clearKeys };
+}
+
+function classifyDash(row, probe) {
+  // Only ClearKey is decryptable in the browser without a licence server, and
+  // an MPD the network cannot reach would just spin forever in the player.
+  if (!probe?.isMpd) return { kind: null, reason: 'dash-unreachable' };
+  if (probe.cors !== '*') return { kind: null, reason: 'dash-no-cors' };
+  if (!row.licenseType) return { kind: 'dash', proxy: false, clearKeys: null };
+  const clearKeys = parseClearKeys(row.licenseKey);
+  if (!clearKeys) return { kind: null, reason: 'clearkey-unparsable' };
+  if (!keyMatchesManifest(clearKeys, probe)) return { kind: null, reason: 'clearkey-stale' };
+  return { kind: 'dash', proxy: false, clearKeys };
+}
+
 /**
  * Decides how (or whether) FGStreams can play a playlist row.
  * `probe` is the result of fetching the URL server-side, when available.
+ * Returns { kind, proxy, clearKeys? } when playable, else { kind: null, reason }.
  */
 export function classifyRow(row, probe) {
   const url = row.url?.trim() ?? '';
@@ -125,39 +162,10 @@ export function classifyRow(row, probe) {
     return { kind: null, reason: 'invalid-url' };
   }
 
-  const looksHls = url.includes('.m3u8') || probe?.isM3u === true;
-  if (looksHls) {
-    // A manifest we cannot fetch ourselves is dead for the browser too, and an
-    // unfetched .m3u8 would render as an iframe showing raw playlist text.
-    if (!probe?.isM3u) return { kind: null, reason: 'hls-unreachable' };
-    return { kind: 'hls', proxy: probe.cors !== '*' || parsed.protocol === 'http:' };
-  }
+  if (url.includes('.m3u8') || probe?.isM3u === true) return classifyHls(parsed, probe);
+  if (row.tokenUrl && url.includes('{token}')) return classifyTokenDash(row, probe);
+  if (url.includes('.mpd')) return classifyDash(row, probe);
 
-  // Some rows carry a `token` URL that redirects to `…/tok_<jwt>/…`, and that
-  // token fills the {token} placeholder in the stream URL. The JWT scopes itself
-  // to one directory: when that is not the directory the media sits in, the token
-  // buys the manifest and nothing else, and only a paid session unlocks the rest.
-  if (row.tokenUrl && url.includes('{token}')) {
-    if (!probe?.isMpd) return { kind: null, reason: 'token-stream-unreachable' };
-    if (!probe.tokenCoversMedia) return { kind: null, reason: 'token-scoped-to-manifest' };
-    if (probe.cors !== '*') return { kind: null, reason: 'dash-no-cors' };
-    const clearKeys = parseClearKeys(row.licenseKey);
-    if (row.licenseType && !clearKeys) return { kind: null, reason: 'clearkey-unparsable' };
-    if (!keyMatchesManifest(clearKeys, probe)) return { kind: null, reason: 'clearkey-stale' };
-    return { kind: 'dash', proxy: false, clearKeys };
-  }
-
-  if (url.includes('.mpd')) {
-    // Only ClearKey is decryptable in the browser without a licence server, and
-    // an MPD the network cannot reach would just spin forever in the player.
-    if (!probe?.isMpd) return { kind: null, reason: 'dash-unreachable' };
-    if (probe.cors !== '*') return { kind: null, reason: 'dash-no-cors' };
-    if (!row.licenseType) return { kind: 'dash', proxy: false, clearKeys: null };
-    const clearKeys = parseClearKeys(row.licenseKey);
-    if (!clearKeys) return { kind: null, reason: 'clearkey-unparsable' };
-    if (!keyMatchesManifest(clearKeys, probe)) return { kind: null, reason: 'clearkey-stale' };
-    return { kind: 'dash', proxy: false, clearKeys };
-  }
   if (parsed.protocol !== 'https:') return { kind: null, reason: 'insecure' };
   if (NON_STREAM_EXT.test(parsed.pathname)) return { kind: null, reason: 'not-a-stream' };
   // Embed pages cannot be validated server-side (most block non-browser fetches),
@@ -173,14 +181,11 @@ function uniqueOptionName(taken, name) {
   return `${base} (${n})`;
 }
 
-/**
- * Appends playlist rows to the existing channel list: rows join an existing
- * channel when the station name normalizes to the same thing, otherwise they
- * create one. URLs already present anywhere in the list are never duplicated.
- */
+/** Prefix put on option names when an import runs with `markNew`, so fresh entries are easy to review. */
 export const NEW_OPTION_PREFIX = 'NEW · ';
 
-export function mergePlaylist(existingChannels, rows, probes = new Map(), { markNew = false } = {}) {
+/** Copy the channels and index them by normalized name, known URL and taken option names. */
+function indexChannels(existingChannels) {
   const channels = existingChannels.map(c => ({ ...c, options: [...c.options] }));
   const byName = new Map();
   const knownUrls = new Set();
@@ -193,6 +198,23 @@ export function mergePlaylist(existingChannels, rows, probes = new Map(), { mark
     for (const option of channel.options) knownUrls.add(option.iframe);
   }
 
+  return { channels, byName, knownUrls, optionNames };
+}
+
+function toChannelOption(name, url, verdict) {
+  const option = { name, iframe: url };
+  if (verdict.proxy) option.proxy = true;
+  if (verdict.clearKeys) option.clearKeys = verdict.clearKeys;
+  return option;
+}
+
+/**
+ * Appends playlist rows to the existing channel list: rows join an existing
+ * channel when the station name normalizes to the same thing, otherwise they
+ * create one. URLs already present anywhere in the list are never duplicated.
+ */
+export function mergePlaylist(existingChannels, rows, probes = new Map(), { markNew = false } = {}) {
+  const { channels, byName, knownUrls, optionNames } = indexChannels(existingChannels);
   const stats = { added: 0, newChannels: 0, duplicates: 0, skipped: {} };
 
   for (const row of rows) {
@@ -226,10 +248,7 @@ export function mergePlaylist(existingChannels, rows, probes = new Map(), { mark
     const name = uniqueOptionName(taken, label);
     taken.add(name);
     knownUrls.add(row.url);
-    const option = { name, iframe: row.url };
-    if (verdict.proxy) option.proxy = true;
-    if (verdict.clearKeys) option.clearKeys = verdict.clearKeys;
-    channel.options.push(option);
+    channel.options.push(toChannelOption(name, row.url, verdict));
     stats.added++;
   }
 

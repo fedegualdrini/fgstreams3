@@ -1,10 +1,14 @@
 'use client';
 
-import { memo, useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import { memo } from 'react';
 import type { BroadcastChannel, Match } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
+import PosterImage from '@/components/match-list/PosterImage';
+import { useScoreFlash } from '@/components/match-list/useScoreFlash';
+
+/** Broadcasters shown on a card; more would crowd out the league name. */
+const MAX_BROADCASTS = 2;
 
 interface MatchCardProps {
   match: Match;
@@ -15,180 +19,84 @@ interface MatchCardProps {
 }
 
 function MatchCard({ match, score, scoreMinute, broadcasts = [] }: MatchCardProps) {
-  const isLive = match.isLive;
-  const startTime = match.startTime ? new Date(match.startTime) : null;
-  const localTime = useLocalTime(startTime);
-  const displayScore = isLive && score ? score : null;
-  const posterUrl = getPosterUrl(match.poster);
-
-  const prevScoreRef = useRef<string | null | undefined>(undefined);
-  const [scoreFlash, setScoreFlash] = useState(false);
-
-  useEffect(() => {
-    if (prevScoreRef.current !== undefined && prevScoreRef.current !== displayScore && displayScore) {
-      setScoreFlash(true);
-      const t = setTimeout(() => setScoreFlash(false), 800);
-      return () => clearTimeout(t);
-    }
-    prevScoreRef.current = displayScore;
-  }, [displayScore]);
+  const localTime = useLocalTime(match.startTime ? new Date(match.startTime) : null);
+  const displayScore = match.isLive && score ? score : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="match-card">
+      <Poster match={match} />
 
-      {/* Poster */}
-      <div style={{ position: 'relative', width: '100%', height: '160px', background: 'var(--bg-2)', overflow: 'hidden', flexShrink: 0 }}>
-        {posterUrl && (
-          <Image
-            src={posterUrl}
-            alt={`${match.team1} vs ${match.team2 ?? ''}`}
-            fill
-            sizes="(max-width: 768px) 100vw, 300px"
-            style={{ objectFit: 'cover', opacity: 0.85 }}
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-          />
-        )}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(to top, rgba(7,8,12,0.95) 0%, rgba(7,8,12,0.2) 60%, transparent 100%)',
-        }} />
-        {isLive && (
-          <div style={{
-            position: 'absolute', top: '0.625rem', left: '0.625rem',
-            display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
-            background: 'var(--red)', color: '#fff',
-            fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em',
-            padding: '0.18rem 0.45rem', borderRadius: '2px',
-          }}>
-            <span className="live-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
-            LIVE
-          </div>
-        )}
+      <div className="match-card__header">
+        <span className="match-card__league truncate">{match.league || match.sport}</span>
+        <Broadcasts broadcasts={broadcasts} />
       </div>
 
-      {/* Top: league */}
-      <div style={{
-        padding: '0.75rem 0.875rem 0',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <span style={{
-          fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em',
-          textTransform: 'uppercase', color: 'var(--subtle)', fontFamily: 'var(--font-body)',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {match.league || match.sport}
+      <div className="match-card__matchup">
+        <span className="match-card__team match-card__team--home truncate">{match.team1}</span>
+        <ScoreOrVersus score={displayScore} minute={scoreMinute} />
+        {match.team2
+          ? <span className="match-card__team truncate">{match.team2}</span>
+          : <span style={{ flex: 1 }} />}
+      </div>
+
+      <div className="match-card__footer">
+        <span className="match-card__sport">{match.sport}</span>
+        {match.isLive && <span className="match-card__watch">WATCH →</span>}
+        {!match.isLive && localTime && (
+          <span className="match-card__time" suppressHydrationWarning>{localTime}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Poster({ match }: { match: Match }) {
+  const posterUrl = getPosterUrl(match.poster);
+
+  return (
+    <div className="match-card__poster">
+      {posterUrl && (
+        <PosterImage
+          src={posterUrl}
+          alt={`${match.team1} vs ${match.team2 ?? ''}`}
+          sizes="(max-width: 768px) 100vw, 300px"
+          className="match-card__poster-image"
+        />
+      )}
+      <div className="match-card__poster-fade" />
+      {match.isLive && (
+        <div className="match-card__live">
+          <span className="live-dot match-card__live-dot" />
+          LIVE
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Broadcasts({ broadcasts }: { broadcasts: BroadcastChannel[] }) {
+  if (broadcasts.length === 0) return null;
+
+  return (
+    <span className="match-card__broadcasts">
+      {broadcasts.slice(0, MAX_BROADCASTS).map((broadcast) => (
+        <span key={broadcast.channel} title={broadcast.network} className="match-card__broadcast truncate">
+          {broadcast.channel}
         </span>
+      ))}
+    </span>
+  );
+}
 
-        {/* Broadcasters, so the card answers "where is this on?" at a glance. */}
-        {broadcasts.length > 0 && (
-          <span style={{ display: 'flex', gap: '4px', flexShrink: 0, marginLeft: '0.5rem' }}>
-            {broadcasts.slice(0, 2).map((broadcast) => (
-              <span
-                key={broadcast.channel}
-                title={broadcast.network}
-                style={{
-                  fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.06em',
-                  textTransform: 'uppercase', color: 'var(--accent)',
-                  border: '1px solid var(--line)', borderRadius: '2px',
-                  padding: '0.1rem 0.3rem', whiteSpace: 'nowrap',
-                  maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis',
-                }}
-              >
-                {broadcast.channel}
-              </span>
-            ))}
-          </span>
-        )}
-      </div>
+function ScoreOrVersus({ score, minute }: { score: string | null; minute?: string }) {
+  const flashing = useScoreFlash(score);
 
-      {/* Teams + score/vs */}
-      <div style={{
-        padding: '0.875rem 0.875rem 0.75rem',
-        display: 'flex', alignItems: 'center', gap: '0.625rem', flex: 1,
-      }}>
-        <span style={{
-          flex: 1, fontFamily: 'var(--font-display)', fontSize: '1.25rem',
-          letterSpacing: '0.02em', color: 'var(--text)', lineHeight: 1.1,
-          textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {match.team1}
-        </span>
+  if (!score) return <span className="match-card__vs">VS</span>;
 
-        {displayScore ? (
-          <div style={{
-            flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center',
-            padding: '0.2rem 0.625rem', background: 'var(--bg-3)',
-            border: '1px solid var(--line)', borderRadius: '3px',
-            minWidth: '4.25rem', textAlign: 'center',
-          }}>
-            <span
-              className={scoreFlash ? 'score-flash' : undefined}
-              style={{
-                fontFamily: 'var(--font-display)', fontSize: '1.2rem',
-                color: 'var(--accent)', letterSpacing: '0.04em', lineHeight: 1,
-              }}
-            >
-              {displayScore}
-            </span>
-            {scoreMinute && (
-              <span style={{
-                fontSize: '0.5rem', color: 'var(--red)',
-                fontWeight: 600, letterSpacing: '0.06em', marginTop: '2px',
-              }}>
-                {scoreMinute}
-              </span>
-            )}
-          </div>
-        ) : (
-          <span style={{
-            flexShrink: 0, fontSize: '0.58rem', fontWeight: 700,
-            letterSpacing: '0.12em', color: 'var(--muted)',
-            padding: '0.15rem 0.45rem', border: '1px solid var(--line)', borderRadius: '2px',
-          }}>
-            VS
-          </span>
-        )}
-
-        {match.team2 ? (
-          <span style={{
-            flex: 1, fontFamily: 'var(--font-display)', fontSize: '1.25rem',
-            letterSpacing: '0.02em', color: 'var(--text)', lineHeight: 1.1,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {match.team2}
-          </span>
-        ) : (
-          <span style={{ flex: 1 }} />
-        )}
-      </div>
-
-      {/* Footer: sport + time/watch */}
-      <div style={{
-        padding: '0.5rem 0.875rem', borderTop: '1px solid var(--line)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <span style={{
-          fontSize: '0.6rem', color: 'var(--muted)',
-          fontFamily: 'var(--font-body)', fontWeight: 500,
-        }}>
-          {match.sport}
-        </span>
-        {isLive ? (
-          <span style={{
-            fontSize: '0.6rem', color: 'var(--accent)',
-            fontFamily: 'var(--font-body)', fontWeight: 600, letterSpacing: '0.08em',
-          }}>
-            WATCH →
-          </span>
-        ) : localTime ? (
-          <span suppressHydrationWarning style={{
-            fontSize: '0.6rem', color: 'var(--subtle)', fontFamily: 'var(--font-body)',
-          }}>
-            {localTime}
-          </span>
-        ) : null}
-      </div>
-
+  return (
+    <div className="match-card__score">
+      <span className={`match-card__score-value${flashing ? ' score-flash' : ''}`}>{score}</span>
+      {minute && <span className="match-card__score-minute">{minute}</span>}
     </div>
   );
 }

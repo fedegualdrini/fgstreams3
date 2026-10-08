@@ -15,11 +15,17 @@ export const dynamic = 'force-dynamic';
 // first time after a deploy; every later render reads the cached catalog.
 export const maxDuration = 60;
 
+const FOOTER_LINKS = [
+  { href: '/', label: 'Matches' },
+  { href: '/channels', label: 'Channels' },
+  { href: '/movies', label: 'Movies' },
+];
+
 export default async function Home() {
   const sortedMatches = sortCatalog(await getCatalog());
 
-  const liveMatches = sortedMatches.filter(m => m.isLive);
-  const upcomingMatches = sortedMatches.filter(m => !m.isLive);
+  const liveMatches = sortedMatches.filter((match) => match.isLive);
+  const upcomingMatches = sortedMatches.filter((match) => !match.isLive);
 
   return (
     <>
@@ -27,31 +33,28 @@ export default async function Home() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
         <Suspense fallback={<MatchListSkeleton />}>
-          <MatchListWithSearch
-            liveMatches={liveMatches}
-            upcomingMatches={upcomingMatches}
-          />
+          <MatchListWithSearch liveMatches={liveMatches} upcomingMatches={upcomingMatches} />
         </Suspense>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--line)', marginTop: 'auto', padding: '1.25rem 0' }}>
-        <div className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.65rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
-            Streams sourced from publicly available sources
-          </span>
-          <nav aria-label="Footer navigation" style={{ display: 'flex', gap: '1rem' }}>
-            {[
-              { href: '/', label: 'Matches' },
-              { href: '/channels', label: 'Channels' },
-              { href: '/movies', label: 'Movies' },
-            ].map(({ href, label }) => (
-              <Link key={href} href={href} style={{ fontSize: '0.65rem', color: 'var(--subtle)', textDecoration: 'none', fontFamily: 'var(--font-body)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                {label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
+  );
+}
+
+function SiteFooter() {
+  return (
+    <footer className="site-footer">
+      <div className="page-content site-footer__inner">
+        <span className="site-footer__note">Streams sourced from publicly available sources</span>
+        <nav aria-label="Footer navigation" className="site-footer__nav">
+          {FOOTER_LINKS.map(({ href, label }) => (
+            <Link key={href} href={href} className="site-footer__link">
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </footer>
   );
 }

@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import type { MediaResult } from '@/types/movies';
+import { createLogger } from '@/lib/logger';
+import { TMDB_BASE, toMediaResults, type TmdbSearchResponse } from '@/lib/movieTmdb';
 
-const TMDB_BASE = 'https://api.themoviedb.org/3';
+const log = createLogger('media/search');
+
+const SEARCH_REVALIDATE_SECONDS = 300;
 
 const SearchParamsSchema = z.object({
   q: z.string().min(1).max(200),
@@ -23,31 +26,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'TMDB key not configured' }, { status: 500 });
   }
 
-  const endpoint = type === 'movie' ? 'search/movie' : 'search/tv';
-  const url = `${TMDB_BASE}/${endpoint}?api_key=${key}&query=${encodeURIComponent(q)}&language=en-US&page=1&include_adult=false`;
+  const url = `${TMDB_BASE}/search/${type}?api_key=${key}&query=${encodeURIComponent(q)}&language=en-US&page=1&include_adult=false`;
 
   try {
-    const res = await fetch(url, {
-      next: { revalidate: 300 }, // cache search results 5 min
-    });
+    const res = await fetch(url, { next: { revalidate: SEARCH_REVALIDATE_SECONDS } });
     if (!res.ok) throw new Error(`TMDB ${res.status}`);
-    const data = await res.json();
-
-    const results: MediaResult[] = (data.results ?? [])
-      .slice(0, 12)
-      .map((item: Record<string, unknown>) => ({
-        tmdbId: item.id as number,
-        type,
-        title: (type === 'movie' ? item.title : item.name) as string,
-        year: ((type === 'movie' ? item.release_date : item.first_air_date) as string ?? '').slice(0, 4),
-        overview: (item.overview as string) ?? '',
-        posterPath: (item.poster_path as string | null) ?? null,
-        voteAverage: (item.vote_average as number) ?? 0,
-      }));
-
-    return NextResponse.json(results);
+    const data: TmdbSearchResponse = await res.json();
+    return NextResponse.json(toMediaResults(data, type));
   } catch (err) {
-    console.error('[media/search]', err);
+    log.error('search failed', err);
     return NextResponse.json([], { status: 200 }); // fail-open with empty list
   }
 }

@@ -13,14 +13,8 @@ export default function MoviesPage() {
     <>
       <SiteHeader activeSection="movies" />
       <main style={{ flex: 1 }}>
-        <div className="page-content" style={{ paddingTop: '2rem', paddingBottom: '3rem' }}>
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.8rem', letterSpacing: '0.04em',
-            color: 'var(--text)', marginBottom: '1.75rem', lineHeight: 1,
-          }}>
-            Movies &amp; Series
-          </h1>
+        <div className="page-content movies-page">
+          <h1 className="movies-page__title">Movies &amp; Series</h1>
           <MoviesPageClient />
         </div>
       </main>

@@ -110,6 +110,19 @@ function rewriteM3U8(text: string, baseUrl: string): string {
     .join('\n');
 }
 
+const M3U8_MAGIC = '#EXTM3U';
+
+/** Every proxied response is uncacheable and readable cross-origin by the player. */
+function proxied(body: BodyInit | null, contentType: string): NextResponse {
+  return new NextResponse(body, {
+    headers: {
+      'Content-Type': contentType,
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+}
+
 export async function GET(req: NextRequest) {
   const rawUrl = req.nextUrl.searchParams.get('url');
   if (!rawUrl) {
@@ -157,29 +170,11 @@ export async function GET(req: NextRequest) {
   // rewritten, and a 16-byte key is passed through untouched.
   if (isM3U8(contentType, finalUrl) || isM3U8(contentType, rawUrl)) {
     const body = Buffer.from(await upstream.arrayBuffer());
-    if (body.subarray(0, 7).toString('utf8') === '#EXTM3U') {
-      return new NextResponse(rewriteM3U8(body.toString('utf8'), finalUrl), {
-        headers: {
-          'Content-Type': 'application/vnd.apple.mpegurl',
-          'Cache-Control': 'no-cache',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
+    if (body.subarray(0, M3U8_MAGIC.length).toString('utf8') === M3U8_MAGIC) {
+      return proxied(rewriteM3U8(body.toString('utf8'), finalUrl), 'application/vnd.apple.mpegurl');
     }
-    return new NextResponse(body, {
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
+    return proxied(body, 'application/octet-stream');
   }
 
-  return new NextResponse(upstream.body, {
-    headers: {
-      'Content-Type': contentType,
-      'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
+  return proxied(upstream.body, contentType);
 }

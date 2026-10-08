@@ -91,6 +91,30 @@ const MAX_PLAUSIBLE_OFFSET_MS = 14 * 60 * MINUTE_MS;
 const MIN_OFFSET_SAMPLES = 3;
 
 /**
+ * The fixture whose names fit best, or null when the best fit is weak or tied.
+ * Only unambiguous, high-confidence pairs may vote on the offset: one bad
+ * pairing should never be able to shift the whole feed.
+ */
+function unambiguousBestFixture(team1: string, team2: string, games: Fixture[]): Fixture | null {
+  let best: Fixture | null = null;
+  let bestScore = 0;
+  let ambiguous = false;
+
+  for (const game of games) {
+    const score = teamPairScore(team1, team2, game.homeTeam, game.awayTeam);
+    if (score > bestScore) {
+      bestScore = score;
+      best = game;
+      ambiguous = false;
+    } else if (score === bestScore && score > 0) {
+      ambiguous = true;
+    }
+  }
+
+  return ambiguous || bestScore < STRONG_TEAM_MATCH_THRESHOLD ? null : best;
+}
+
+/**
  * Estimate the constant clock offset between the two feeds.
  *
  * Promiedos renders kickoff in the *viewer's* timezone, inferred from the
@@ -113,26 +137,10 @@ export function estimateFeedOffsetMs(
   for (const match of matches) {
     if (!match.team1 || !match.team2 || !Number.isFinite(match.startMs)) continue;
 
-    let best: Fixture | null = null;
-    let bestScore = 0;
-    let ambiguous = false;
+    const fixture = unambiguousBestFixture(match.team1, match.team2, games);
+    if (!fixture) continue;
 
-    for (const game of games) {
-      const score = teamPairScore(match.team1, match.team2, game.homeTeam, game.awayTeam);
-      if (score > bestScore) {
-        bestScore = score;
-        best = game;
-        ambiguous = false;
-      } else if (score === bestScore && score > 0) {
-        ambiguous = true;
-      }
-    }
-
-    // Only unambiguous, high-confidence pairs get a vote: one bad pairing
-    // should never be able to shift the whole feed.
-    if (!best || ambiguous || bestScore < STRONG_TEAM_MATCH_THRESHOLD) continue;
-
-    const delta = match.startMs - best.startTimeMs;
+    const delta = match.startMs - fixture.startTimeMs;
     if (Math.abs(delta) > MAX_PLAUSIBLE_OFFSET_MS) continue;
 
     const bucket = Math.round(delta / OFFSET_BUCKET_MS) * OFFSET_BUCKET_MS;
@@ -176,18 +184,22 @@ export function findFixture<T extends Fixture>(
   if (!team1 || !team2) return null;
 
   const { offsetMs = 0 } = options;
-  const compareTimes =
-    offsetMs !== null && startTimeMs !== undefined && Number.isFinite(startTimeMs);
+  // Without a usable offset or kickoff there is no time to compare, and names
+  // alone must carry the decision.
+  const timeGate =
+    offsetMs !== null && startTimeMs !== undefined && Number.isFinite(startTimeMs)
+      ? { offsetMs, startTimeMs }
+      : null;
   const threshold =
-    options.threshold ?? (compareTimes ? TEAM_MATCH_THRESHOLD : STRONG_TEAM_MATCH_THRESHOLD);
+    options.threshold ?? (timeGate ? TEAM_MATCH_THRESHOLD : STRONG_TEAM_MATCH_THRESHOLD);
 
   let best: T | null = null;
   let bestScore = 0;
 
   for (const game of games) {
-    if (compareTimes) {
-      const fixtureStart = game.startTimeMs + (offsetMs as number);
-      if (Math.abs(fixtureStart - (startTimeMs as number)) > KICKOFF_TOLERANCE_MS) continue;
+    if (timeGate) {
+      const fixtureStart = game.startTimeMs + timeGate.offsetMs;
+      if (Math.abs(fixtureStart - timeGate.startTimeMs) > KICKOFF_TOLERANCE_MS) continue;
     }
 
     const score = teamPairScore(team1, team2, game.homeTeam, game.awayTeam);

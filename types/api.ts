@@ -1,4 +1,6 @@
-// Raw shape returned by streamed.pk API — normalized before use
+import type { Channel } from './channels';
+
+// Raw shape returned by the streamed.pk API (validated by lib/schemas.ts) — normalized before use
 export interface RawStream {
   url?: string;
   embedUrl?: string;
@@ -40,12 +42,6 @@ export interface RawMatch {
   team2Image?: string;
   posterImage?: string;
   posterUrl?: string;
-}
-
-export interface ApiError {
-  status: number;
-  message: string;
-  url: string;
 }
 
 export interface MatchSource {
@@ -188,12 +184,12 @@ export interface AngulismoEvent {
   // Kickoff in epoch ms. The feed is a static file, so its Argentina-local
   // times mean the same thing to every caller.
   startTimeMs: number;
-  channels: import('./channels').Channel[];
+  channels: Channel[];
 }
 
 export interface AngulismoSnapshot {
   events: AngulismoEvent[];
-  channels: import('./channels').Channel[];
+  channels: Channel[];
   /** Whether the lookup succeeded; false means "unknown", not "nothing there". */
   ok: boolean;
   /** True when the data came from the last good lookup rather than this one. */
