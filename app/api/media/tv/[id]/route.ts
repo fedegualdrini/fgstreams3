@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
-import type { TvDetail, TvSeason } from '@/types/movies';
+import { createLogger } from '@/lib/logger';
+import { TMDB_BASE, toTvDetail, type TmdbTvResponse } from '@/lib/movieTmdb';
 
-const TMDB_BASE = 'https://api.themoviedb.org/3';
+const log = createLogger('media/tv');
+
+const TV_REVALIDATE_SECONDS = 3600; // season counts rarely change
 
 export async function GET(
   _req: Request,
@@ -16,28 +19,13 @@ export async function GET(
   try {
     const res = await fetch(
       `${TMDB_BASE}/tv/${tmdbId}?api_key=${key}&language=en-US`,
-      { next: { revalidate: 3600 } } // season counts rarely change
+      { next: { revalidate: TV_REVALIDATE_SECONDS } }
     );
     if (!res.ok) throw new Error(`TMDB ${res.status}`);
-    const data = await res.json();
-
-    const seasons: TvSeason[] = (data.seasons ?? [])
-      .filter((s: Record<string, unknown>) => (s.season_number as number) > 0)
-      .map((s: Record<string, unknown>) => ({
-        seasonNumber: s.season_number as number,
-        name: (s.name as string) ?? `Season ${s.season_number}`,
-        episodeCount: (s.episode_count as number) ?? 0,
-      }));
-
-    const detail: TvDetail = {
-      tmdbId,
-      title: data.name ?? '',
-      seasons,
-    };
-
-    return NextResponse.json(detail);
+    const data: TmdbTvResponse = await res.json();
+    return NextResponse.json(toTvDetail(tmdbId, data));
   } catch (err) {
-    console.error('[media/tv]', err);
+    log.error('tv lookup failed', err);
     return NextResponse.json(null, { status: 200 });
   }
 }

@@ -1,3 +1,5 @@
+import type { Match } from '@/types/api';
+
 const MAX_HISTORY = 10;
 const STORAGE_KEY = 'fgstreams-watch-history';
 
@@ -8,6 +10,17 @@ export interface HistoryEntry {
   league: string | null;
   sport: string;
   poster: string;
+}
+
+export function historyEntryFromMatch(match: Match): HistoryEntry {
+  return {
+    id: match.id,
+    team1: match.team1,
+    team2: match.team2 ?? null,
+    league: match.league ?? null,
+    sport: match.sport,
+    poster: match.poster ?? '',
+  };
 }
 
 export function addToHistory(entry: HistoryEntry): void {

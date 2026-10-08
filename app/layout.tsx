@@ -1,24 +1,24 @@
-import type { Metadata } from "next";
-import { Bebas_Neue, Space_Grotesk } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import AdBlockBanner from "@/components/AdBlockBanner";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Bebas_Neue, Space_Grotesk } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AdBlockBanner from '@/components/AdBlockBanner';
+import './globals.css';
 
 // Self-hosted by next/font so the fonts are not a render-blocking third-party
 // request. The CSS variables feed --font-display / --font-body in globals.css.
 const bebasNeue = Bebas_Neue({
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-  variable: "--font-display-src",
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+  variable: '--font-display-src',
 });
 
 const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-  variable: "--font-body-src",
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-body-src',
 });
 
 export const metadata: Metadata = {
@@ -42,19 +42,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${bebasNeue.variable} ${spaceGrotesk.variable}`}>
       <body>
         <AdBlockBanner />
         <div className="site-container">
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
+          <ErrorBoundary>{children}</ErrorBoundary>
         </div>
         <Analytics />
       </body>

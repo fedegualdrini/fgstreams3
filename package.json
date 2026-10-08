@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "import:playlist": "node scripts/import-playlist.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
@@ -17,6 +18,7 @@
     "next": "^14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "shaka-player": "^4.16.48",
     "zod": "^4.3.6"
   },
   "devDependencies": {

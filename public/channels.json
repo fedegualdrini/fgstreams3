@@ -1502,6 +1502,10 @@
       {
         "name": "StreamX HD - Win Sports",
         "iframe": "https://streamx-hd.com/live1.php?stream=winsports"
+      },
+      {
+        "name": "NEW · Win sports",
+        "iframe": "https://streamtp.sbs/global1.php?stream=winsports"
       }
     ],
     "show": true
@@ -1725,6 +1729,25 @@
       {
         "name": "StreamX HD - DSports 1",
         "iframe": "https://streamx-hd.com/live1.php?stream=dsports"
+      },
+      {
+        "name": "NEW · DSports FULL HD",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash-sd/enc/hubonmgf5k/out/v1/10560d92577e4917973aa4624124ecd6/cenc-sd.mpd",
+        "clearKeys": {
+          "45bbd582f220f438f896450d8306a3f2": "582c6ba7f64bbc0f2d91c6b0c265760c"
+        }
+      },
+      {
+        "name": "NEW · D SPORTS OP3",
+        "iframe": "https://streamtp.sbs/global1.php?stream=dsports"
+      },
+      {
+        "name": "NEW · D SPORTS OP4",
+        "iframe": "https://embed.ksdjugfsddeports.com/embed2/directvsports.html"
+      },
+      {
+        "name": "NEW · D SPORTS 2",
+        "iframe": "https://embed.ksdjugfsddeports.com/embed2/directvsports2.html"
       }
     ],
     "show": true
@@ -4822,6 +4845,14 @@
       {
         "name": "TimStreams",
         "iframe": "https://logic.icelanders.st/embed/espn-usa"
+      },
+      {
+        "name": "NEW · ESPN 2",
+        "iframe": "https://streamtp.sbs/global1.php?stream=espn2"
+      },
+      {
+        "name": "NEW · ESPN 3",
+        "iframe": "https://streamtp.sbs/global1.php?stream=espn3"
       }
     ],
     "show": true
@@ -5193,6 +5224,10 @@
       {
         "name": "Timstreams",
         "iframe": "https://logic.icelanders.st/embed/nbc-sports-bayarea"
+      },
+      {
+        "name": "NEW · NBC SPORTS BAY AREA",
+        "iframe": "https://tvpass.org/live/nbc-sports-bay-area/hd"
       }
     ],
     "show": true
@@ -5215,6 +5250,13 @@
       {
         "name": "TimStreams",
         "iframe": "https://logic.icelanders.st/embed/nflnetwork-usa"
+      },
+      {
+        "name": "NEW · NFL NETWORK",
+        "iframe": "https://aca-live4-ott.izzigo.tv/6/out/u/dash/NFL-HD-H265/default.mpd",
+        "clearKeys": {
+          "b12b76d776853a4f015786aeb7686d38": "d695178f4b2be4c2cef535cb4ca557ff"
+        }
       }
     ],
     "show": true
@@ -5259,6 +5301,11 @@
       {
         "name": "TimStreams",
         "iframe": "https://logic.icelanders.st/embed/nicktoons-usa"
+      },
+      {
+        "name": "NEW · NICKTOONS",
+        "iframe": "https://jmp2.uk/plu-645952687cb4b100084ed52e.m3u8",
+        "proxy": true
       }
     ],
     "show": true
@@ -5314,6 +5361,13 @@
       {
         "name": "TimStreams",
         "iframe": "https://logic.icelanders.st/embed/premiere-br"
+      },
+      {
+        "name": "NEW · PREMIERE",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/nelfyucw9a/out/v1/6ffb2c365ad14f88b154591beb43d1f6/cenc.mpd",
+        "clearKeys": {
+          "56b79c1782b30e6b6fc973b0e8fd4104": "fa38aaa865a57eda7c77444697ba8ed3"
+        }
       }
     ],
     "show": true
@@ -5791,6 +5845,11 @@
       {
         "name": "TimStreams",
         "iframe": "https://logic.icelanders.st/embed/tennischannel-usa"
+      },
+      {
+        "name": "NEW · TENNIS CHANNEL",
+        "iframe": "https://jmp2.uk/plu-6870c9333ffa5e0c914e9205.m3u8",
+        "proxy": true
       }
     ],
     "show": true
@@ -5887,6 +5946,13 @@
       {
         "name": "StreamX HD - TUDN MX",
         "iframe": "https://streamx-hd.com/live1.php?stream=tudnmx"
+      },
+      {
+        "name": "NEW · TUDN",
+        "iframe": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/o2vy4aahsh/out/v1/e293c932745a44dcaf897573dfc53532/cenc.mpd",
+        "clearKeys": {
+          "763ce1ebcaf23502c8cf357c6ef423e1": "0c5e6c0820a1ea28753721db00272411"
+        }
       }
     ],
     "show": true
@@ -6111,5 +6177,3292 @@
       }
     ],
     "show": true
+  },
+  {
+    "name": "Sportv",
+    "logo": "http://api.sofascore.com/api/v1/unique-tournament/16/image/dark",
+    "options": [
+      {
+        "name": "NEW · SporTV BR FHD",
+        "iframe": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/w8kwdfmlgs/out/v1/3aa321e477504937a439b602e078eb18/cenc.mpd",
+        "clearKeys": {
+          "51c0ef23b17297e5c01cd7f36dd0a6ce": "8823f713ba6fdb9bbe0a2ad82d309a4b"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UNIVERSAL CINEMA OESTE",
+    "logo": "https://geo.edge.pontiscloud.com:9002/images/1282/CH_LOGO/800/542/0/0/21817888076947.png",
+    "options": [
+      {
+        "name": "NEW · UNIVERSAL CINEMA OESTE",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash-sd/enc/byvanrruxe/out/v1/33a96ef35b0b42789bb6ebd104900bae/cenc-sd.mpd",
+        "clearKeys": {
+          "62c4befbcf6779ca84bc9d86ef5dce78": "a460b8f668709993a8dd76fbcce360be"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UNIVERSAL COMEDY",
+    "logo": "https://geo.edge.pontiscloud.com:9002/images/1283/CH_LOGO/800/542/0/0/94843453076948.png",
+    "options": [
+      {
+        "name": "NEW · UNIVERSAL COMEDY",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash-sd/enc/7997jjtvoa/out/v1/29bcd1f10f2b491cbc91cb1b624a655e/cenc-sd.mpd",
+        "clearKeys": {
+          "1c8b46ea8e6390267c1d16c588a4c4c0": "5272e03689b890b677f42dc1ead8794b"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UNIVERSAL CRIME",
+    "logo": "https://geo.edge.pontiscloud.com:9002/images/1284/CH_LOGO/800/542/0/0/34307524076949.png",
+    "options": [
+      {
+        "name": "NEW · UNIVERSAL CRIME",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash-sd/enc/goiznoiicv/out/v1/b76595a406d24861b49b6871786d4661/cenc-sd.mpd",
+        "clearKeys": {
+          "04a58d27b7bfaf4763362edf05da265e": "b6421cee1c6224913783e474079e7a72"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UNIVERSAL PREMIERE OESTE",
+    "logo": "https://geo.edge.pontiscloud.com:9002/images/1285/CH_LOGO/800/542/0/0/62685863076950.png",
+    "options": [
+      {
+        "name": "NEW · UNIVERSAL PREMIERE OESTE",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash-sd/enc/xerdmaskki/out/v1/787fdc37902c41eda2fb8a3098dbd50d/cenc-sd.mpd",
+        "clearKeys": {
+          "79368a1a8de04576303bd1750e43ab63": "ff356a80dd60bac9dba49e141160fd03"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UNIVERSAL REALITY",
+    "logo": "https://geo.edge.pontiscloud.com:9002/images/1281/CH_LOGO/800/542/0/0/16370616076951.png",
+    "options": [
+      {
+        "name": "NEW · UNIVERSAL REALITY",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash-sd/enc/pedfya71dz/out/v1/38ed60f9665245ab9182a5b34b41f769/cenc-sd.mpd",
+        "clearKeys": {
+          "578cb3e21bd530e72decf4546aab7abb": "cab3146dc7ef25ef60412a6c7f05f575"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CANAL E",
+    "logo": "https://i.ibb.co/zftBZ5j/canal-e.webp",
+    "options": [
+      {
+        "name": "NEW · CANAL E",
+        "iframe": "https://unlimited1-buenosaires.dps.live/perfiltv/perfiltv.smil/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Clan",
+    "logo": "https://i.postimg.cc/cL8vJm6W/clan-2026-worldtv2.png",
+    "options": [
+      {
+        "name": "NEW · Clan",
+        "iframe": "https://rtvelivestream-rtveplayplus.rtve.es/rtvesec/int/clan_int_main_dvr_720.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NICK JR. CLUB",
+    "logo": "https://images.pluto.tv/channels/67f3eb1c443f0671bc03ece8/colorLogoSVG_1748329103439.svg",
+    "options": [
+      {
+        "name": "NEW · NICK JR. CLUB",
+        "iframe": "https://jmp2.uk/plu-5ddd7cb2cbb9010009b4fe32.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TEENNICK",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/TeenNick_logo_2023_%28outline%29.svg/1280px-TeenNick_logo_2023_%28outline%29.svg.png",
+    "options": [
+      {
+        "name": "NEW · TEENNICK",
+        "iframe": "https://jmp2.uk/plu-5fab09a8749b1a00077d35d2.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NICKREWIND",
+    "logo": "https://i.imgur.com/Bw8rdAb.png",
+    "options": [
+      {
+        "name": "NEW · NICKREWIND",
+        "iframe": "https://jmp2.uk/plu-6824cda00101510f9eeaa011.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BabyFirst",
+    "logo": "https://i.imgur.com/WxLHBwu.png",
+    "options": [
+      {
+        "name": "NEW · BabyFirst",
+        "iframe": "https://jmp2.uk/plu-5ebac49ce4dc8b00078b23bc.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BAND",
+    "logo": "https://i.pinimg.com/564x/61/d8/07/61d807daca7fb95995f174d67c6be4f9.jpg",
+    "options": [
+      {
+        "name": "NEW · BAND",
+        "iframe": "https://media.cdntvms.com.br/band_sat/tracks-v1a1/mono.m3u8"
+      },
+      {
+        "name": "NEW · BAND (2)",
+        "iframe": "https://5b7f3c45ab7c2.streamlock.net/arapuan/ngrp:arapuan_all/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "JP NEWS",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Jovem_Pan_logo_2018.svg/960px-Jovem_Pan_logo_2018.svg.png",
+    "options": [
+      {
+        "name": "NEW · JP NEWS",
+        "iframe": "http://45.190.28.50/JP_NEWS/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "GLOBO R.D.J",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Globo_2024.svg/960px-Globo_2024.svg.png",
+    "options": [
+      {
+        "name": "NEW · GLOBO R.D.J",
+        "iframe": "http://45.190.28.50/GLOBO_HD/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV FRONTEIRA",
+    "logo": "https://i.imgur.com/NtcoW6G.png",
+    "options": [
+      {
+        "name": "NEW · TV FRONTEIRA",
+        "iframe": "https://tvfronteira.brasilstream.com.br/hls/tvfronteira/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV BAHIA",
+    "logo": "https://i.imgur.com/sJOrvHg.png",
+    "options": [
+      {
+        "name": "NEW · TV BAHIA",
+        "iframe": "http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SBT",
+    "logo": "https://static.wikia.nocookie.net/logos/images/8/81/SBT_Logo_2004.png/revision/latest?cb=20230302235717&path-prefix=pt-br",
+    "options": [
+      {
+        "name": "NEW · SBT",
+        "iframe": "http://45.190.28.50/SBT_HD/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SBT NACIONAL",
+    "logo": "https://static.wikia.nocookie.net/logos/images/8/81/SBT_Logo_2004.png/revision/latest?cb=20230302235717&path-prefix=pt-br",
+    "options": [
+      {
+        "name": "NEW · SBT NACIONAL",
+        "iframe": "https://6836041ea1117.streamlock.net/cverde/cverde/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SBT INTERIOR",
+    "logo": "https://static.wikia.nocookie.net/logos/images/8/81/SBT_Logo_2004.png/revision/latest?cb=20230302235717&path-prefix=pt-br",
+    "options": [
+      {
+        "name": "NEW · SBT INTERIOR",
+        "iframe": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RECORD TV",
+    "logo": "https://static.wikia.nocookie.net/telenovelas/images/a/a5/Logorecord.png/revision/latest?cb=20181016064409&path-prefix=es",
+    "options": [
+      {
+        "name": "NEW · RECORD TV",
+        "iframe": "http://45.190.28.50/RECORD/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RECORD NACIONAL",
+    "logo": "https://static.wikia.nocookie.net/telenovelas/images/a/a5/Logorecord.png/revision/latest?cb=20181016064409&path-prefix=es",
+    "options": [
+      {
+        "name": "NEW · RECORD NACIONAL",
+        "iframe": "https://media.cdntvms.com.br/record_nacional_sat/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RECORD NEWS",
+    "logo": "https://i.imgur.com/HZDRG0K.png",
+    "options": [
+      {
+        "name": "NEW · RECORD NEWS",
+        "iframe": "http://45.190.28.50/RECORD_NEWS_HD/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO TV RECORD NEWS",
+    "logo": "https://images.pluto.tv/channels/6102e04e9ab1db0007a980a1/colorLogoSVG.svg",
+    "options": [
+      {
+        "name": "NEW · PLUTO TV RECORD NEWS",
+        "iframe": "https://jmp2.uk/plu-6102e04e9ab1db0007a980a1.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FUTURA",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Canal_Futura.png/960px-Canal_Futura.png",
+    "options": [
+      {
+        "name": "NEW · FUTURA",
+        "iframe": "http://168.197.104.22:80/FUTURA/index.m3u8",
+        "proxy": true
+      },
+      {
+        "name": "NEW · FUTURA HD",
+        "iframe": "http://170.83.49.66:8083/FUTURAHD/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "REDE MINAS BR",
+    "logo": "https://i.postimg.cc/85wczdN9/download-32.png",
+    "options": [
+      {
+        "name": "NEW · REDE MINAS BR",
+        "iframe": "https://8hzcavccys.zoeweb.tv/redeminas/ngrp:redeminas_all/chunklist_w115990305_b2771072.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV MORENA",
+    "logo": "https://i.imgur.com/AJ0xqPT.png",
+    "options": [
+      {
+        "name": "NEW · TV MORENA",
+        "iframe": "https://media2.cdntvms.com.br/tv_morena_dorados/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV MAIS BR",
+    "logo": "https://i.postimg.cc/tRwytvSP/download-70.jpg",
+    "options": [
+      {
+        "name": "NEW · TV MAIS BR",
+        "iframe": "https://stmv1.samcast.com.br/demaistv6503/demaistv6503/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV PANAENSE",
+    "logo": "https://duckduckgo.com/i/e408ea02.png",
+    "options": [
+      {
+        "name": "NEW · TV PANAENSE",
+        "iframe": "https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV BRASIL",
+    "logo": "https://i.postimg.cc/65x9SxzP/TVBRASIL.png",
+    "options": [
+      {
+        "name": "NEW · TV BRASIL",
+        "iframe": "https://tvbrasil-stream.ebc.com.br/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV CULTURA",
+    "logo": "https://m.media-amazon.com/images/I/51yXxzQXi1L.png",
+    "options": [
+      {
+        "name": "NEW · TV CULTURA",
+        "iframe": "https://player-tvcultura.stream.uol.com.br/live/tvcultura.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV CULTURAL FAST",
+    "logo": "https://images.pluto.tv/channels/62e010e6cd663f0007e57dc8/colorLogoSVG.svg",
+    "options": [
+      {
+        "name": "NEW · TV CULTURAL FAST",
+        "iframe": "https://jmp2.uk/plu-62e010e6cd663f0007e57dc8.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CANAL UOL",
+    "logo": "https://images.pluto.tv/channels/64b9370b409629000802d32b/colorLogoSVG.svg",
+    "options": [
+      {
+        "name": "NEW · CANAL UOL",
+        "iframe": "https://jmp2.uk/plu-64b9370b409629000802d32b.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MONUMENTAL",
+    "logo": "https://i.imgur.com/kEcOYML.png",
+    "options": [
+      {
+        "name": "NEW · MONUMENTAL",
+        "iframe": "https://copacogen.desdeparaguay.net/monumentaltv/monumentaltv_med/playlist.m3u8?admin=tvaccion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MEGA TV",
+    "logo": "https://i.ibb.co/hfFmYXz/WW.jpg",
+    "options": [
+      {
+        "name": "NEW · MEGA TV",
+        "iframe": "https://www.desde-paraguay.com/mega.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PARAGUAY TV",
+    "logo": "https://bestleague.world/img/pytv.png",
+    "options": [
+      {
+        "name": "NEW · PARAGUAY TV",
+        "iframe": "https://stream.paraguaytv.gov.py/memfs/bbe36fed-9b49-4d1d-adaa-4bd6d1b2e386.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RADIO NACIONAL DEL PARAGUAY",
+    "logo": "https://i.imgur.com/ksh20I5.png",
+    "options": [
+      {
+        "name": "NEW · RADIO NACIONAL DEL PARAGUAY",
+        "iframe": "https://stream.paraguaytv.gov.py/memfs/ea8a90e9-10f7-4b00-8e88-42f4a838d74b.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RED DIGITAL",
+    "logo": "https://i.imgur.com/3jj0MQP.jpg",
+    "options": [
+      {
+        "name": "NEW · RED DIGITAL",
+        "iframe": "https://video.hostingcaaguazu.com:19360/reddigitalsanpedro/reddigitalsanpedro.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CANAL PRO",
+    "logo": "https://www.desdeparaguay.com/images_hpy/logos/radios/90x90px2/pro.png",
+    "options": [
+      {
+        "name": "NEW · CANAL PRO",
+        "iframe": "https://www.desde-paraguay.com/pro.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TVS",
+    "logo": "https://i.ibb.co/s14qLnR/TVS.png",
+    "options": [
+      {
+        "name": "NEW · TVS",
+        "iframe": "https://stmv6.voxtvhd.com.br/tvs/tvs/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NPY",
+    "logo": "https://i.imgur.com/pUEkaiW.png",
+    "options": [
+      {
+        "name": "NEW · NPY",
+        "iframe": "https://copacogen.desdeparaguay.net/npy/npy_py_alta/playlist.m3u8?admin=tvaccion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "LA TELE",
+    "logo": "https://i.imgur.com/Qcf6Qev.png",
+    "options": [
+      {
+        "name": "NEW · LA TELE",
+        "iframe": "https://copacotf.desdeparaguay.net/latele/latele_py_alta/playlist.m3u8?admin=tvaccion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "HEI NOW",
+    "logo": "https://i.imgur.com/oMHiGRN.png",
+    "options": [
+      {
+        "name": "NEW · HEI NOW",
+        "iframe": "https://copacogen.desdeparaguay.net/heitv/heitv_py_alta/playlist.m3u8?admin=nacion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "E40",
+    "logo": "https://i.ibb.co/jz9XkvP/e40.png",
+    "options": [
+      {
+        "name": "NEW · E40",
+        "iframe": "https://rds3gen.desdeparaguay.net/e40tv/e40tv_py_alta/playlist.m3u8?admin=tvaccion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Mi Tv",
+    "logo": "https://i.postimg.cc/qvvgzQzD/1200px-LOGO-MITV-ALTA-DEFINICION-2020-PNG.png",
+    "options": [
+      {
+        "name": "NEW · Mi Tv",
+        "iframe": "https://rds3.desdeparaguay.net:443/mitv/mitv/chunklist.m3u8?admin=nacion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Venus Media",
+    "logo": "https://bestleague.world/img/venus.png",
+    "options": [
+      {
+        "name": "NEW · Venus Media",
+        "iframe": "https://tigocloud.desdeparaguay.net/venusmedia/venusmedia/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Ñanduti TV",
+    "logo": "https://i0.wp.com/logoroga.com/wp-content/uploads/2017/10/nanduti-previa.png?w=1000&ssl=1",
+    "options": [
+      {
+        "name": "NEW · Ñanduti TV",
+        "iframe": "https://copacogen.desdeparaguay.net/nandutitv/nandutitv_baja/index.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "ÑANDEJARA ÑE´E TV",
+    "logo": "https://i.postimg.cc/VLn9kH7Z/nande-jara.png",
+    "options": [
+      {
+        "name": "NEW · ÑANDEJARA ÑE´E TV",
+        "iframe": "https://rds3gen.desdeparaguay.net/nandejaraneetv/nandejaraneetv/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Union TV",
+    "logo": "https://i.imgur.com/No9YzNC.png",
+    "options": [
+      {
+        "name": "NEW · Union TV",
+        "iframe": "https://tigocloud.desdeparaguay.net/800tv/800tv/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Educanal",
+    "logo": "https://i.imgur.com/857OkFf.png",
+    "options": [
+      {
+        "name": "NEW · Educanal",
+        "iframe": "https://cloudtv.streaming.com.py/educanalpy/educanalpy/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RCC",
+    "logo": "https://i.imgur.com/qdjBnRl.png",
+    "options": [
+      {
+        "name": "NEW · RCC",
+        "iframe": "https://copacoradios.desdeparaguay.net/rcctv/rcctv/playlist.m3u8?admin=nacion"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV CHAQUEÑA",
+    "logo": "https://i.postimg.cc/wTZxC8bG/tv-chaquena.png",
+    "options": [
+      {
+        "name": "NEW · TV CHAQUEÑA",
+        "iframe": "https://rds3gen.desdeparaguay.net/tvchaquena/tvchaquena/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TVAIRE CORONEL OVIEDO",
+    "logo": "https://i.postimg.cc/LX4WNDTj/tva.png",
+    "options": [
+      {
+        "name": "NEW · TVAIRE CORONEL OVIEDO",
+        "iframe": "https://video.hostingcaaguazu.com:19360/tvairepy/tvairepy.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CÁRITAS TV",
+    "logo": "https://i.postimg.cc/P5nLVXQ2/caritas-tv.png",
+    "options": [
+      {
+        "name": "NEW · CÁRITAS TV",
+        "iframe": "https://rds3gen.desdeparaguay.net/caritastv/caritastv/chunklist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BRUNO MASI TV",
+    "logo": "https://i.ibb.co/pK5SNMT/bruno-masi-tv.png",
+    "options": [
+      {
+        "name": "NEW · BRUNO MASI TV",
+        "iframe": "https://rds3gen.desdeparaguay.net/brunomasitv/brunomasitv/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FARRA TV",
+    "logo": "https://i.imgur.com/bXWzstH.png",
+    "options": [
+      {
+        "name": "NEW · FARRA TV",
+        "iframe": "https://stream.farra.com.py/live/farra_low.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TVE",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e7/TVE.svg",
+    "options": [
+      {
+        "name": "NEW · TVE",
+        "iframe": "https://rtvelivestream-rtveplayplus.rtve.es/rtvesec/int/tvei_ame_main_1080.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "EL PAIS",
+    "logo": "https://i.ytimg.com/vi/4MrSOuQGmeU/hqdefault.jpg",
+    "options": [
+      {
+        "name": "NEW · EL PAIS",
+        "iframe": "https://d2epgk1fomaa1g.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-9n8y4tw0bk3an/live/fast-channel-el-pais/fast-channel-el-pais.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TELEMUNDO NOTICIAS",
+    "logo": "https://i.postimg.cc/yx613kKm/TELEMUNDOMX.png",
+    "options": [
+      {
+        "name": "NEW · TELEMUNDO NOTICIAS",
+        "iframe": "https://d368vp0qqzvkid.cloudfront.net/manifest/3fec3e5cac39a52b2132f9c66c83dae043dc17d4/prod_default_nbc-direct/32d83610-b3ed-4e0c-bc1a-9cf4055cc405/3.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "ARIRANG HD",
+    "logo": "https://i.imgur.com/Jdy3WNm.png",
+    "options": [
+      {
+        "name": "NEW · ARIRANG HD",
+        "iframe": "https://dash3.antik.sk/live/test_arirang/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TELESUR",
+    "logo": "https://i.imgur.com/P50VjRX.png",
+    "options": [
+      {
+        "name": "NEW · TELESUR",
+        "iframe": "https://mblesmain01.telesur.ultrabase.net/mbliveMain/480p/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TELESUR SUB ENGLISH",
+    "logo": "https://i.imgur.com/P50VjRX.png",
+    "options": [
+      {
+        "name": "NEW · TELESUR SUB ENGLISH",
+        "iframe": "https://mblenmain01.telesur.ultrabase.net/mblivev3/hd/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "DW",
+    "logo": "https://i.imgur.com/8MRNFb9.png",
+    "options": [
+      {
+        "name": "NEW · DW",
+        "iframe": "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UCL",
+    "logo": "https://i.imgur.com/BzQphbw.png",
+    "options": [
+      {
+        "name": "NEW · UCL",
+        "iframe": "https://livedelta.cdn.antel.net.uy/out/u/url_canalu.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Canal VIX",
+    "logo": "https://i.postimg.cc/7PJ6pRNy/canal-vix.png",
+    "options": [
+      {
+        "name": "NEW · Canal VIX",
+        "iframe": "https://d36vag51su2f9u.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-rjlh25phsoano/server/distrib/7GnqnNT9v6Prt6lj/zuvPJYoOOdEMDNF2j2mvmg.XD-5XW7bmDpD5yWfV328oU9NWPX1Y7dhiYqJY3ymkerRKjKvBm9YaKmRu09CS8ak3vKkgVwPUO3_k0fGhRTEqiM6VVMAQRZ3BajxAKTNLztc3UzxLEvwclMk_xuZaPti2iQdDj7x8B9VIacgVxB6nPh8e9-_CaBQXtdfGZ-hf5fbtm5YEJTk8bxZMjA7NHu0J1zj4SG_9elXTTj4sJ5PP8hj9EcpM_08XHwoobu1NQTtftlO8dfbnTpEQrG7AlU7Z82dozEUrKZJxDjrjsMtug/manifest.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TELEMUNDO INTERNACIONAL",
+    "logo": "https://i.postimg.cc/yx613kKm/TELEMUNDOMX.png",
+    "options": [
+      {
+        "name": "NEW · TELEMUNDO INTERNACIONAL",
+        "iframe": "http://177.234.249.178:8888/TELEMUNDO/tracks-v1a1/mono.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "LAS ESTRELLAS",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Las_Estrellas_logo_%282016%29.png",
+    "options": [
+      {
+        "name": "NEW · LAS ESTRELLAS",
+        "iframe": "https://channel01-onlymex.akamaized.net/hls/live/2022749/event01/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Azteca Internacional",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Azteca_Internacional_logo_2023.png",
+    "options": [
+      {
+        "name": "NEW · Azteca Internacional",
+        "iframe": "https://azt-mun.otteravision.com/azt/mun/mun.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TV AZTECA",
+    "logo": "https://static.wikia.nocookie.net/laislaelreality/images/2/27/Tv_azteca.jpg/revision/latest?cb=20140911045925&path-prefix=es",
+    "options": [
+      {
+        "name": "NEW · TV AZTECA",
+        "iframe": "https://azt-cl.otteravision.com/azt/cl/cl.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PASIONES",
+    "logo": "https://ipuntotv.com/IMAGES/Cabezales/4625.jpg",
+    "options": [
+      {
+        "name": "NEW · PASIONES",
+        "iframe": "http://45.162.193.35/PASIONESHD/tracks-v1a1/mono.ts.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TODO NOVELAS, MAS PASIONES",
+    "logo": "https://ipuntotv.com/IMAGES/Cabezales/4625.jpg",
+    "options": [
+      {
+        "name": "NEW · TODO NOVELAS, MAS PASIONES",
+        "iframe": "https://448a93b8.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/Vml6aW9fVG9kb05vdmVsYXNfSExT/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TLN",
+    "logo": "https://i.ibb.co/KHSrKnN/7314320.png",
+    "options": [
+      {
+        "name": "NEW · TLN",
+        "iframe": "http://televisa-televisa-1-it.samsung.wurl.tv/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO.TV NOVELAS",
+    "logo": "https://images.pluto.tv/channels/5dcde0cc2efd2700090b7ff4/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · PLUTO.TV NOVELAS",
+        "iframe": "https://jmp2.uk/plu-5dcde0cc2efd2700090b7ff4.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "AZ CORAZÓN",
+    "logo": "https://images.pluto.tv/channels/646ccdd0939a5900088a1980/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · AZ CORAZÓN",
+        "iframe": "https://jmp2.uk/plu-646ccdd0939a5900088a1980.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO.TV NOVELAS CONTINENTALES",
+    "logo": "https://images.pluto.tv/channels/686eed4c677f2f98b4a1ccd4/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · PLUTO.TV NOVELAS CONTINENTALES",
+        "iframe": "https://jmp2.uk/plu-686eed4c677f2f98b4a1ccd4.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO.TV NOVELAS DE MEXICO",
+    "logo": "https://images.pluto.tv/channels/6474a7958e3c0a0008b97cae/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · PLUTO.TV NOVELAS DE MEXICO",
+        "iframe": "https://jmp2.uk/plu-6474a7958e3c0a0008b97cae.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SIN ##### NO HAY PARAÍSO",
+    "logo": "https://images.pluto.tv/channels/604bdf4e6d0abc0007ba77ad/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · SIN ##### NO HAY PARAÍSO",
+        "iframe": "https://jmp2.uk/plu-604bdf4e6d0abc0007ba77ad.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "LA SELECC10N",
+    "logo": "https://images.pluto.tv/channels/63211ba9cad976000794f988/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · LA SELECC10N",
+        "iframe": "https://jmp2.uk/plu-63211ba9cad976000794f988.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO.TV NOVELAS DE VENEZUELA",
+    "logo": "https://images.pluto.tv/channels/6474a86917f5e100089a0c1c/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · PLUTO.TV NOVELAS DE VENEZUELA",
+        "iframe": "https://jmp2.uk/plu-6474a86917f5e100089a0c1c.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO.TV AMOR Y MENTIRA",
+    "logo": "https://images.pluto.tv/channels/698a45156dc3c71eb1ba6599/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · PLUTO.TV AMOR Y MENTIRA",
+        "iframe": "https://jmp2.uk/plu-698a45156dc3c71eb1ba6599.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CLARO SPORTS LATAM",
+    "logo": "https://www.clarosports.com/resources/themes/clarosports-v4/assets/images/claroSportsSitio-170x36.png",
+    "options": [
+      {
+        "name": "NEW · CLARO SPORTS LATAM",
+        "iframe": "https://d1cfxove8uup6f.cloudfront.net/live/20d97871-da2b-4b9a-9ad5-5c1be98c37e1/live.isml/manifest.mpd"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CLARO SPORTS MX/C.A.",
+    "logo": "https://www.clarosports.com/resources/themes/clarosports-v4/assets/images/claroSportsSitio-170x36.png",
+    "options": [
+      {
+        "name": "NEW · CLARO SPORTS MX/C.A.",
+        "iframe": "https://dai.google.com/linear/hls/event/_OKWx76jT7mivD6d-25QAw/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TYC SPORTS FAN",
+    "logo": "https://freecast.com/_next/image?url=https%3A%2F%2Fd3e3bui7xn67l.cloudfront.net%2Fcms_media%2Fmedia%2Flive%2Fchannel%2Ff9ed6770-e2fe-4147-81f6-a083cf6390d4-1771856213.119908.256x256.jpg&w=128&q=75",
+    "options": [
+      {
+        "name": "NEW · TYC SPORTS FAN",
+        "iframe": "https://amg26268-amg26268c14-freelivesports-emea-10267.playouts.now.amagi.tv/ts-us-e2-n2/playlist/amg26268-sportsstudio-tycsports-freelivesportsemea/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CHILEVISION DEPORTES (SOLO CHILE)",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdPHoAXsb35yNW6Z-R7Z7t_g7PzsgWr8rD_ZmcqQetQA&s=10",
+    "options": [
+      {
+        "name": "NEW · CHILEVISION DEPORTES (SOLO CHILE)",
+        "iframe": "https://redirector.dps.live/hls/chvdeportes/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO TV DEPORTES",
+    "logo": "https://images.pluto.tv/channels/5dcde07af1c85b0009b18651/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · PLUTO TV DEPORTES",
+        "iframe": "https://jmp2.uk/plu-5dcde07af1c85b0009b18651.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BEIN SPORTS Ñ",
+    "logo": "https://i.imgur.com/J5aurrb.png",
+    "options": [
+      {
+        "name": "NEW · BEIN SPORTS Ñ",
+        "iframe": "https://la18hd.su/vivo/canales.php?stream=beinsportes"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BEIN SPORTS XTRA Ñ",
+    "logo": "https://i.imgur.com/V562tpO.png",
+    "options": [
+      {
+        "name": "NEW · BEIN SPORTS XTRA Ñ",
+        "iframe": "https://bein-esp-xumo.amagi.tv/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "ZONA TUDN",
+    "logo": "https://i.ibb.co/WDt6Sc6/zona-tudn.png",
+    "options": [
+      {
+        "name": "NEW · ZONA TUDN",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/mitr07scim/out/v1/4fb1073240a549479fd2f343e6cad4ba/cenc.mpd",
+        "clearKeys": {
+          "cb308ff4c4ec835baa2956212507de52": "aa45e839f15058df50342ace8d040a48"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BAND SPORTS",
+    "logo": "https://i.ibb.co/WWrRh4X/Band-Sports.png",
+    "options": [
+      {
+        "name": "NEW · BAND SPORTS",
+        "iframe": "http://45.190.28.50/BAND_SPORTS_HD/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "GE TV",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Logo_GE_TV.svg/960px-Logo_GE_TV.svg.png",
+    "options": [
+      {
+        "name": "NEW · GE TV",
+        "iframe": "https://dfr80qz435crc.cloudfront.net/EFGH/Amagi/Globo/GE_Fast_BR/GE_Fast.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CAZE TV LIVE EVENT 1",
+    "logo": "https://i.ibb.co/W3XpzQy/cazetv.png",
+    "options": [
+      {
+        "name": "NEW · CAZE TV LIVE EVENT 1",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/3ynrpdanq2/out/v1/81fd4c26584044d2b1a1cc5b32fa9af0/cenc.mpd",
+        "clearKeys": {
+          "34475edab991ad5e92548aebd710410a": "501b209cccd323ac00bf5ac15b406cb4"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CAZE TV LIVE EVENT 2",
+    "logo": "https://i.ibb.co/W3XpzQy/cazetv.png",
+    "options": [
+      {
+        "name": "NEW · CAZE TV LIVE EVENT 2",
+        "iframe": "https://otte.cache.aiv-cdn.net/gru-nitro/live/clients/dash/enc/vzeco5ty0v/out/v1/44c6b8f31a2544e3b2a9bb41ed5e241e/cenc.mpd",
+        "clearKeys": {
+          "ac7abaa9c9481aacfbdac64fc3ec3312": "c0c504a2ed2e70b879a650b8770a38c6"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CAZE TV LIVE EVENT 3",
+    "logo": "https://i.ibb.co/W3XpzQy/cazetv.png",
+    "options": [
+      {
+        "name": "NEW · CAZE TV LIVE EVENT 3",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash-sd/enc/iy79zu8tb9/out/v1/e86df8b45c0f452daf49ca6e3d27103e/cenc-sd.mpd",
+        "clearKeys": {
+          "0a29e3b7dc26ced80114da99266ea636": "9f1e4034545fed90b5ce7a8f8925e621"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SPORTV 2",
+    "logo": "https://i.ibb.co/L6MdcHL/sportv2.png",
+    "options": [
+      {
+        "name": "NEW · SPORTV 2",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/dsa3hwuhd1/out/v1/631b48c8d9ea437e8309d1a4b55acef5/cenc.mpd?aws.sessionId=a57b713d-66c0-4b39-9dea-987451b920b8&amznDtid=AOAGZA014O5RE&encoding=segmentBase",
+        "clearKeys": {
+          "3de028eafb3b2caffec03be1c1c818b3": "8fbdd8a9ae6748696bb13e547bb093fc"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SPORTV 3",
+    "logo": "https://i.ibb.co/db4L078/sportv3.png",
+    "options": [
+      {
+        "name": "NEW · SPORTV 3",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/6otiglnptp/out/v1/add7499679b0422cb6791f7701f95ecc/cenc.mpd",
+        "clearKeys": {
+          "902e5ec0e3d05e665daa32fc23f4f59e": "7b2322a273843921a43e2c61dac7cae3"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 2",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 2",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/oy6rp0jwmf/out/v1/580ecf12bad24979baf8dd993dce053e/cenc.mpd",
+        "clearKeys": {
+          "9dc40460c93087aea84d6315f08ecb64": "f69c8d4624fddff4ca89bd0b31bdc4a7"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 3",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 3",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/6onrfniyry/out/v1/f23069c61dbf4e00890a40b705a84079/cenc.mpd",
+        "clearKeys": {
+          "d23f7433798a652a7d4f6791d9e1036c": "4942eebd598b5727c5cc484cc62b52e8"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 4",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 4",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/tirjor64kh/out/v1/fd2ed9916d994f09a3bd62b64141b9cb/cenc.mpd",
+        "clearKeys": {
+          "e23365c2ad97870c871712b73f0d6195": "58709c714320bb862dbd07270df81c94"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 5",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 5",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/1obktrybht/out/v1/08265453c8f64d9fbeb3cf43764403a8/cenc.mpd?amznDtid=AOAGZA014O5RE&encoding=segmentBase",
+        "clearKeys": {
+          "332f62eb3cae824e98a4124da29a7d31": "d1698cda3d040f9051125a61745b596b"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 6",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 6",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash-sd/enc/k1mql3yg4r/out/v1/898067f362a5444bbe42d7568430ca14/cenc-sd.mpd",
+        "clearKeys": {
+          "561baa89676c89c1d047e1852ba01c09": "a8c157826dfdf1299a329b77e2ab6a1a"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 7",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 7",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash-sd/enc/kqftwsvdgz/out/v1/9f866bc326d241aa9d470c52654a7bf9/cenc-sd.mpd",
+        "clearKeys": {
+          "9ee352aac7ed8ee1cb42cfdf322b1cb0": "053d635fc90e175881bef26cd29f371e"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PREMIERE 8",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "options": [
+      {
+        "name": "NEW · PREMIERE 8",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash-sd/enc/ln7isfb6fz/out/v1/34c85840b67d46b990cf4e01fb16d24d/cenc-sd.mpd?amznDtid=AOAGZA014O5RE&encoding=segmentBase",
+        "clearKeys": {
+          "19fb8464136594ce0c66fe3589e88ef4": "6a0efc4a82a1e087f093c3e5de3e2a3e"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "PLUTO ESPORTE",
+    "logo": "https://www.tvchannellists.com/wiki/images/9/9d/Esportes.svg",
+    "options": [
+      {
+        "name": "NEW · PLUTO ESPORTE",
+        "iframe": "https://jmp2.uk/plu-5f32d2db0af67400077f29c4.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "N Sports",
+    "logo": "https://www.cxtv.com.br/img/Tvs/Logo/webp-m/8bbe6817af0af2e0e5a6df96f245b752.webp",
+    "options": [
+      {
+        "name": "NEW · N Sports",
+        "iframe": "https://ogc-nsprt-tcl-roku-syndication.otteravision.com/ogc/nsprt/nsprt_720p.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "DSports2",
+    "logo": "https://d18o29lhcg4kda.cloudfront.net/fit-in/1440x1080/Y2gwMTAwMDAwMDAwMTI4X2xpbmVhcl9jaGFubmVsX3NzbGE_11002_LOGO_1440x1080.png",
+    "options": [
+      {
+        "name": "NEW · DSports2",
+        "iframe": "http://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/dash/enc/rgilyeubta/out/v1/09a67027b18f4fd78aaa3794a2aacfe8/cenc.mpd",
+        "clearKeys": {
+          "03f12d6a3dbfd3a6fa7dd7f6417e0c11": "ea07b87acdf2e45be824cde4a1cf3504"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "DSports+",
+    "logo": "https://d18o29lhcg4kda.cloudfront.net/fit-in/1440x1080/Y2gwMTAwMDAwMDAwMTM5X2xpbmVhcl9jaGFubmVsX3NzbGE_11002_LOGO_1440x1080.png",
+    "options": [
+      {
+        "name": "NEW · DSports+",
+        "iframe": "http://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/dash/enc/ud6bnhthpj/out/v1/2639a2f4480f4269953de466d5f46463/cenc.mpd",
+        "clearKeys": {
+          "83f81c4cc1443991543de4e22eea7586": "ddfd7ca653d6f35543d8edb3c688e20f"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FS1",
+    "logo": "https://i.imgur.com/O9BapV9.png",
+    "options": [
+      {
+        "name": "NEW · FS1",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/tmpzbbdj9y/out/v1/962736723a534ba294e7592fef49827b/cenc.mpd",
+        "clearKeys": {
+          "5466ebd70704bdeb657f0abf3c5ca4ef": "bdd79b72d8e48ed483aa623cc38a8a16"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FS2",
+    "logo": "https://i.imgur.com/LHtxKI8.png",
+    "options": [
+      {
+        "name": "NEW · FS2",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/awxnrqkbo5/out/v1/716529a4091947b0877e6cb80dbd6ccb/cenc.mpd",
+        "clearKeys": {
+          "09453ce820d65fbc675de3185f9e454c": "98cff9600995fa381c76fdacf3c7edae"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NBC SPORTS NOW",
+    "logo": "https://i.imgur.com/EzNf2Yx.png",
+    "options": [
+      {
+        "name": "NEW · NBC SPORTS NOW",
+        "iframe": "https://xumo-xumoent-vc-122-sjv70.fast.nbcuni.com/live/master.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NBC SPORTS PHILADELFHIA",
+    "logo": "https://i.imgur.com/j9mVaf3.png",
+    "options": [
+      {
+        "name": "NEW · NBC SPORTS PHILADELFHIA",
+        "iframe": "https://tvpass.org/live/nbc-sports-philadelphia/hd"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NBC SPORTS BOSTON",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/NBC_Sports_Boston.png/960px-NBC_Sports_Boston.png",
+    "options": [
+      {
+        "name": "NEW · NBC SPORTS BOSTON",
+        "iframe": "https://tvpass.org/live/nbc-sports-boston/hd"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "LALIGA TV",
+    "logo": "https://i.imgur.com/ilay5Jr.png",
+    "options": [
+      {
+        "name": "NEW · LALIGA TV",
+        "iframe": "https://deportes.ksdjugfsddeports.com/stream.php?canal=skysportslaliga&target=1"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BUNDESLIGA TV",
+    "logo": "https://i.imgur.com/UXtjFtd.png",
+    "options": [
+      {
+        "name": "NEW · BUNDESLIGA TV",
+        "iframe": "https://la18hd.com/vivo/canales.php?stream=sky_bundesliga_mx"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Sports 16",
+    "logo": "https://i.imgur.com/SuTOqKi.png",
+    "options": [
+      {
+        "name": "NEW · Sky Sports 16",
+        "iframe": "https://aca-live4-ott.izzigo.tv/12/out/u/dash/SKY-SPORTS-16-HD/default.mpd",
+        "clearKeys": {
+          "cb80e1e7d7598eaf98b1dbbe6dc14ee9": "103ae55c7948ca1d159d6743619d26c4"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Sports 21",
+    "logo": "https://i.postimg.cc/W1yjByM9/sky-sport-21.png",
+    "options": [
+      {
+        "name": "NEW · Sky Sports 21",
+        "iframe": "https://aca-live4-ott.izzigo.tv/13/out/u/dash/SKY-SPORTS-21-HD/default.mpd",
+        "clearKeys": {
+          "99909032389c6ee41c3d2f3ec829f804": "41fbc575c8ef1cdac1dca990c9a0df9d"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Sports 24",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Sky_Sport_24_-_Logo_2020.svg/960px-Sky_Sport_24_-_Logo_2020.svg.png",
+    "options": [
+      {
+        "name": "NEW · Sky Sports 24",
+        "iframe": "https://aca-live4-ott.izzigo.tv/15/out/u/dash/SKY-SPORTS-24-HD/default.mpd",
+        "clearKeys": {
+          "d8d5823d92a9ef9306a4cc4bd634b4b4": "df9fbdaa0ef9e905b75f4692f213af19"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Sports",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Sky_Sport_-_Logo_2026.svg/960px-Sky_Sport_-_Logo_2026.svg.png",
+    "options": [
+      {
+        "name": "NEW · Sky Sports",
+        "iframe": "https://aca-live4-ott.izzigo.tv/13/out/u/dash/SKY-SPORTS-HD/default.mpd",
+        "clearKeys": {
+          "335511dfdf0d03bc06f1fdead5870b5a": "1a022fb33ad3de4d4579b04966551488"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Live Event 2",
+    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
+    "options": [
+      {
+        "name": "NEW · Sky Live Event 2",
+        "iframe": "https://aca-live4-ott.izzigo.tv/8/out/u/dash/SKY-LIVE-EVENT-2-HD-H265/default.mpd",
+        "clearKeys": {
+          "1d220987b13a594b144d1bbb6bedd568": "b1778e4c2200a3a885957500b13f5335"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Live Event 3",
+    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
+    "options": [
+      {
+        "name": "NEW · Sky Live Event 3",
+        "iframe": "https://aca-live4-ott.izzigo.tv/11/out/u/dash/SKY-LIVE-EVENT-4-HD/default.mpd",
+        "clearKeys": {
+          "a931b2e953695ffb0cfd38573e97ba33": "4ddd99cc4fb168d7f0e20be8a3287100"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky Live Event 4",
+    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
+    "options": [
+      {
+        "name": "NEW · Sky Live Event 4",
+        "iframe": "https://aca-live4-ott.izzigo.tv/12/out/u/dash/SKY-LIVE-EVENT-5-HD/default.mpd",
+        "clearKeys": {
+          "6c89e84c52eae0428b7d2c8e887a48ec": "758a1484f920a0f1aa73e95d5f2be225"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "GOLF CHANNEL LATIN AMERICA",
+    "logo": "https://geo.edge.pontiscloud.com:9002/images/224/CH_LOGO/160/160/0/0/6885621707734.png",
+    "options": [
+      {
+        "name": "NEW · GOLF CHANNEL LATIN AMERICA",
+        "iframe": "https://aca-live4-ott.izzigo.tv/6/out/u/dash/GOLF-CHANNEL-HD-H265/default.mpd",
+        "clearKeys": {
+          "b8df797e071b0ef1f1a238c8ac18ad2d": "a65bce29cf4bb5390c686ea0cbbbc4cd"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Beisbol Latino TV",
+    "logo": "https://i.postimg.cc/sxvRGbKM/beisbol-latino.png",
+    "options": [
+      {
+        "name": "NEW · Beisbol Latino TV",
+        "iframe": "https://aca-live4-ott.izzigo.tv/14/out/u/dash/BEISBOL-LATINO-HD/default.mpd",
+        "clearKeys": {
+          "5dbf14888bd99a7b01a3c9b0386c29ed": "1ee5f6042b292cfb366e5b2ec27ecf22"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Hi Sports",
+    "logo": "https://i.postimg.cc/nhxDp91D/hi-sports.png",
+    "options": [
+      {
+        "name": "NEW · Hi Sports",
+        "iframe": "https://aca-live4-ott.izzigo.tv/12/out/u/dash/HI-SPORTS-SD/default.mpd",
+        "clearKeys": {
+          "f2966ad533e52a19c3ded1c7b9e40370": "2e0bb20e3edb3ce7fc0d616b3ff28748"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "AZTECA DEPORTES NETWORK 2",
+    "logo": "https://i.ibb.co/pLzvPJ3/aztecadeportes.png",
+    "options": [
+      {
+        "name": "NEW · AZTECA DEPORTES NETWORK 2",
+        "iframe": "https://jmp2.uk/plu-65cf60d166eec80008724e6f.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Adrenalina Sports Network",
+    "logo": "https://i.postimg.cc/3x24hrK1/adrenalina-sports.webp",
+    "options": [
+      {
+        "name": "NEW · Adrenalina Sports Network",
+        "iframe": "https://aca-live4-ott.izzigo.tv/11/out/u/dash/ADRENALINA-HD/default.mpd",
+        "clearKeys": {
+          "6de0a66b528401c0378c559712f74643": "f9a240cea75f585add8405375ad1d787"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TVC DEPORTES",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e8/TVCDeportes.png",
+    "options": [
+      {
+        "name": "NEW · TVC DEPORTES",
+        "iframe": "https://la14hd.com/vivo/canales.php?stream=tvc_deportes"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TELEMUNDO PR",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Telemundo_logo_2018.svg/960px-Telemundo_logo_2018.svg.png",
+    "options": [
+      {
+        "name": "NEW · TELEMUNDO PR",
+        "iframe": "https://nbculocallive.akamaized.net/hls/live/2037499/puertorico/stream1/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "UNIVERSO HD",
+    "logo": "https://i.imgur.com/RZ8pIKe.png",
+    "options": [
+      {
+        "name": "NEW · UNIVERSO HD",
+        "iframe": "http://190.11.225.124:5000/live/universo_hd/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TELEMUNDO DEPORTES AHORA",
+    "logo": "https://img.nbc.com/files/2025-12/tda_stacked_logo_color_whitetext.png?impolicy=nbc_com&imwidth=340&imdensity=1",
+    "options": [
+      {
+        "name": "NEW · TELEMUNDO DEPORTES AHORA",
+        "iframe": "https://d1rqgw5gocwo9i.cloudfront.net/10009/99951459/hls/master.m3u8?ads.xumo_channelId=99951459&ads.asnw=169843&ads.afid=442535792&ads.sfid=23780352&ads.caid=telemundodeportesahora_linear&ads.csid=xumo_[PLATFORM]_telemundodeportesahora_ssai_cro&ads._fw_is_lat=[IS_LAT]&ads._fw_us_privacy=[CCPA_Value]&ads._fw_coppa=0&ads._fw_did=[IFA]&ads._fw_vcid2=512116:[IFA]&ads._fw_app_bundle=[app_bundle]&ads._fw_app_store_url=[app_store_url]&ads._fw_content_category=[IAB_content_category]&ads._fw_content_genre=[content_genre]&ads._fw_content_language=es&ads._fw_content_rating=[content_rating]&ads._fw_deviceMake=[device_make]&ads._fw_device_model=[device_model]&ads._fw_deviceType=3-Connected_TV&ads.appVersion=[APP_VERSION]&ads.appName=XumoPlay&ads.xumo_contentId=4281&ads.xumo_contentName=TelemundoDeportesAhora&ads.xumo_providerId=4281&ads.xumo_providerName=TelemundoDeportesAhora&ads.channelId=99951459&ads._fw_ifa_type=[IFA_TYPE]",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "LA 1 MUNDIAL",
+    "logo": "https://i.ibb.co/DHSH2L0y/Logo-La-1-UHD-2024.jpg",
+    "options": [
+      {
+        "name": "NEW · LA 1 MUNDIAL",
+        "iframe": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/c7di7zkdor/out/v1/f7d5b356e048494a8325563e8916d50b/cenc.mpd",
+        "clearKeys": {
+          "745cd6ec34a58f2f7ac2af35dc3da6d2": "ae008f1e47e6567fe4201a6ff8f1ae54"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FUBO SPORTS NETWORK",
+    "logo": "https://www.cxtv.com.br/img/Tvs/Logo/webp-m/c003630ad52514b4aea174660c1ef25e.webp",
+    "options": [
+      {
+        "name": "NEW · FUBO SPORTS NETWORK",
+        "iframe": "https://aegis-cloudfront-1.tubi.video/c2ac89da-5c69-439e-b85d-d87de0548b54/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TSN",
+    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "options": [
+      {
+        "name": "NEW · TSN",
+        "iframe": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "clearKeys": {
+          "14eeabf30c14b7fbf3008c03099ce011": "17d2ac8dbc5429bd70af3433aa12158d"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TSN 2",
+    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "options": [
+      {
+        "name": "NEW · TSN 2",
+        "iframe": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/cjglydxghe/out/v1/8977baf175da4b94873194613dd3fe55/cenc.mpd",
+        "clearKeys": {
+          "85b277daf5aae05833fe43a68f587968": "d52d7e9bc0bcd98787efd547ac91eca0"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TSN 3",
+    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "options": [
+      {
+        "name": "NEW · TSN 3",
+        "iframe": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/lsibpqruq1/out/v1/748887d614a84913ba8bcdf3c82823e6/cenc.mpd",
+        "clearKeys": {
+          "d3250252765347a0c2603c6cb4869f8c": "0c19319460da7e9ed816db46ce839b37"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TSN 4",
+    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "options": [
+      {
+        "name": "NEW · TSN 4",
+        "iframe": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/ihys8nw4wv/out/v1/fde190f369484bc6b6117cc16cd82a9f/cenc.mpd",
+        "clearKeys": {
+          "abc5b2883121012850ebda05b528c5ec": "e5250924f4b738905f7163a0134587a7"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TSN 5",
+    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "options": [
+      {
+        "name": "NEW · TSN 5",
+        "iframe": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/cscevwljkq/out/v1/972185041b244140860b7d56398e9aaf/cenc.mpd",
+        "clearKeys": {
+          "385ceb9714b75e0cef61254f80b31002": "18dce92a2891fee68d21ede5173230f8"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "beIN SPORTS 1 AU",
+    "logo": "https://i.postimg.cc/PxVwNGgX/be-IN-SPORTS1-ENGLISH-Digital-Mono.png",
+    "options": [
+      {
+        "name": "NEW · beIN SPORTS 1 AU",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash/enc/ghwcl6hv68/out/v1/83536910d8034e9b9895a20fbe1c1687/cenc.mpd",
+        "clearKeys": {
+          "335dad778109954503dcbb21dc92015f": "24bfd75d436cbf73168a2a2dccd40281"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "beIN SPORTS 2 AU",
+    "logo": "https://i.postimg.cc/5NYwY0NW/be-IN-SPORTS2-ENGLISH-Digital-Mono.png",
+    "options": [
+      {
+        "name": "NEW · beIN SPORTS 2 AU",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash/enc/8m8cd46i1t/out/v1/83985c68e4174e90a58a1f2c024be4c9/cenc.mpd",
+        "clearKeys": {
+          "0b42be2664d7e811d04f3e504e0924c5": "ae24090123b8c72ac5404dc152847cb8"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "beIN SPORTS 3 AU",
+    "logo": "https://i.postimg.cc/9fjtjh2F/be-IN-SPORTS3-ENGLISH-Digital-Mono.png",
+    "options": [
+      {
+        "name": "NEW · beIN SPORTS 3 AU",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash/enc/q4u5nwaogz/out/v1/18de6d3e65934f3a8de4358e69eab86c/cenc.mpd",
+        "clearKeys": {
+          "7995c724a13748ed970840a8ab5bb9b3": "67bdaf1e2175b9ff682fcdf0e2354b1e"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FOX ONE USA",
+    "logo": "https://images.seeklogo.com/logo-png/28/1/fox-sports-logo-png_seeklogo-284763.png",
+    "options": [
+      {
+        "name": "NEW · FOX ONE USA",
+        "iframe": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/ajfoeddkbz/out/v1/b78800b9b2304879b15843f455836829/cenc.mpd",
+        "clearKeys": {
+          "f6564ec2aee819046328a0e153be574d": "ff46a8a1031eb27ef22576a077c98ab7"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CBS NEW YORK",
+    "logo": "http://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s10098_dark_360w_270h.png",
+    "options": [
+      {
+        "name": "NEW · CBS NEW YORK",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/8kmy1rjdu3/out/v1/53c15187903449e6971e0817d79d7cca/cenc.mpd",
+        "clearKeys": {
+          "421b7a258a557c073110d2bd0aa335ba": "4d7481264fdffb9b7cc05bf490e62ad2"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CBS CHICAGO",
+    "logo": "http://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s10098_dark_360w_270h.png",
+    "options": [
+      {
+        "name": "NEW · CBS CHICAGO",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/p04avr57rr/out/v1/25ec3c73680045ce86858d701763a70c/cenc.mpd",
+        "clearKeys": {
+          "780cb0938d1399fa631bd6c0b868e560": "f8529525ed53f542de966ad548c59f9c"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CBS Sports Golazo!",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US100000704_20260421T142122SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · CBS Sports Golazo!",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/rbem8rorcw/out/v1/5318821e2c3c44c2a439681b9aa86e9b/cenc.mpd",
+        "clearKeys": {
+          "d9623774ac5c8c351aafe97c5fe70267": "5164e6d05164a2d65fa8fcc962aa4861"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FIFA+",
+    "logo": "https://m.media-amazon.com/images/I/2185OD67t-L.png",
+    "options": [
+      {
+        "name": "NEW · FIFA+",
+        "iframe": "https://d63fabad.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWVzX0ZJRkFQbHVzU3BhbmlzaF9ITFM/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "FIFA+ LIVE",
+    "logo": "https://m.media-amazon.com/images/I/2185OD67t-L.png",
+    "options": [
+      {
+        "name": "NEW · FIFA+ LIVE",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/filihyb6x1/out/v1/e2b737b02ca046729b34f0594a611494/cenc.mpd",
+        "clearKeys": {
+          "26977ba93795552a60559679ab740b38": "e75175191d0ed494da3dec258bbfd74f"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Premier Sports 1",
+    "logo": "https://i.postimg.cc/m2ChRY5V/Premier-Sports-1-II.png",
+    "options": [
+      {
+        "name": "NEW · Premier Sports 1",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/m6sqanvm2m/out/v1/f6beb46c6e9a4132ad739f3ca27df6aa/cenc.mpd",
+        "clearKeys": {
+          "1444f4235529f183f0a5a486befe9cdb": "e5e3fec67a1bb3472a2089c8a0a2557f"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Premier Sports 2",
+    "logo": "https://i.postimg.cc/6QjpzY8J/premier-sports-2.png",
+    "options": [
+      {
+        "name": "NEW · Premier Sports 2",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/dash/enc/bcj3iscpd6/out/v1/fcd137b391214f7cb99dd4d7be90ca87/cenc.mpd",
+        "clearKeys": {
+          "1a5df53609ebc9857898c490f4724918": "77f62980d582ec541280796acf8b2d19"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Red Bull TV",
+    "logo": "https://media.tvup.cloud/canales/color_lg_5c4352438c3e78047f57c408.png",
+    "options": [
+      {
+        "name": "NEW · Red Bull TV",
+        "iframe": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RALLY TV",
+    "logo": "https://i.postimg.cc/Mp0VCRjd/rally-tv.png",
+    "options": [
+      {
+        "name": "NEW · RALLY TV",
+        "iframe": "https://dms.redbull.tv/v5/destination/rallytv/07f960dc-fd36-466c-971f-64a597518b83/personal_computer/http/us/es_US/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "COMBATE GLOBAL",
+    "logo": "https://i.postimg.cc/L4CSKz5S/combate-global.png",
+    "options": [
+      {
+        "name": "NEW · COMBATE GLOBAL",
+        "iframe": "https://d1u6wgaa8xb3mk.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-9fazlfu4at6aj/server/distrib/QDLoJT9yeWXS4WJP6/zuvPJYoOOdEMDNF2j2mvmg.u11pIHHxg4zn_J5_7NMwCvbxoAihWCJsSeWRKxhEKeoFgynWSWKVB3Jj4tTtIZWWcoaFPXDCjGvkNCD5r3qc8iuea_TCCOedUj2PegrO6kozyyjPsrlkz2DJ_dCfvxqdTxvlzkjhMHtTFaBoYlyZQf7MVggFEv4XSUNSJIBMujHhn5guG50Cdd9mIqIzFjbAxl4RiWCqeweKVNSQFxI-PA/manifest.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SPORTDIGITAL SCOOORE",
+    "logo": "https://i.ibb.co/pfHxtNN/scooore.png",
+    "options": [
+      {
+        "name": "NEW · SPORTDIGITAL SCOOORE",
+        "iframe": "https://d30q89nbu2cn1m.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-dqa8cbhgtjvjl/ScoooreDE.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.consent=%7BTC_STRING%7D&ads.ssai_vendor=SSSLIVE&ads.service_id=ATBD26000124P",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SPORTDIGITAL FREE",
+    "logo": "https://i.ibb.co/XX6rKD0/sdf.png",
+    "options": [
+      {
+        "name": "NEW · SPORTDIGITAL FREE",
+        "iframe": "https://d46c0ebf9ef94053848fdd7b1f2f6b90.mediatailor.eu-central-1.amazonaws.com/v1/master/81bfcafb76f9c947b24574657a9ce7fe14ad75c0/live-prod/1ee22da8-818e-11eb-908d-533d39655269/0/master.m3u8?uid=%7BPSID%7D&optout=%7BTARGETOPT%7D&country=AT&vendor=samsung&ads:app_domain=%7BAPP_DOMAIN%7D&ads:app_name=%7BAPP_NAME%7D&coppa=1&ads:tcf=%7BTC_STRING%7D",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MBC Shahid | Sports 1",
+    "logo": "https://i.postimg.cc/tTRh0wvz/shahid-sports.png",
+    "options": [
+      {
+        "name": "NEW · MBC Shahid | Sports 1",
+        "iframe": "https://shahid-sports-1-enc.edgenextcdn.net/out/v1/0169cfa282614ebe97ef0201da87bb04/index.mpd",
+        "clearKeys": {
+          "ab081a704aad41829b1123b09b6ecafd": "dd51609092fff15e68b91debf5d591f9"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MBC Shahid | Sports 2",
+    "logo": "https://i.postimg.cc/tTRh0wvz/shahid-sports.png",
+    "options": [
+      {
+        "name": "NEW · MBC Shahid | Sports 2",
+        "iframe": "https://shahid-sports-2-enc.edgenextcdn.net/out/v1/589aa6b16ce942388695b5b214f4ae93/index.mpd",
+        "clearKeys": {
+          "50a7f3afc00a40b38face4db639d0e4c": "ad7000691326064706281a700b7d6714"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MBC Shahid | Sports 3",
+    "logo": "https://i.postimg.cc/tTRh0wvz/shahid-sports.png",
+    "options": [
+      {
+        "name": "NEW · MBC Shahid | Sports 3",
+        "iframe": "https://shahid-sports-3-enc.edgenextcdn.net/out/v1/2658c96bbfa54f339e357fe36361587e/index.mpd",
+        "clearKeys": {
+          "2b6f6b340aa8467785e4e82f9320fb5a": "8889701d704078c4d910ed1409413d9b"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MBC Shahid | Sports 4",
+    "logo": "https://i.postimg.cc/tTRh0wvz/shahid-sports.png",
+    "options": [
+      {
+        "name": "NEW · MBC Shahid | Sports 4",
+        "iframe": "https://shahid-sports-4-enc.edgenextcdn.net/out/v1/f813ab47644d4c41a99285513f6c7409/index.mpd",
+        "clearKeys": {
+          "6477160076644679af1028534f03f67e": "1267f99705113a62c7782c4d5281a7eb"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MBC Shahid | Sports 5",
+    "logo": "https://i.postimg.cc/tTRh0wvz/shahid-sports.png",
+    "options": [
+      {
+        "name": "NEW · MBC Shahid | Sports 5",
+        "iframe": "https://shahid-sports-5-enc.edgenextcdn.net/out/v1/ae00715d1c2c4432852b44a254c04a3d/index.mpd",
+        "clearKeys": {
+          "e2df3c205b674360bc6f364ba1090e70": "93da2c77bc812bc05a6e20ad8d35ea78"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TENNIS CHANNEL 2",
+    "logo": "https://i.ibb.co/m8rwcJy/T2-live-tennis.png",
+    "options": [
+      {
+        "name": "NEW · TENNIS CHANNEL 2",
+        "iframe": "https://a12aivottepl-a.akamaihd.net/gru-nitro/live/clients/dash/enc/bfigtl960n/out/v1/5ba5484550e84681bff2e8ca994266c1/cenc.mpd",
+        "clearKeys": {
+          "59f50679c9e60963bd0cb6640992aaaa": "8685817c4d31f322e08940feeae2855a"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Tennis Channel US",
+    "logo": "https://tvpnlogopeu.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/ESBD2600001ME_20230809T053838SQUARE.png_20230809053839.png",
+    "options": [
+      {
+        "name": "NEW · Tennis Channel US",
+        "iframe": "http://23.237.104.106:8080/USA_TENNIS/index.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MTV Biggest Pop",
+    "logo": "https://images.pluto.tv/channels/6047fabfce6e8e00070bcc9f/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · MTV Biggest Pop",
+        "iframe": "https://jmp2.uk/plu-5d14fd1a252d35decbc4080c.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MTV Spankin' New",
+    "logo": "https://images.pluto.tv/channels/5d14fdb8ca91eedee1633117/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · MTV Spankin' New",
+        "iframe": "https://jmp2.uk/plu-5d14fdb8ca91eedee1633117.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MTV Flow Latino",
+    "logo": "https://images.pluto.tv/channels/62b218fc511d4b00070ddc0c/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · MTV Flow Latino",
+        "iframe": "https://jmp2.uk/plu-62b218fc511d4b00070ddc0c.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MTV CLASSICS",
+    "logo": "https://images.pluto.tv/channels/66a11a21a79dea0008aa90ca/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · MTV CLASSICS",
+        "iframe": "https://jmp2.uk/plu-66a11a21a79dea0008aa90ca.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MTV ROCKS",
+    "logo": "https://images.pluto.tv/channels/66a01b52a4ee27000808ea36/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · MTV ROCKS",
+        "iframe": "https://jmp2.uk/plu-66a01b52a4ee27000808ea36.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "STINGRAY TIKTOK RADIO",
+    "logo": "https://images.pluto.tv/channels/63dac1b78795f300086d5ca6/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · STINGRAY TIKTOK RADIO",
+        "iframe": "https://jmp2.uk/plu-63dac1b78795f300086d5ca6.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CONCERT CHANNEL",
+    "logo": "https://images.pluto.tv/channels/6868152657543d1f8be4ece3/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · CONCERT CHANNEL",
+        "iframe": "https://jmp2.uk/plu-6868152657543d1f8be4ece3.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Sky One",
+    "logo": "https://i.postimg.cc/tg23Y682/sky-one.png",
+    "options": [
+      {
+        "name": "NEW · Sky One",
+        "iframe": "https://aca-live4-ott.izzigo.tv/6/out/u/dash/SKY-ONE-HD-H265/default.mpd",
+        "clearKeys": {
+          "4b66bfb53e5980a82a1022a458410e17": "8838e7ad61bfe429f6b81013078d30d1"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Holidayscapes",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500038R6_20251230T035626SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Holidayscapes",
+        "iframe": "https://plextv.ott-channels.stingray.com/holidayscapes/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Conciertos Por Stingray",
+    "logo": "https://images.pluto.tv/channels/5f85ca40eda1b10007b967cd/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · Conciertos Por Stingray",
+        "iframe": "https://jmp2.uk/plu-5f85ca40eda1b10007b967cd.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Qello Concerts",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500024YB_20260421T141917SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Qello Concerts",
+        "iframe": "https://lotus.stingray.com/manifest/qello-qello001-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Classic Rock",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD35000180U_20250630T232430SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Classic Rock",
+        "iframe": "https://lotus.stingray.com/manifest/ose-101ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Juicebox",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Stingray_Juicebox.jpg",
+    "options": [
+      {
+        "name": "NEW · Stingray Juicebox",
+        "iframe": "https://aca-live4-ott.izzigo.tv/8/out/u/dash/SKY-STINGRAY-JUICEBOX-HD-H265/default.mpd",
+        "clearKeys": {
+          "dad7d94c86a19a01549e5aaf637ef967": "20f9a557b58e37980370bbdc718a444e"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Hits!",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/1/15/Stingray_Hits.svg",
+    "options": [
+      {
+        "name": "NEW · Stingray Hits!",
+        "iframe": "https://aca-live4-ott.izzigo.tv/6/out/u/dash/SKY-STINGRAY-HITS-HD-H265/default.mpd",
+        "clearKeys": {
+          "1c2efd84d8c2daeafaaf6b6cc38e43e9": "973bb80c6d2eab41b83da0ebea7ca710"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Retro",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Stingray_RETRO.svg",
+    "options": [
+      {
+        "name": "NEW · Stingray Retro",
+        "iframe": "https://aca-live4-ott.izzigo.tv/8/out/u/dash/STINGRAY-RETRO-HD-H265/default.mpd",
+        "clearKeys": {
+          "21c43423bec433c52908824670ea11c9": "7d854e49b750c70f29ba9ed15e6b192a"
+        }
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Classica",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stingray_Classica_Logo_10.2019.svg/3840px-Stingray_Classica_Logo_10.2019.svg.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Classica",
+        "iframe": "https://lotus.stingray.com/manifest/classica-cla008-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray CMusic",
+    "logo": "https://i.imgur.com/3UppN5P.png",
+    "options": [
+      {
+        "name": "NEW · Stingray CMusic",
+        "iframe": "https://lotus.stingray.com/manifest/cmusic-cme004-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray DJAZZ",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500025GS_20240826T191202SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray DJAZZ",
+        "iframe": "https://lotus.stingray.com/manifest/djazz-djaads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Easy Listening",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500011J3_20260421T143139SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Easy Listening",
+        "iframe": "https://lotus.stingray.com/manifest/ose-137ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Flashback 70s",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500008IJ_20260421T143136SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Flashback 70s",
+        "iframe": "https://lotus.stingray.com/manifest/ose-115ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Hit List",
+    "logo": "https://i.imgur.com/lgpIwId.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Hit List",
+        "iframe": "https://lotus.stingray.com/manifest/ose-107ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Holiday Hits",
+    "logo": "https://i.imgur.com/4xVVKH8.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Holiday Hits",
+        "iframe": "https://lotus.stingray.com/manifest/ose-155ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Hot Country",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300021KV_20251230T035621SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Hot Country",
+        "iframe": "https://lotus.stingray.com/manifest/ose-108ads-montreal/samsungtvplus/master.m3u8"
+      },
+      {
+        "name": "NEW · Stingray Hot Country (2)",
+        "iframe": "https://jmp2.uk/stvp-USBD3300021KV",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Karaoke Por Stingray",
+    "logo": "https://images.pluto.tv/channels/5f85cf621d6d2200079f1de0/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · Karaoke Por Stingray",
+        "iframe": "https://jmp2.uk/plu-5f85cf621d6d2200079f1de0.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Karaoke US",
+    "logo": "https://i.imgur.com/9TLTLS3.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Karaoke US",
+        "iframe": "https://lotus.stingray.com/manifest/karaoke-kar000-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Hip Hop",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500010MT_20260421T141910SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Hip Hop",
+        "iframe": "https://jmp2.uk/stvp-USBD3500010MT",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Euro Hits",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700002UF_20260421T143051SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Euro Hits",
+        "iframe": "https://lotus.stingray.com/manifest/ose-214ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Soft Hits",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700007GV_20260421T143101SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Soft Hits",
+        "iframe": "https://jmp2.uk/stvp-US4700007GV",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Jukebox Oldies",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700006XL_20260421T143057SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Jukebox Oldies",
+        "iframe": "https://lotus.stingray.com/manifest/ose-021ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Country Greats",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700005EA_20260421T143054SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Country Greats",
+        "iframe": "https://jmp2.uk/stvp-US4700005EA",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Greatest Hits",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500022DN_20251230T035623SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Greatest Hits",
+        "iframe": "https://jmp2.uk/stvp-USBD3500022DN",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Naturescape",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USAK3508705A_20250630T232500SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Naturescape",
+        "iframe": "https://lotus.stingray.com/manifest/naturescape-a003-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Nothin' But 90s",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD35000149S_20260421T143145SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Nothin' But 90s",
+        "iframe": "https://lotus.stingray.com/manifest/ose-142ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Pop Adult",
+    "logo": "https://i.imgur.com/H2ugC9L.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Pop Adult",
+        "iframe": "https://lotus.stingray.com/manifest/ose-104ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Remember the 80s",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300022QK_20260421T143132SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Remember the 80s",
+        "iframe": "https://lotus.stingray.com/manifest/ose-128ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Rock Alternative",
+    "logo": "https://i.imgur.com/mt8ulVX.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Rock Alternative",
+        "iframe": "https://lotus.stingray.com/manifest/ose-102ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Romance Latino",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500017CE_20260421T141914SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Romance Latino",
+        "iframe": "https://lotus.stingray.com/manifest/ose-202ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Smooth Jazz",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD35000128A_20260421T143142SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Smooth Jazz",
+        "iframe": "https://lotus.stingray.com/manifest/ose-140ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Soul Storm",
+    "logo": "https://i.imgur.com/dU1KC3f.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Soul Storm",
+        "iframe": "https://lotus.stingray.com/manifest/ose-134ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray The Spa",
+    "logo": "https://i.imgur.com/ywAN923.png",
+    "options": [
+      {
+        "name": "NEW · Stingray The Spa",
+        "iframe": "https://lotus.stingray.com/manifest/ose-122ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Today's KPOP",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500016NH_20250630T232451SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Today's KPOP",
+        "iframe": "https://lotus.stingray.com/manifest/ose-317ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Today's Latin Pop",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500009Y3_20260421T141859SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Today's Latin Pop",
+        "iframe": "https://lotus.stingray.com/manifest/ose-190ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray Urban Beat",
+    "logo": "https://i.imgur.com/Os3kRRP.png",
+    "options": [
+      {
+        "name": "NEW · Stingray Urban Beat",
+        "iframe": "https://lotus.stingray.com/manifest/ose-133ads-montreal/samsungtvplus/master.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "Stingray iConcerts",
+    "logo": "https://i.postimg.cc/2ygd92x5/stingray-iconcerts.png",
+    "options": [
+      {
+        "name": "NEW · Stingray iConcerts",
+        "iframe": "https://dash2.antik.sk/live/test_stingray_iconcerts_hd_hevc50/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO POP",
+    "logo": "https://images.pluto.tv/channels/5d93b635b43dd1a399b39eee/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · VEVO POP",
+        "iframe": "https://d1ktssaxrjabsg.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-1vshdbah8e4f8/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO POP ESPAÑOL",
+    "logo": "https://images.pluto.tv/channels/5d93b635b43dd1a399b39eee/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · VEVO POP ESPAÑOL",
+        "iframe": "https://d3e0llp20n59j5.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-fs5u02h1uaofy/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO LATINO",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBC3600015GF_20260303T094222SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · VEVO LATINO",
+        "iframe": "https://amg00056-amg00056c13-rakuten-es-3246.playouts.now.amagi.tv/playlist/amg00056-vevotvfast-vevolatinoes-rakutenes/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO ICONOS LATINOS",
+    "logo": "https://images.pluto.tv/channels/64d161c93c785e0008df575e/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · VEVO ICONOS LATINOS",
+        "iframe": "https://jmp2.uk/plu-64d161c93c785e0008df575e.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO REGIONAL XM",
+    "logo": "https://images.pluto.tv/channels/64dab5fe35425100080e2991/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · VEVO REGIONAL XM",
+        "iframe": "https://jmp2.uk/plu-64dab5fe35425100080e2991.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO RETRO",
+    "logo": "https://i.postimg.cc/FsHZjDN8/vevo-retro.png",
+    "options": [
+      {
+        "name": "NEW · VEVO RETRO",
+        "iframe": "https://dh732bpen9wqx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-xpcm3pisx9sj8/VevoRetro_ES.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO ´70s & ´80s",
+    "logo": "https://i.postimg.cc/ZKTdpP70/vevo-70s-80s.png",
+    "options": [
+      {
+        "name": "NEW · VEVO ´70s & ´80s",
+        "iframe": "https://d38e11bvtr8xdq.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-jlzlygsoesvmj/Vevo70sand80s_GB.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO '90s & '00s",
+    "logo": "https://i.postimg.cc/GhvPrh4f/vevo-90s-00s.png",
+    "options": [
+      {
+        "name": "NEW · VEVO '90s & '00s",
+        "iframe": "https://d1cj21il6keqa2.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-1jatv2dap12i7/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO HIP-HOP & R&B",
+    "logo": "https://i.postimg.cc/ZnpKVkmr/vevo-hip-hop-r-b.png",
+    "options": [
+      {
+        "name": "NEW · VEVO HIP-HOP & R&B",
+        "iframe": "https://d7i20u8nlyf1b.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-lymqk2na77cwn/VevoHipHopRB_GB.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO HIP-HOP",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBC3600002EK_20260303T094219SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · VEVO HIP-HOP",
+        "iframe": "https://jmp2.uk/stvp-USBC3600002EK"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO R&B",
+    "logo": "https://images.pluto.tv/channels/5da0d83f66c9700009b96d0e/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · VEVO R&B",
+        "iframe": "https://jmp2.uk/plu-5da0d83f66c9700009b96d0e.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO NAVIDAD",
+    "logo": "https://i.postimg.cc/3r0rkkFd/vevo-navidad.png",
+    "options": [
+      {
+        "name": "NEW · VEVO NAVIDAD",
+        "iframe": "https://d3gvsgk1wzcus5.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-9n2dbsm9s7w96/VevoNavidad_ES.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO CHRISTMAS",
+    "logo": "https://i.postimg.cc/k5MXGwf8/vevo-christmas.png",
+    "options": [
+      {
+        "name": "NEW · VEVO CHRISTMAS",
+        "iframe": "https://d2iwbme1fhlm5y.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-dhh5tap5387o2/VevoChristmas_GB.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VEVO ROCK",
+    "logo": "https://images.pluto.tv/channels/61d4b38226b8a50007fe03a6/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · VEVO ROCK",
+        "iframe": "https://d2hdqrshyzxswl.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-neu8sqvbxozkb/Vevo_Retro_Rock.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE ROCK X METAL",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB2300004KV_20240716T002654SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE ROCK X METAL",
+        "iframe": "https://d198ro05q94rc4.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-c5xdq9qwilrd2/XITE_Rock_On.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE 80s FLASHBACK",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB320000647_20260512T070257SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE 80s FLASHBACK",
+        "iframe": "https://d1n314cytqn9r3.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-bklagqy82v0pr/XITE_80s_Flashback.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE 90s THROWBACK",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB3200007AK_20260512T070259SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE 90s THROWBACK",
+        "iframe": "https://d284aawtm5vi48.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-fjdfi2br1jtq7/XITE_90s_Throwback.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE HITS US",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300004RH_20260421T141846SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE HITS US",
+        "iframe": "https://xite-rakuten.amagi.tv/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE HITS DE",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300004RH_20260421T141846SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE HITS DE",
+        "iframe": "https://d726x48n2pd5h.cloudfront.net/XITE_Hits.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE HITS UK",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300004RH_20260421T141846SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE HITS UK",
+        "iframe": "https://amg01243-xitenetworksint-hitsuk-samsunguk-mvovq.amagi.tv/playlist/amg01243-xitenetworksint-hitsuk-samsunguk/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE CELEBRATES",
+    "logo": "https://i.imgur.com/coSrUwV.png",
+    "options": [
+      {
+        "name": "NEW · XITE CELEBRATES",
+        "iframe": "https://dt1s4l2cmiyit.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-fcwpee1h7t5cs/XITE_Celebrates.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE JUST CHILL",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB2300003JZ_20240716T002652SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE JUST CHILL",
+        "iframe": "https://dvnftgdlbnemm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-dh48uzd9o895t/XITE_Just_Chill.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE GOSPEL",
+    "logo": "https://images.pluto.tv/channels/623b93628e6ded0007337d4d/colorLogoPNG.png",
+    "options": [
+      {
+        "name": "NEW · XITE GOSPEL",
+        "iframe": "https://jmp2.uk/plu-623b93628e6ded0007337d4d.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE NUEVO LATINO",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300007PB_20260421T141851SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE NUEVO LATINO",
+        "iframe": "https://d3bsgqzbpkrvbb.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-w288eaw03izg1/XITE_Nuevo_Latino.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE SIEMPRE LATINO",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300010L9_20260421T141854SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE SIEMPRE LATINO",
+        "iframe": "https://d1xc25jm9e0l4b.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-xplkt8i7m24dc/XITE_Siempre_Latino.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "XITE CLASSIC COUNTRY",
+    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300011UT_20260421T141856SQUARE.png",
+    "options": [
+      {
+        "name": "NEW · XITE CLASSIC COUNTRY",
+        "iframe": "https://d2xm7fwgbakh1x.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-ltmgkaa20sgt9/XITE_Countrys_Finest.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MTV JP",
+    "logo": "https://i.ibb.co/HqPNtN1/mtv.png",
+    "options": [
+      {
+        "name": "NEW · MTV JP",
+        "iframe": "http://cdns.jp-primehome.com:8000/zhongying/live/playlist.m3u8?cid=cs18",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "SOL MUSICA",
+    "logo": "https://i.postimg.cc/RhWwrHfD/sol-musica.png",
+    "options": [
+      {
+        "name": "NEW · SOL MUSICA",
+        "iframe": "https://d2glyu450vvghm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-21u4g5cjglv02/sm.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "QWEST TV",
+    "logo": "https://media.tvup.cloud/canales/color_lg_67b4ba5dfdf20e048d551fab_1739965973280.png",
+    "options": [
+      {
+        "name": "NEW · QWEST TV",
+        "iframe": "https://amg00447-qwesttv-amg00447c1-vidaa-us-9656.playouts.now.amagi.tv/playlist/amg00447-qwesttvfast-qwesttv-vidaaus/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "MOVIE MUSIC BY STINGRAY",
+    "logo": "https://i.postimg.cc/mrFCmvpg/movie-music-by-stingray.png",
+    "options": [
+      {
+        "name": "NEW · MOVIE MUSIC BY STINGRAY",
+        "iframe": "https://d3f4oii5n0oeqi.cloudfront.net/11701/88814585/hls/master.m3u8?ads.xumo_channelId=88814585",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TIKTOK RADIO",
+    "logo": "https://i.postimg.cc/LsbR87mL/tiktok-radio.png",
+    "options": [
+      {
+        "name": "NEW · TIKTOK RADIO",
+        "iframe": "https://d3f4oii5n0oeqi.cloudfront.net/11701/88814594/hls/master.m3u8?ads.xumo_channelId=88814594",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "BOX PLAYLIST",
+    "logo": "https://i.ibb.co/RHVnH98/box-playlist.png",
+    "options": [
+      {
+        "name": "NEW · BOX PLAYLIST",
+        "iframe": "https://d3e900fnvjyq99.cloudfront.net/d/BKFNLVLBL20NVRK6FYE0/hls3/now_-1m_15s/m.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VClassicTV",
+    "logo": "https://i.postimg.cc/ZK6g0tTn/vclassic-tv.png",
+    "options": [
+      {
+        "name": "NEW · VClassicTV",
+        "iframe": "https://5eaccbab48461.streamlock.net:1936/8112/8112/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "VClassicTV Tropical",
+    "logo": "https://i.postimg.cc/SRLDDptg/vclassic-tv-tropical.png",
+    "options": [
+      {
+        "name": "NEW · VClassicTV Tropical",
+        "iframe": "https://5eaccbab48461.streamlock.net:1936/8076/8076/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TOP TV",
+    "logo": "https://i.ibb.co/svkq8Y7H/Top-TV-logo-svg.png",
+    "options": [
+      {
+        "name": "NEW · TOP TV",
+        "iframe": "https://isaocorp.cloudecast.com/toptv/tracks-v1a1/mono.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "NEW KPOP",
+    "logo": "https://i.ibb.co/BGxBxvX/new-kpop.png",
+    "options": [
+      {
+        "name": "NEW · NEW KPOP",
+        "iframe": "https://d3sp12rkfenklh.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-8590bzk53m6cd/live/newid_338_fd18dfd9/samsung_tvplus/index.m3u8?apikey=b97c7a7d0c82424bb607e141ef215779&auth=2fc034f7-8ea7eec6-1badd192-856e5919",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "K-POP BY CJ ENM",
+    "logo": "https://i.ibb.co/WkFpM7k/k-pop-cj-enm.png",
+    "options": [
+      {
+        "name": "NEW · K-POP BY CJ ENM",
+        "iframe": "https://d3kmrn2mstrnk5.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-7ppcp3lxg7oer/f4acc9ba_daae_4ed0_b836_32126cead919/hls/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TRACE URBAN",
+    "logo": "https://i.imgur.com/DLIbUMx.png",
+    "options": [
+      {
+        "name": "NEW · TRACE URBAN",
+        "iframe": "https://amg01131-tracetv-amg01131c1-rakuten-us-1081.playouts.now.amagi.tv/playlist/amg01131-tracetvfast-traceurban-rakutenus/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TRACE HITS",
+    "logo": "https://i.imgur.com/Vvxz6KX.png",
+    "options": [
+      {
+        "name": "NEW · TRACE HITS",
+        "iframe": "https://channels.trace.plus/Traceprod/URBAN_FR/.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TRACE LATINA",
+    "logo": "https://i.imgur.com/CUVAi4u.png",
+    "options": [
+      {
+        "name": "NEW · TRACE LATINA",
+        "iframe": "https://amg01131-tracetv-tracelatina-glewed-vtnk7.amagi.tv/playlist1080P.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TRACE GOSPEL",
+    "logo": "https://i.imgur.com/X0UmU3K.png",
+    "options": [
+      {
+        "name": "NEW · TRACE GOSPEL",
+        "iframe": "https://channels.trace.plus/Traceprod/GOSPEL_FR/.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "TRACE UK",
+    "logo": "https://a.jsrdn.com/hls/23073/trace-uk/logo_20240627_183320_70.png",
+    "options": [
+      {
+        "name": "NEW · TRACE UK",
+        "iframe": "https://channels.trace.plus/Traceprod/UK_FAST/abr.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "CMC TV",
+    "logo": "https://media.tvup.cloud/canales/color_lg_5b1e8713dd713247dee47267.png",
+    "options": [
+      {
+        "name": "NEW · CMC TV",
+        "iframe": "https://hwlive.streamingmediahosting.com/14215-live/0_obd393sh/chunklist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "HIP HOP TV",
+    "logo": "https://i.ibb.co/JrGSVR4/hip-hop-tv.png",
+    "options": [
+      {
+        "name": "NEW · HIP HOP TV",
+        "iframe": "https://9ea6ba0f84904cf4b17433f6a489638b.mediatailor.us-east-1.amazonaws.com/v1/master/0fb304b2320b25f067414d481a779b77db81760d/Samsung-it_HipHopTV/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "ROCK TV",
+    "logo": "https://i.ibb.co/myJgqVR/ROCK-TV.png",
+    "options": [
+      {
+        "name": "NEW · ROCK TV",
+        "iframe": "https://3ff10b5c36cb4729a63d9a2eb5e629f7.mediatailor.us-east-1.amazonaws.com/v1/master/0fb304b2320b25f067414d481a779b77db81760d/Samsung-it_RockTV/playlist.m3u8",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "70-80 it",
+    "logo": "https://i.ibb.co/HTm3wJW/70-80-it.png",
+    "options": [
+      {
+        "name": "NEW · 70-80 it",
+        "iframe": "https://585b674743bbb.streamlock.net/9050/9050/chunklist_w2077975936.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
+  },
+  {
+    "name": "RADIO CAPITAL",
+    "logo": "https://i.postimg.cc/4xkSmztV/Radio-Capital-logo-2020-svg.png",
+    "options": [
+      {
+        "name": "NEW · RADIO CAPITAL",
+        "iframe": "https://4c4b867c89244861ac216426883d1ad0.msvdn.net/live/S35394734/Z6U2wGoDYANk/playlist.m3u8"
+      }
+    ],
+    "show": true,
+    "source": "playlist"
   }
 ]

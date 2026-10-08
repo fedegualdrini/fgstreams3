@@ -1,24 +1,16 @@
 import { unstable_cache } from 'next/cache';
-import type {
-  AngulismoEvent, BroadcastChannel, CatalogMatch, Match, PromiedosGame, Stream,
-} from '@/types/api';
-import { fetchAllMatches, fetchLiveMatchIds, fetchStreamLookup } from './api';
-import { normalizeMatches, matchStartMs } from './matchUtils';
-import { fetchPromiedosGames } from './promiedos';
-import { fetchAngulismoData } from './angulismo';
-import { estimateFeedOffsetMs, findFixture } from './teamMatch';
-import { getChannelCatalog } from './channelCatalog';
+import type { AngulismoSnapshot, CatalogMatch } from '@/types/api';
 import type { Channel } from '@/types/channels';
-import { broadcastsFromEvent, mergeBroadcasts, resolveBroadcastChannels } from './broadcasters';
-import {
-  CATALOG_CONCURRENCY,
-  CATALOG_FUTURE_HOURS,
-  CATALOG_PAST_HOURS,
-  CATALOG_TIME_BUDGET_MS,
-  EXTENDED_LIVE_WINDOW_HOURS,
-  LIVE_WINDOW_HOURS,
-  REVALIDATE_CATALOG,
-} from './constants';
+import { fetchAllMatches, fetchLiveMatchIds } from './api';
+import { normalizeMatches } from './matchUtils';
+import { fetchPromiedosGames, type PromiedosSnapshot } from './promiedos';
+import { fetchAngulismoData } from './angulismo';
+import { getChannelCatalog } from './channelCatalog';
+import { buildBroadcastSources, findFeedFixtures, resolveFeedBroadcasts } from './catalogBroadcasts';
+import { resolveStreams } from './catalogStreams';
+import { currentLiveState, isListable } from './catalogWindow';
+import { CATALOG_TIME_BUDGET_MS, REVALIDATE_CATALOG } from './constants';
+import { createLogger } from './logger';
 
 /**
  * The match catalog: every listable match together with the streams that
@@ -33,50 +25,14 @@ import {
  * Resolution is expensive (~470 upstream calls) so it happens inside a cached
  * function: after the first build, renders read the cache and Next refreshes it
  * in the background.
+ *
+ * The pieces live next to this file: catalogWindow (what is listed / live),
+ * catalogStreams (stream resolution), catalogBroadcasts (TV channel matching).
  */
 
-const HOUR_MS = 60 * 60 * 1000;
+const log = createLogger('catalog');
 
 export type { CatalogMatch };
-
-/** Run `task` over `items` with at most `limit` in flight, stopping at `deadline`. */
-async function mapWithConcurrency<T, R>(
-  items: T[],
-  limit: number,
-  deadline: number,
-  task: (item: T) => Promise<R>,
-): Promise<Array<R | undefined>> {
-  const results = new Array<R | undefined>(items.length);
-  let cursor = 0;
-
-  async function worker(): Promise<void> {
-    while (cursor < items.length) {
-      const index = cursor++;
-      // Past the budget, leave the rest undefined. Callers treat "unresolved"
-      // as "keep the match" so a slow upstream degrades into a longer list,
-      // never into an empty page.
-      if (Date.now() > deadline) return;
-      try {
-        results[index] = await task(items[index]);
-      } catch {
-        results[index] = undefined;
-      }
-    }
-  }
-
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
-  return results;
-}
-
-function isListable(match: Match, now: number): boolean {
-  if (!match.team1) return false;
-  const start = matchStartMs(match, now);
-  // Matches with no usable kickoff time still list — the feed marks some
-  // long-running events (motorsport, fights) that way.
-  if (start === undefined) return true;
-  const offsetHours = (now - start) / HOUR_MS;
-  return offsetHours <= CATALOG_PAST_HOURS && offsetHours >= -CATALOG_FUTURE_HOURS;
-}
 
 /**
  * Thrown when the upstream match feed gave us nothing at all.
@@ -93,16 +49,19 @@ class EmptyUpstreamError extends Error {
   }
 }
 
+// Broadcast data is a bonus; neither source is allowed to fail the catalog.
+const NO_PROMIEDOS: PromiedosSnapshot = { games: [], ok: false, stale: false };
+const NO_ANGULISMO: AngulismoSnapshot = { events: [], channels: [], ok: false, stale: false };
+
 async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
   const deadline = now + CATALOG_TIME_BUDGET_MS;
 
-  const [rawMatches, liveIds, broadcastSnapshot, angulismo, channels] = await Promise.all([
+  const [rawMatches, liveIds, promiedos, angulismo, channels] = await Promise.all([
     fetchAllMatches(),
     fetchLiveMatchIds(),
-    // Broadcast data is a bonus; never let either source fail the catalog.
-    fetchPromiedosGames().catch(() => ({ games: [], ok: false, stale: false })),
-    fetchAngulismoData().catch(() => ({ events: [], channels: [], ok: false, stale: false })),
+    fetchPromiedosGames().catch(() => NO_PROMIEDOS),
+    fetchAngulismoData().catch(() => NO_ANGULISMO),
     getChannelCatalog().catch(() => [] as Channel[]),
   ]);
 
@@ -113,66 +72,20 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
 
   // Only with a working lookup and a channel catalog can we say a match has no
   // broadcaster. Without them we know nothing, which is a different thing.
-  const broadcastsKnown =
-    (broadcastSnapshot.ok || angulismo.ok) && channels.length > 0;
+  const broadcastsKnown = (promiedos.ok || angulismo.ok) && channels.length > 0;
 
   const matches = normalizeMatches(rawMatches, now)
     .filter(match => isListable(match, now))
     .map(match => ({ ...match, liveHint: liveIds.has(match.id) }));
 
-  // One entry per (match, source) pair; a match is playable if any of them resolve.
-  const refs = matches.flatMap((match, matchIndex) =>
-    (match.sources ?? []).map(source => ({ matchIndex, source })),
-  );
-
-  const resolved = await mapWithConcurrency(
-    refs,
-    CATALOG_CONCURRENCY,
-    deadline,
-    async ({ source }) => fetchStreamLookup(source.source, source.id),
-  );
-
-  const streamsByMatch = new Map<number, Stream[]>();
-  const unresolvedMatches = new Set<number>();
-
-  refs.forEach((ref, index) => {
-    const lookup = resolved[index];
-    // Undefined means we ran out of time budget; ok:false means the request
-    // itself failed. Either way we do not know what this source carries, so the
-    // match must not be judged unwatchable on the strength of it.
-    if (lookup === undefined || !lookup.ok) {
-      unresolvedMatches.add(ref.matchIndex);
-      return;
-    }
-    const bucket = streamsByMatch.get(ref.matchIndex) ?? [];
-    for (const stream of lookup.streams) {
-      bucket.push({ ...stream, source: stream.source || ref.source.source });
-    }
-    streamsByMatch.set(ref.matchIndex, bucket);
-  });
-
-  const datedMatches = matches.flatMap(match => {
-    const startMs = matchStartMs(match, now);
-    return startMs === undefined ? [] : [{ team1: match.team1, team2: match.team2, startMs }];
-  });
-
-  // Promiedos renders kickoff in the requesting IP's timezone, so the offset
-  // between the feeds is measured once per build rather than assumed.
-  const promiedosOffsetMs = estimateFeedOffsetMs(datedMatches, broadcastSnapshot.games);
-  // The angulismo feed is a static file, so its Argentina-local times are the
-  // same for every caller and zero is the known-correct fallback.
-  const angulismoOffsetMs = estimateFeedOffsetMs(datedMatches, angulismo.events) ?? 0;
+  const { streamsByMatch, unresolvedMatches } = await resolveStreams(matches, deadline);
+  const broadcastSources = buildBroadcastSources(matches, promiedos.games, angulismo.events, now);
 
   const catalog: CatalogMatch[] = [];
 
   matches.forEach((match, matchIndex) => {
     const streams = streamsByMatch.get(matchIndex) ?? [];
-    const broadcasts = resolveBroadcastsFor(match, channels, now, {
-      promiedosGames: broadcastSnapshot.games,
-      promiedosOffsetMs,
-      angulismoEvents: angulismo.events,
-      angulismoOffsetMs,
-    });
+    const broadcasts = resolveFeedBroadcasts(findFeedFixtures(match, now, broadcastSources), channels);
 
     // Drop matches nobody can watch: no working Streamed source and no channel
     // carrying it. Two cases are deliberately kept instead:
@@ -187,63 +100,6 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
   });
 
   return catalog;
-}
-
-interface BroadcastSources {
-  promiedosGames: PromiedosGame[];
-  promiedosOffsetMs: number | null;
-  angulismoEvents: AngulismoEvent[];
-  angulismoOffsetMs: number | null;
-}
-
-/**
- * Channels carrying this match, angulismo first.
- *
- * Order matters: the angulismo feed supplies working URLs for the fixture
- * itself, whereas Promiedos supplies a broadcaster name that we then resolve
- * against a catalog that may be out of date. Promiedos still contributes the
- * channels angulismo did not list, and covers far more competitions.
- */
-function resolveBroadcastsFor(
-  match: Match,
-  channels: Channel[],
-  now: number,
-  sources: BroadcastSources,
-): BroadcastChannel[] {
-  if (!match.team2) return [];
-
-  const startMs = matchStartMs(match, now);
-
-  const event = findFixture(
-    match.team1, match.team2, startMs, sources.angulismoEvents,
-    { offsetMs: sources.angulismoOffsetMs },
-  );
-  const fromEvent = event ? broadcastsFromEvent(event, channels) : [];
-
-  if (channels.length === 0) return fromEvent;
-
-  const game = findFixture(
-    match.team1, match.team2, startMs, sources.promiedosGames,
-    { offsetMs: sources.promiedosOffsetMs },
-  );
-  const fromPromiedos = game ? resolveBroadcastChannels(game, channels) : [];
-
-  return mergeBroadcasts(fromEvent, fromPromiedos);
-}
-
-/**
- * Liveness for the current clock. Recomputed on every read so a cached catalog
- * entry cannot leave a live badge on a finished match — or drop one from an
- * event that legitimately runs past the default window.
- */
-function currentLiveState(match: Match & { liveHint: boolean }, now: number): boolean {
-  const start = matchStartMs(match, now);
-  if (start === undefined) return match.liveHint || Boolean(match.isLive);
-
-  const elapsedHours = (now - start) / HOUR_MS;
-  if (elapsedHours < 0) return false;
-  if (elapsedHours <= LIVE_WINDOW_HOURS) return true;
-  return match.liveHint && elapsedHours <= EXTENDED_LIVE_WINDOW_HOURS;
 }
 
 const getCachedCatalog = unstable_cache(buildCatalog, ['match-catalog'], {
@@ -272,10 +128,10 @@ export async function getCatalog(): Promise<CatalogMatch[]> {
     lastGoodCatalog = catalog;
   } catch (error) {
     if (!lastGoodCatalog) {
-      console.error('catalog: upstream unavailable and nothing cached to fall back on:', error);
+      log.error('upstream unavailable and nothing cached to fall back on', error);
       return [];
     }
-    console.warn('catalog: upstream unavailable, serving the last good catalog:', error);
+    log.warn('upstream unavailable, serving the last good catalog', error);
     catalog = lastGoodCatalog;
   }
 

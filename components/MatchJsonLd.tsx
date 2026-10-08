@@ -1,18 +1,17 @@
 import type { Match } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
 
+const UNSAFE_CHAR_ESCAPES: Record<string, string> = {
+  '<': '\\u003c',
+  '>': '\\u003e',
+  '&': '\\u0026',
+  "'": '\\u0027',
+  '"': '\\u0022',
+};
+
 // Strip HTML tags and escape characters that could break a <script> tag when embedded as JSON.
 function sanitizeText(str: string): string {
-  return str.replace(/<[^>]*>/g, '').replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case '<': return '\\u003c';
-      case '>': return '\\u003e';
-      case '&': return '\\u0026';
-      case "'": return '\\u0027';
-      case '"': return '\\u0022';
-      default: return c;
-    }
-  });
+  return str.replace(/<[^>]*>/g, '').replace(/[<>&'"]/g, (c) => UNSAFE_CHAR_ESCAPES[c]);
 }
 
 export default function MatchJsonLd({ match }: { match: Match }) {

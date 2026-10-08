@@ -1,252 +1,39 @@
-import type { FlashscoreDetail, FlashscoreEvent, FlashscoreStat, FlashscoreLineups, FlashscorePlayer } from '@/types/api';
+import type { FlashscoreDetail } from '@/types/api';
+import StatsScore from './match-detail/StatsScore';
+import StatsTimeline from './match-detail/StatsTimeline';
+import StatsBars from './match-detail/StatsBars';
+import StatsLineups from './match-detail/StatsLineups';
 
-interface MatchStatsPanelProps {
-  detail: FlashscoreDetail;
-}
-
-const EVENT_ICONS: Record<FlashscoreEvent['type'], string> = {
-  goal: '⚽',
-  yellow_card: '🟨',
-  red_card: '🟥',
-  substitution: '↕',
-  other: '•',
-};
-
-export default function MatchStatsPanel({ detail }: MatchStatsPanelProps) {
-  const { score, status, minute, periods, events, stats, lineups } = detail;
-  if (!score && events.length === 0 && stats.length === 0 && !lineups) return null;
-
-  const statusLabel = status === 'fin'
-    ? 'FT'
-    : status === 'live' && minute
-      ? minute
-      : status === 'live'
-        ? 'LIVE'
-        : '';
+export default function MatchStatsPanel({ detail }: { detail: FlashscoreDetail }) {
+  const { score, events, stats, lineups } = detail;
+  const hasEvents = events.length > 0;
+  const hasStats = stats.length > 0;
+  if (!score && !hasEvents && !hasStats && !lineups) return null;
 
   return (
-    <div style={{
-      marginTop: '2rem',
-      borderTop: '1px solid var(--line)',
-      paddingTop: '1.5rem',
-    }}>
-      {/* Section label */}
-      <span className="label" style={{ fontSize: '0.6rem', display: 'block', marginBottom: '1rem' }}>
-        Match Stats
-      </span>
+    <div className="stats-panel">
+      <span className="label stats-heading stats-heading--title">Match Stats</span>
 
-      {/* Score row */}
-      {score && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.75rem',
-          marginBottom: '1.5rem',
-        }}>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '2.5rem',
-            letterSpacing: '0.06em',
-            color: 'var(--accent)',
-            lineHeight: 1,
-          }}>
-            {score}
-          </span>
-          {statusLabel && (
-            <span style={{
-              background: status === 'fin' ? 'var(--muted)' : 'var(--red)',
-              color: '#fff',
-              fontSize: '0.6rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              padding: '0.2rem 0.45rem',
-              borderRadius: '2px',
-            }}>
-              {statusLabel}
-            </span>
-          )}
-          {periods && (
-            <span style={{ fontSize: '0.65rem', color: 'var(--muted)' }}>
-              {periods}
-            </span>
-          )}
-        </div>
+      {score && <StatsScore detail={detail} score={score} />}
+
+      {hasEvents && <StatsTimeline events={events} />}
+      {!hasEvents && score && !hasStats && !lineups && (
+        <p className="stats-empty">No events yet</p>
       )}
 
-      {/* Events timeline — center-divider layout */}
-      {events.length > 0 && (
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {/* Vertical center line */}
-          <div style={{
-            position: 'absolute',
-            left: '50%',
-            top: 0,
-            bottom: 0,
-            width: '2px',
-            background: 'var(--line)',
-            transform: 'translateX(-50%)',
-            pointerEvents: 'none',
-          }} />
-          {events.map((event, i) => (
-            <EventRow key={i} event={event} />
-          ))}
-        </div>
+      {hasStats && (
+        <section className={hasEvents ? 'stats-section' : undefined}>
+          <span className="label stats-heading">Statistics</span>
+          <StatsBars stats={stats} />
+        </section>
       )}
 
-      {events.length === 0 && score && stats.length === 0 && !lineups && (
-        <p style={{ fontSize: '0.75rem', color: 'var(--muted)', textAlign: 'center' }}>
-          No events yet
-        </p>
-      )}
-
-      {/* Statistics bars */}
-      {stats.length > 0 && (
-        <div style={{ marginTop: events.length > 0 ? '1.5rem' : 0 }}>
-          <span className="label" style={{ fontSize: '0.6rem', display: 'block', marginBottom: '0.75rem' }}>
-            Statistics
-          </span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {stats.map((stat, i) => (
-              <StatRow key={i} stat={stat} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Lineups */}
       {lineups && (
-        <div style={{ marginTop: '1.5rem' }}>
-          <span className="label" style={{ fontSize: '0.6rem', display: 'block', marginBottom: '0.75rem' }}>
-            Lineups
-          </span>
-          <LineupsGrid lineups={lineups} />
-        </div>
+        <section className="stats-section">
+          <span className="label stats-heading">Lineups</span>
+          <StatsLineups lineups={lineups} />
+        </section>
       )}
-    </div>
-  );
-}
-
-function StatRow({ stat }: { stat: FlashscoreStat }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-      {/* Values + label */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.7rem', color: 'var(--text)', fontFamily: 'var(--font-body)', minWidth: '2.5rem' }}>
-          {stat.home}
-        </span>
-        <span style={{ fontSize: '0.6rem', color: 'var(--muted)', fontFamily: 'var(--font-body)', textAlign: 'center', flex: 1 }}>
-          {stat.label}
-        </span>
-        <span style={{ fontSize: '0.7rem', color: 'var(--text)', fontFamily: 'var(--font-body)', minWidth: '2.5rem', textAlign: 'right' }}>
-          {stat.away}
-        </span>
-      </div>
-      {/* Bar chart */}
-      <div style={{ display: 'flex', height: '3px', borderRadius: '2px', overflow: 'hidden', background: 'var(--line)' }}>
-        <div style={{ width: `${stat.homePct}%`, background: 'var(--accent)', transition: 'width 0.3s' }} />
-        <div style={{ width: `${stat.awayPct}%`, background: 'var(--red)', transition: 'width 0.3s' }} />
-      </div>
-    </div>
-  );
-}
-
-function PlayerList({ players, align }: { players: FlashscorePlayer[]; align: 'left' | 'right' }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-      {players.map((p, i) => (
-        <div key={i} style={{ display: 'flex', gap: '0.4rem', alignItems: 'baseline', flexDirection: align === 'right' ? 'row-reverse' : 'row' }}>
-          {p.number && (
-            <span style={{ fontSize: '0.6rem', color: 'var(--muted)', minWidth: '1.25rem', textAlign: align === 'right' ? 'left' : 'right' }}>
-              {p.number}
-            </span>
-          )}
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontFamily: 'var(--font-body)' }}>
-            {p.name}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function LineupsGrid({ lineups }: { lineups: FlashscoreLineups }) {
-  const hasSubs = lineups.homeSubs.length > 0 || lineups.awaySubs.length > 0;
-
-  return (
-    <div>
-      {/* Team name headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-        <span style={{ fontSize: '0.65rem', color: 'var(--accent)', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-          {lineups.homeTeam}
-        </span>
-        <span style={{ fontSize: '0.65rem', color: 'var(--accent)', fontFamily: 'var(--font-body)', fontWeight: 600, textAlign: 'right' }}>
-          {lineups.awayTeam}
-        </span>
-      </div>
-      {/* Starters */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-        <PlayerList players={lineups.homePlayers} align="left" />
-        <PlayerList players={lineups.awayPlayers} align="right" />
-      </div>
-      {/* Substitutes */}
-      {hasSubs && (
-        <>
-          <div style={{ marginTop: '0.75rem', marginBottom: '0.5rem', borderTop: '1px solid var(--line)', paddingTop: '0.5rem' }}>
-            <span style={{ fontSize: '0.55rem', color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Substitutes
-            </span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-            <PlayerList players={lineups.homeSubs} align="left" />
-            <PlayerList players={lineups.awaySubs} align="right" />
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function EventRow({ event }: { event: FlashscoreEvent }) {
-  const icon = EVENT_ICONS[event.type];
-  const isAway = event.team === 'away';
-  const isUnknown = event.team === 'unknown';
-
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.4rem',
-      flexDirection: isAway ? 'row-reverse' : 'row',
-      // Home events fill the left half, away events fill the right half.
-      // Unknown-team events span full width (e.g. kick-off, penalty shootout).
-      width: isUnknown ? '100%' : '50%',
-      alignSelf: isAway ? 'flex-end' : 'flex-start',
-      paddingRight: isAway ? 0 : '0.625rem',
-      paddingLeft: isAway ? '0.625rem' : 0,
-      boxSizing: 'border-box',
-    }}>
-      <span style={{
-        fontSize: '0.6rem',
-        color: 'var(--muted)',
-        minWidth: '2rem',
-        flexShrink: 0,
-        textAlign: isAway ? 'right' : 'left',
-      }}>
-        {event.minute}
-      </span>
-      <span style={{ fontSize: '0.75rem', flexShrink: 0 }}>{icon}</span>
-      <span style={{
-        fontSize: '0.75rem',
-        color: 'var(--text-dim)',
-        fontFamily: 'var(--font-body)',
-        textAlign: isAway ? 'right' : 'left',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}>
-        {event.player || event.type.replace('_', ' ')}
-      </span>
     </div>
   );
 }

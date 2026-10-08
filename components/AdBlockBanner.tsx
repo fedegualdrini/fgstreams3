@@ -7,6 +7,7 @@ const STORAGE_KEY = 'adblock-banner-dismissed';
 export default function AdBlockBanner() {
   const [visible, setVisible] = useState(false);
 
+  // Read after mount: sessionStorage doesn't exist during server rendering.
   useEffect(() => {
     if (!sessionStorage.getItem(STORAGE_KEY)) setVisible(true);
   }, []);
@@ -19,53 +20,28 @@ export default function AdBlockBanner() {
   if (!visible) return null;
 
   return (
-    <div style={{
-      borderBottom: '1px solid var(--line)',
-      background: 'var(--bg-1)',
-      padding: '0.6rem 0',
-    }}>
-      <div className="page-content" style={{
-        display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
-      }}>
-        <span style={{ fontSize: '0.95rem', lineHeight: 1, marginTop: '1px', flexShrink: 0 }}>🛡️</span>
-        <p style={{
-          flex: 1, margin: 0,
-          fontFamily: 'var(--font-body)', fontSize: '0.75rem',
-          color: 'var(--text-dim)', lineHeight: 1.6,
-        }}>
+    <div className="adblock-banner">
+      <div className="page-content adblock-banner__inner">
+        <span className="adblock-banner__icon" aria-hidden="true">🛡️</span>
+        <p className="adblock-banner__text">
           For the best experience, we recommend using{' '}
-          <a
-            href="https://brave.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}
-          >
-            Brave Browser
-          </a>
+          <ExternalLink href="https://brave.com">Brave Browser</ExternalLink>
           {' '}with the{' '}
-          <a
-            href="https://ublockorigin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}
-          >
-            uBlock Origin Lite
-          </a>
+          <ExternalLink href="https://ublockorigin.com">uBlock Origin Lite</ExternalLink>
           {' '}extension — together they block most ads and popups you&apos;ll encounter on streams.
         </p>
-        <button
-          type="button"
-          onClick={dismiss}
-          aria-label="Dismiss"
-          style={{
-            flexShrink: 0, background: 'none', border: 'none',
-            cursor: 'pointer', padding: '0.1rem',
-            color: 'var(--muted)', lineHeight: 1, fontSize: '0.9rem',
-          }}
-        >
+        <button type="button" className="adblock-banner__dismiss" onClick={dismiss} aria-label="Dismiss">
           ✕
         </button>
       </div>
     </div>
+  );
+}
+
+function ExternalLink({ href, children }: { href: string; children: string }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="adblock-banner__link">
+      {children}
+    </a>
   );
 }

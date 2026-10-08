@@ -1,35 +1,33 @@
 import type { FlashscoreEntry } from '@/types/api';
 import { TEAM_ALIASES } from './scoreAliases';
 
+// Minimum average token overlap for two fixtures to count as the same match.
+const DEFAULT_SIMILARITY_THRESHOLD = 0.4;
+
+// Club-name affixes (FC, AFC, SC, CF, RFC) that differ between sources.
+const CLUB_AFFIX_PATTERN = /\b(f\.?c\.?|a\.?f\.?c\.?|s\.?c\.?|c\.?f\.?|r\.?f\.?c\.?)\b/g;
+
 // Normalise a team name for fuzzy comparison:
-// lowercase, strip common suffixes, apply aliases, collapse spaces.
+// lowercase, apply aliases, strip club affixes, collapse spaces.
 export function normalizeTeamName(name: string): string {
-  let n = name.toLowerCase().trim();
+  const lowered = name.toLowerCase().trim();
+  const aliased = TEAM_ALIASES[lowered] || lowered;
 
-  // Apply alias map first
-  if (TEAM_ALIASES[n]) n = TEAM_ALIASES[n];
-
-  // Strip trailing suffixes (only when they appear at the end as whole words)
-  n = n
-    .replace(/\b(f\.?c\.?|a\.?f\.?c\.?|s\.?c\.?|c\.?f\.?|r\.?f\.?c\.?)\b/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  return n;
+  return aliased.replace(CLUB_AFFIX_PATTERN, '').replace(/\s+/g, ' ').trim();
 }
 
 function tokenize(name: string): Set<string> {
   return new Set(
     normalizeTeamName(name)
       .split(/\s+/)
-      .filter((t) => t.length > 1)  // ignore single chars
+      .filter((token) => token.length > 1), // ignore single chars
   );
 }
 
 // Jaccard similarity between two token sets.
 function jaccard(a: Set<string>, b: Set<string>): number {
   if (a.size === 0 && b.size === 0) return 1;
-  const intersection = [...a].filter((t) => b.has(t)).length;
+  const intersection = [...a].filter((token) => b.has(token)).length;
   const union = new Set([...a, ...b]).size;
   return union === 0 ? 0 : intersection / union;
 }
@@ -40,7 +38,7 @@ export function findMatchingEntry(
   team1: string,
   team2: string,
   entries: FlashscoreEntry[],
-  threshold = 0.4,
+  threshold = DEFAULT_SIMILARITY_THRESHOLD,
 ): FlashscoreEntry | null {
   const t1 = tokenize(team1);
   const t2 = tokenize(team2);

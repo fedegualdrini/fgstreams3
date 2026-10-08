@@ -1,8 +1,15 @@
 import type { AngulismoEvent, AngulismoSnapshot } from '@/types/api';
 import type { Channel, ChannelOption } from '@/types/channels';
-import { AngulismoDataSchema } from './schemas';
+import { AngulismoDataSchema, type AngulismoData } from './schemas';
 import { isValidStreamUrl } from './urlValidation';
 import { ANGULISMO_TIMEOUT_MS, REVALIDATE_ANGULISMO } from './constants';
+import { fetchJson } from './httpClient';
+import { createLogger } from './logger';
+
+const log = createLogger('angulismo');
+
+/** The usable part of the feed, before `ok` / `stale` bookkeeping. */
+type AngulismoFeed = Omit<AngulismoSnapshot, 'ok' | 'stale'>;
 
 /**
  * angulismotv.pages.dev is driven entirely by one JSON file, which it fetches
@@ -66,19 +73,23 @@ function toChannel(raw: { name: string; logo?: string; options?: ChannelOption[]
 }
 
 /** Parse the raw feed. Exported for tests; `fetchAngulismoData` is the entry point. */
-export function parseAngulismoData(payload: unknown): Omit<AngulismoSnapshot, 'ok' | 'stale'> {
+export function parseAngulismoData(payload: unknown): AngulismoFeed {
   const result = AngulismoDataSchema.safeParse(payload);
   if (!result.success) {
-    console.warn('angulismo: unexpected response shape:', result.error.issues.slice(0, 3));
+    log.warn('unexpected response shape', result.error.issues.slice(0, 3));
     return { events: [], channels: [] };
   }
+  return buildFeed(result.data);
+}
 
-  const channels = result.data.channels
+/** Pair each fixture with the playable channels carrying it. */
+function buildFeed(data: AngulismoData): AngulismoFeed {
+  const channels = data.channels
     .map(toChannel)
     .filter((channel): channel is Channel => channel !== null);
 
   const events: AngulismoEvent[] = [];
-  for (const raw of result.data.events) {
+  for (const raw of data.events) {
     const teams = parseEventTitle(raw.evento ?? '');
     // Non-fixture entries (a race, a fight card) have no two teams to match on.
     if (!teams) continue;
@@ -107,29 +118,28 @@ export function parseAngulismoData(payload: unknown): Omit<AngulismoSnapshot, 'o
 
 // Last good payload, reused when a refresh fails so one bad response cannot
 // blank the feed on a warm instance.
-let lastGood: Omit<AngulismoSnapshot, 'ok' | 'stale'> | null = null;
+let lastGood: AngulismoFeed | null = null;
 
 export async function fetchAngulismoData(): Promise<AngulismoSnapshot> {
-  try {
-    const response = await fetch(DATA_URL, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(ANGULISMO_TIMEOUT_MS),
-      next: { revalidate: REVALIDATE_ANGULISMO },
-    });
-    if (!response.ok) throw new Error(`responded ${response.status}`);
+  const data = await fetchJson(DATA_URL, AngulismoDataSchema, {
+    log,
+    label: 'GET feed',
+    revalidate: REVALIDATE_ANGULISMO,
+    headers: { Accept: 'application/json' },
+    timeoutMs: ANGULISMO_TIMEOUT_MS,
+  });
 
-    const parsed = parseAngulismoData(await response.json());
+  if (data) {
+    const feed = buildFeed(data);
     // A structurally valid but empty payload means the shape moved under us;
     // the previous copy is better than nothing.
-    if (parsed.events.length === 0 && parsed.channels.length === 0) {
-      throw new Error('payload contained no usable events or channels');
+    if (feed.events.length > 0 || feed.channels.length > 0) {
+      lastGood = feed;
+      return { ...feed, ok: true, stale: false };
     }
-
-    lastGood = parsed;
-    return { ...parsed, ok: true, stale: false };
-  } catch (error) {
-    console.error('angulismo: failed to load feed:', error);
-    if (lastGood) return { ...lastGood, ok: true, stale: true };
-    return { events: [], channels: [], ok: false, stale: false };
+    log.warn('payload contained no usable events or channels');
   }
+
+  if (lastGood) return { ...lastGood, ok: true, stale: true };
+  return { events: [], channels: [], ok: false, stale: false };
 }

@@ -1,21 +1,13 @@
 import { fetchStreams } from '@/lib/api';
-import { NextResponse } from 'next/server';
+import { jsonWithCache, withErrorResponse } from '@/lib/httpRoute';
+import { STREAMS_CDN_MAX_AGE, STREAMS_CDN_STALE_WHILE_REVALIDATE } from '@/lib/constants';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ source: string; id: string }> }
-) {
-  try {
+export const GET = withErrorResponse<{ params: Promise<{ source: string; id: string }> }>(
+  'streams route',
+  'Failed to fetch streams',
+  async (_req, { params }) => {
     const { source, id } = await params;
     const streams = await fetchStreams(source, id);
-    return NextResponse.json(streams, {
-      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' },
-    });
-  } catch (err) {
-    console.error('streams route error:', err);
-    return NextResponse.json(
-      { error: 'Failed to fetch streams' },
-      { status: 502 },
-    );
-  }
-}
+    return jsonWithCache(streams, STREAMS_CDN_MAX_AGE, STREAMS_CDN_STALE_WHILE_REVALIDATE);
+  },
+);

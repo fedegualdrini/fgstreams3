@@ -23,3 +23,7 @@ export function isValidStreamUrl(url: string | undefined): boolean {
 export function isHlsUrl(url: string): boolean {
   return url.includes('.m3u8');
 }
+
+export function isDashUrl(url: string): boolean {
+  return url.includes('.mpd');
+}

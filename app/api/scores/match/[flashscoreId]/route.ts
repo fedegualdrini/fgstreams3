@@ -1,25 +1,19 @@
-import { NextResponse } from 'next/server';
 import { fetchMatchDetail } from '@/lib/flashscore';
+import { jsonWithCache, withErrorResponse } from '@/lib/httpRoute';
+import {
+  FINISHED_MATCH_CDN_MAX_AGE,
+  SCORES_CDN_MAX_AGE,
+  SCORES_CDN_STALE_WHILE_REVALIDATE,
+} from '@/lib/constants';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ flashscoreId: string }> },
-) {
-  try {
+export const GET = withErrorResponse<{ params: Promise<{ flashscoreId: string }> }>(
+  'match detail route',
+  'Failed to fetch match detail',
+  async (_req, { params }) => {
     const { flashscoreId } = await params;
     const detail = await fetchMatchDetail(flashscoreId);
 
-    // Use longer cache for finished matches
-    const maxAge = detail?.status === 'fin' ? 3600 : 30;
-
-    return NextResponse.json(detail, {
-      headers: { 'Cache-Control': `s-maxage=${maxAge}, stale-while-revalidate=60` },
-    });
-  } catch (err) {
-    console.error('match detail route error:', err);
-    return NextResponse.json(
-      { error: 'Failed to fetch match detail' },
-      { status: 502 },
-    );
-  }
-}
+    const maxAge = detail?.status === 'fin' ? FINISHED_MATCH_CDN_MAX_AGE : SCORES_CDN_MAX_AGE;
+    return jsonWithCache(detail, maxAge, SCORES_CDN_STALE_WHILE_REVALIDATE);
+  },
+);

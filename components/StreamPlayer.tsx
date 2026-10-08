@@ -1,79 +1,75 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Stream } from '@/types/api';
 import { STREAM_LOAD_TIMEOUT_MS } from '@/lib/constants';
 import Spinner from '@/components/Spinner';
 
 interface StreamPlayerProps {
   stream: Stream | null;
-  autoPlay?: boolean;
   muted?: boolean;
   onError?: () => void;
   fillParent?: boolean;
 }
 
+/** Best effort: only same-origin embeds expose their <video>. */
+function muteEmbeddedVideo(iframe: HTMLIFrameElement | null) {
+  try {
+    const video = iframe?.contentWindow?.document.querySelector('video');
+    if (video) video.muted = true;
+  } catch {
+    // Cross-origin embed.
+  }
+}
+
 export default function StreamPlayer({
   stream,
-  autoPlay = true,
   muted = false,
   onError,
   fillParent = false,
 }: StreamPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const loadTimeoutRef = useRef<number | undefined>(undefined);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Keep a stable ref to onError so the load-timeout effect doesn't re-run
-  // (and restart the 10s countdown) whenever the callback reference changes.
+  // Read onError through a ref so the load-timeout effect doesn't re-run (and
+  // restart the countdown) whenever the callback's identity changes.
   const onErrorRef = useRef(onError);
   useEffect(() => { onErrorRef.current = onError; });
 
+  const fail = useCallback(() => {
+    setError(true);
+    setIsLoading(false);
+    onErrorRef.current?.();
+  }, []);
+
+  const embedUrl = stream?.embedUrl || stream?.url;
+
   useEffect(() => {
-    if (!stream?.url && !stream?.embedUrl) {
-      setError(true);
-      setIsLoading(false);
-      onErrorRef.current?.();
+    if (!embedUrl) {
+      fail();
       return;
     }
     setError(false);
     setIsLoading(true);
-    loadTimeoutRef.current = setTimeout(() => {
-      setError(true);
-      setIsLoading(false);
-      onErrorRef.current?.();
-    }, STREAM_LOAD_TIMEOUT_MS);
-    return () => {
-      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
-    };
-  }, [stream]); // onError intentionally excluded — use onErrorRef instead
+    loadTimeoutRef.current = window.setTimeout(fail, STREAM_LOAD_TIMEOUT_MS);
+    return () => window.clearTimeout(loadTimeoutRef.current);
+  }, [stream, embedUrl, fail]);
 
-  const embedUrl = stream?.embedUrl || stream?.url;
-
-  const stateContainerClass = fillParent ? undefined : 'video-container';
-  const stateContainerStyle = fillParent ? { width: '100%', height: '100%' } : {};
+  // Aspect-ratio box by default; fills the parent when the page owns the sizing.
+  const frameClass = fillParent ? 'stream-player--fill' : 'video-container';
 
   if (!embedUrl) {
-    return (
-      <div className={stateContainerClass} style={{ ...stateContainerStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
-        No stream available
-      </div>
-    );
+    return <div className={`${frameClass} stream-player__state`}>No stream available</div>;
   }
 
   if (error) {
     return (
-      <div className={stateContainerClass} style={{ ...stateContainerStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'var(--bg)' }}>
-        <p style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-body)', fontSize: '0.875rem' }}>
-          {stream?.embedUrl ? 'Stream failed to load — the embed may be unavailable.' : 'No playable stream URL.'}
-        </p>
+      <div className={`${frameClass} stream-player__state stream-player__state--error`}>
+        <p>{stream?.embedUrl ? 'Stream failed to load — the embed may be unavailable.' : 'No playable stream URL.'}</p>
         {onError && (
-          <button
-            aria-label="Try next stream"
-            onClick={onError}
-            style={{ padding: '0.5rem 1.25rem', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '3px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
-          >
+          <button type="button" className="btn btn--primary" aria-label="Try next stream" onClick={onError}>
             Try next stream
           </button>
         )}
@@ -81,14 +77,10 @@ export default function StreamPlayer({
     );
   }
 
-  const containerStyle = fillParent
-    ? { position: 'relative' as const, width: '100%', height: '100%' }
-    : { position: 'relative' as const };
-
   return (
-    <div className={fillParent ? undefined : 'video-container'} style={containerStyle}>
+    <div className={frameClass}>
       {isLoading && (
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', zIndex: 10 }}>
+        <div className="stream-player__loading">
           <Spinner label="Loading stream…" />
         </div>
       )}
@@ -99,24 +91,15 @@ export default function StreamPlayer({
         title="Stream"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+        className="stream-player__frame"
         onLoad={() => {
-          if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+          window.clearTimeout(loadTimeoutRef.current);
           setIsLoading(false);
-          if (muted && iframeRef.current?.contentWindow?.document) {
-            try {
-              const video = iframeRef.current.contentWindow.document.querySelector('video');
-              if (video) video.muted = true;
-            } catch {
-              /* cross-origin */
-            }
-          }
+          if (muted) muteEmbeddedVideo(iframeRef.current);
         }}
         onError={() => {
-          if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
-          setError(true);
-          setIsLoading(false);
-          onErrorRef.current?.();
+          window.clearTimeout(loadTimeoutRef.current);
+          fail();
         }}
       />
     </div>
