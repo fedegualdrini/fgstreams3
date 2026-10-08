@@ -175,3 +175,85 @@ input { color-scheme: dark; }
 
   .live-dot { opacity: 1; }
 }
+
+/* ── Shared UI primitives ──
+   Prefer these over per-component inline styles: hover/active/disabled states
+   live in CSS, so components never need onMouseEnter/onMouseLeave handlers. */
+
+/* Small uppercase button. State: `aria-pressed="true"` or `.is-active`. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem;
+  background: var(--bg-2);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.btn:hover:not(:disabled) { color: var(--text); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn[aria-pressed='true'],
+.btn.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+/* Filled call-to-action. */
+.btn--primary {
+  padding: 0.5rem 1.25rem;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  font-size: 0.7rem;
+}
+.btn--primary:hover:not(:disabled) { background: var(--accent-dim); border-color: var(--accent-dim); color: #000; }
+
+/* Square button holding a single glyph. */
+.btn--icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* Keyboard key cap. */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 36px;
+  padding: 0.2rem 0.5rem;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+/* Centered column used for error, empty and "nothing to play" states. */
+.status-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  font-family: var(--font-body);
+}
+.status-panel__title { margin: 0; color: var(--text); font-size: 1rem; font-weight: 600; }
+.status-panel__message { margin: 0; max-width: 400px; color: var(--muted); font-size: 0.875rem; }
