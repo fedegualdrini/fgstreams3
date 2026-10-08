@@ -2,7 +2,7 @@
 
 import { memo, useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import type { Match } from '@/types/api';
+import type { BroadcastChannel, Match } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 
@@ -10,9 +10,11 @@ interface MatchCardProps {
   match: Match;
   score?: string | null;
   scoreMinute?: string;
+  /** Channels from the local catalog carrying this match, if any. */
+  broadcasts?: BroadcastChannel[];
 }
 
-function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
+function MatchCard({ match, score, scoreMinute, broadcasts = [] }: MatchCardProps) {
   const isLive = match.isLive;
   const startTime = match.startTime ? new Date(match.startTime) : null;
   const localTime = useLocalTime(startTime);
@@ -76,6 +78,27 @@ function MatchCard({ match, score, scoreMinute }: MatchCardProps) {
         }}>
           {match.league || match.sport}
         </span>
+
+        {/* Broadcasters, so the card answers "where is this on?" at a glance. */}
+        {broadcasts.length > 0 && (
+          <span style={{ display: 'flex', gap: '4px', flexShrink: 0, marginLeft: '0.5rem' }}>
+            {broadcasts.slice(0, 2).map((broadcast) => (
+              <span
+                key={broadcast.channel}
+                title={broadcast.network}
+                style={{
+                  fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.06em',
+                  textTransform: 'uppercase', color: 'var(--accent)',
+                  border: '1px solid var(--line)', borderRadius: '2px',
+                  padding: '0.1rem 0.3rem', whiteSpace: 'nowrap',
+                  maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}
+              >
+                {broadcast.channel}
+              </span>
+            ))}
+          </span>
+        )}
       </div>
 
       {/* Teams + score/vs */}

@@ -1,4 +1,4 @@
-import type { Match, Stream, Sport } from '@/types/api';
+import type { Match, RawMatch, Stream, Sport } from '@/types/api';
 import { normalizeMatches } from './matchUtils';
 import { REVALIDATE_MATCHES, REVALIDATE_STREAMS, REVALIDATE_SPORTS } from './constants';
 import { RawStreamArraySchema, RawStreamSchema, RawMatchArraySchema, SportArraySchema } from './schemas';
@@ -21,6 +21,89 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 2): P
   throw new Error(`Failed after ${retries + 1} attempts: ${url}`);
 }
 
+/**
+ * Every match streamed.pk knows about for the current day, in one request.
+ * `/matches/all-today` returns exactly the union of the per-sport endpoints, so
+ * the previous fan-out (one request per sport) only multiplied the failure
+ * modes and the latency.
+ */
+export async function fetchAllMatches(): Promise<RawMatch[]> {
+  try {
+    const response = await fetchWithRetry(`${API_BASE}/matches/all-today`, {
+      next: { revalidate: REVALIDATE_MATCHES },
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) {
+      console.error(`API Error: ${response.status} ${response.statusText} for /matches/all-today`);
+      return fetchMatchesPerSport();
+    }
+    const result = RawMatchArraySchema.safeParse(await response.json());
+    if (!result.success) {
+      console.warn('fetchAllMatches: unexpected response shape:', result.error.issues);
+      return fetchMatchesPerSport();
+    }
+    // An empty all-today response is indistinguishable from an upstream hiccup,
+    // so fall back rather than render an empty site.
+    return result.data.length > 0 ? result.data : fetchMatchesPerSport();
+  } catch (error) {
+    console.error('Error fetching all-today matches:', error);
+    return fetchMatchesPerSport();
+  }
+}
+
+/** Fallback path: fan out over the per-sport endpoints. */
+async function fetchMatchesPerSport(): Promise<RawMatch[]> {
+  try {
+    const sports = await fetchSports();
+    if (sports.length === 0) {
+      console.warn('No sports available');
+      return [];
+    }
+
+    const matchArrays = await Promise.all(
+      sports.map(sportItem =>
+        fetchWithRetry(`${API_BASE}/matches/${sportItem.id}`, {
+          next: { revalidate: REVALIDATE_MATCHES },
+          headers: { Accept: 'application/json' },
+        })
+          .then(response => (response.ok ? response.json() : []))
+          .then((data: unknown) => {
+            const parsed = RawMatchArraySchema.safeParse(data);
+            return parsed.success ? parsed.data : [];
+          })
+          .catch(error => {
+            console.error(`Error fetching ${sportItem.name} matches:`, error);
+            return [] as RawMatch[];
+          })
+      )
+    );
+    return matchArrays.flat();
+  } catch (error) {
+    console.error('Error fetching matches per sport:', error);
+    return [];
+  }
+}
+
+/**
+ * Ids of the matches streamed.pk currently flags as live. Its own signal beats
+ * inferring liveness from kickoff time, which mislabels delayed and long events.
+ */
+export async function fetchLiveMatchIds(): Promise<Set<string>> {
+  try {
+    const response = await fetchWithRetry(`${API_BASE}/matches/live`, {
+      next: { revalidate: REVALIDATE_MATCHES },
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) return new Set();
+    const result = RawMatchArraySchema.safeParse(await response.json());
+    if (!result.success) return new Set();
+    return new Set(result.data.map(match => String(match.id)).filter(Boolean));
+  } catch (error) {
+    console.error('Error fetching live matches:', error);
+    return new Set();
+  }
+}
+
 export async function fetchMatches(sport?: string): Promise<Match[]> {
   if (sport) {
     try {
@@ -32,8 +115,7 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
         console.error(`API Error: ${response.status} ${response.statusText} for ${API_BASE}/matches/${sport}`);
         return [];
       }
-      const raw = await response.json();
-      const result = RawMatchArraySchema.safeParse(raw);
+      const result = RawMatchArraySchema.safeParse(await response.json());
       if (!result.success) {
         console.warn(`fetchMatches: unexpected response shape for ${sport}:`, result.error.issues);
         return [];
@@ -45,45 +127,52 @@ export async function fetchMatches(sport?: string): Promise<Match[]> {
     }
   }
 
-  try {
-    const sports = await fetchSports();
-    if (sports.length === 0) {
-      console.warn('No sports available');
-      return [];
-    }
-
-    const matchPromises = sports.map(sportItem =>
-      fetchWithRetry(`${API_BASE}/matches/${sportItem.id}`, {
-        next: { revalidate: REVALIDATE_MATCHES },
-        headers: { Accept: 'application/json' },
-      })
-        .then(response => {
-          if (!response.ok) {
-            console.warn(`Failed to fetch matches for ${sportItem.name}: ${response.status}`);
-            return [];
-          }
-          return response.json();
-        })
-        .then((data: unknown) => {
-          const r = RawMatchArraySchema.safeParse(data);
-          return r.success ? r.data : [];
-        })
-        .catch(error => {
-          console.error(`Error fetching ${sportItem.name} matches:`, error);
-          return [];
-        })
-    );
-
-    const allMatchesArrays = await Promise.all(matchPromises);
-    const allMatches = allMatchesArrays.flat();
-    return normalizeMatches(allMatches);
-  } catch (error) {
-    console.error('Error fetching all matches:', error);
-    return [];
-  }
+  return normalizeMatches(await fetchAllMatches());
 }
 
-export async function fetchStreams(source: string, id: string): Promise<Stream[]> {
+/**
+ * The outcome of a stream lookup.
+ *
+ * `ok: false` means the lookup failed, which is emphatically not the same as a
+ * source carrying no streams: over half of them legitimately return nothing,
+ * and callers decide whether a match is watchable on exactly that basis. A
+ * failed request reported as "empty" silently removes a live event.
+ */
+export interface StreamLookup {
+  streams: Stream[];
+  ok: boolean;
+}
+
+function toStreams(raw: unknown, source: string): Stream[] | null {
+  // streamed.pk returns either an array of streams or a single stream object.
+  // Both shapes are validated with Zod then normalized to Stream[].
+  const arrayResult = RawStreamArraySchema.safeParse(raw);
+  if (arrayResult.success) {
+    return arrayResult.data.map((stream) => ({
+      url: stream.url || stream.embedUrl || '',
+      embedUrl: stream.embedUrl || stream.url || '',
+      language: stream.language,
+      quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
+      source: stream.source || source,
+    }));
+  }
+
+  const singleResult = RawStreamSchema.safeParse(raw);
+  if (singleResult.success) {
+    const stream = singleResult.data;
+    return [{
+      url: stream.url || stream.embedUrl || '',
+      embedUrl: stream.embedUrl || stream.url || '',
+      language: stream.language,
+      quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
+      source: stream.source || source,
+    }];
+  }
+
+  return null;
+}
+
+export async function fetchStreamLookup(source: string, id: string): Promise<StreamLookup> {
   try {
     const response = await fetchWithRetry(`${API_BASE}/stream/${source}/${id}`, {
       next: { revalidate: REVALIDATE_STREAMS },
@@ -91,41 +180,24 @@ export async function fetchStreams(source: string, id: string): Promise<Stream[]
     });
     if (!response.ok) {
       console.error(`Failed to fetch streams for ${source}/${id}: ${response.status} ${response.statusText}`);
-      return [];
-    }
-    const raw = await response.json();
-
-    // streamed.pk returns either an array of streams or a single stream object.
-    // Both shapes are validated with Zod then normalized to Stream[].
-    const arrayResult = RawStreamArraySchema.safeParse(raw);
-    if (arrayResult.success) {
-      return arrayResult.data.map((stream) => ({
-        url: stream.url || stream.embedUrl || '',
-        embedUrl: stream.embedUrl || stream.url || '',
-        language: stream.language,
-        quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
-        source: stream.source || source,
-      }));
+      return { streams: [], ok: false };
     }
 
-    const singleResult = RawStreamSchema.safeParse(raw);
-    if (singleResult.success) {
-      const stream = singleResult.data;
-      return [{
-        url: stream.url || stream.embedUrl || '',
-        embedUrl: stream.embedUrl || stream.url || '',
-        language: stream.language,
-        quality: stream.hd ? 'HD' : (stream.quality || 'SD'),
-        source: stream.source || source,
-      }];
+    const streams = toStreams(await response.json(), source);
+    if (streams === null) {
+      console.warn(`fetchStreams: unexpected response shape for ${source}/${id}`);
+      return { streams: [], ok: false };
     }
-
-    console.warn(`fetchStreams: unexpected response shape for ${source}/${id}`);
-    return [];
+    return { streams, ok: true };
   } catch (error) {
     console.error(`Error fetching streams for ${source}/${id}:`, error);
-    return [];
+    return { streams: [], ok: false };
   }
+}
+
+/** Streams only. Use `fetchStreamLookup` where a failed lookup must be told apart from an empty one. */
+export async function fetchStreams(source: string, id: string): Promise<Stream[]> {
+  return (await fetchStreamLookup(source, id)).streams;
 }
 
 export async function fetchSports(): Promise<Sport[]> {

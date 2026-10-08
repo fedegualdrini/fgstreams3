@@ -1,28 +1,23 @@
-import { cache } from 'react';
-import { fetchMatches, getPosterUrl } from '@/lib/api';
+import { getCatalogMatch } from '@/lib/catalog';
+import { getPosterUrl } from '@/lib/api';
 import MatchDetailClient from '@/components/MatchDetailClient';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { REVALIDATE_MATCHES } from '@/lib/constants';
-
-const getMatches = cache(fetchMatches);
 
 interface MatchDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const revalidate = REVALIDATE_MATCHES;
-
-export async function generateStaticParams() {
-  const matches = await getMatches();
-  // Only pre-generate the first 50 matches — others generate on-demand
-  return matches.slice(0, 50).map(m => ({ id: m.id }));
-}
+// Rendered per request against the cached catalog. Pre-generating match pages
+// baked a build-time snapshot of a list that turns over every few minutes, so
+// visitors saw matches that had already finished — or a 404 for one that had
+// only just been added.
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 export async function generateMetadata({ params }: MatchDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const matches = await getMatches();
-  const match = matches.find(m => m.id === id);
+  const match = await getCatalogMatch(id);
   if (!match) return { title: 'Match Not Found' };
 
   const title = `${match.team1} vs ${match.team2} - Live Stream`;
@@ -49,12 +44,20 @@ export async function generateMetadata({ params }: MatchDetailPageProps): Promis
 
 export default async function MatchDetailPage({ params }: MatchDetailPageProps) {
   const { id } = await params;
-  const matches = await getMatches();
-  const match = matches.find(m => m.id === id);
+  const match = await getCatalogMatch(id);
 
   if (!match) {
     notFound();
   }
 
-  return <MatchDetailClient match={match} />;
+  // Streams and broadcast channels are resolved server-side, so the player and
+  // the source list are populated on first paint rather than after a round trip.
+  return (
+    <MatchDetailClient
+      match={match}
+      initialStreams={match.streams}
+      streamsResolved
+      broadcasts={match.broadcasts}
+    />
+  );
 }

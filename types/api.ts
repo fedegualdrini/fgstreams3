@@ -14,7 +14,11 @@ export interface RawMatch {
   category?: string;
   date?: number | string;
   time?: string;
-  teams?: { home?: { name?: string; badge?: string }; away?: { name?: string; badge?: string } };
+  // null for non-team events (races, fight cards).
+  teams?: {
+    home?: { name?: string; badge?: string } | null;
+    away?: { name?: string; badge?: string } | null;
+  } | null;
   sources?: Array<{ source: string; id: string }>;
   poster?: string;
   sport?: string;
@@ -131,4 +135,67 @@ export interface FlashscoreDetail {
   events: FlashscoreEvent[];
   stats: FlashscoreStat[];
   lineups: FlashscoreLineups | null;
+}
+
+// ─── Broadcast (Promiedos → local channel catalog) ───────────────────────────
+
+// A fixture as published by promiedos.com.ar, reduced to what we need to match
+// it against a Streamed match and resolve its broadcaster.
+export interface PromiedosGame {
+  id: string;
+  league: string;
+  leagueId: string;
+  countryId: string;
+  homeTeam: string;
+  awayTeam: string;
+  // Kickoff in epoch ms against a nominal UTC-3. Promiedos localises times to
+  // the requesting IP, so any constant error here is corrected by
+  // estimateFeedOffsetMs rather than assumed away.
+  startTimeMs: number;
+  networks: string[];
+}
+
+// A channel from public/channels.json that is carrying a given match.
+export interface BroadcastChannel {
+  // Display name of the broadcaster as Promiedos names it.
+  network: string;
+  // Name of the matching entry in the local channel catalog.
+  channel: string;
+  logo: string;
+  options: Array<{ name: string; iframe: string }>;
+}
+
+// A listable match together with everything needed to watch it. Built by
+// lib/catalog.ts; kept here so client components can type it without importing
+// server-only modules.
+export interface CatalogMatch extends Match {
+  streams: Stream[];
+  broadcasts: BroadcastChannel[];
+  // Whether the upstream live feed listed this match when the catalog was built.
+  liveHint: boolean;
+}
+
+// ─── angulismotv feed ────────────────────────────────────────────────────────
+
+// A fixture from the angulismo feed, already paired with the channels carrying
+// it and the iframe URLs that play them.
+export interface AngulismoEvent {
+  id: string;
+  title: string;
+  competition: string;
+  homeTeam: string;
+  awayTeam: string;
+  // Kickoff in epoch ms. The feed is a static file, so its Argentina-local
+  // times mean the same thing to every caller.
+  startTimeMs: number;
+  channels: import('./channels').Channel[];
+}
+
+export interface AngulismoSnapshot {
+  events: AngulismoEvent[];
+  channels: import('./channels').Channel[];
+  /** Whether the lookup succeeded; false means "unknown", not "nothing there". */
+  ok: boolean;
+  /** True when the data came from the last good lookup rather than this one. */
+  stale: boolean;
 }

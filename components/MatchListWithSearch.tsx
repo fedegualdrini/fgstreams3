@@ -2,22 +2,12 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
-import type { Match } from '@/types/api';
+import type { CatalogMatch, Match } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
 import { useLiveScores } from '@/lib/useLiveScores';
-import { useLocalTime } from '@/lib/dateUtils';
 import { addToHistory, getHistory, type HistoryEntry } from '@/lib/watchHistory';
 import { getPosterUrl } from '@/lib/api';
 import { ALL_SPORT_FILTER, getAvailableSportFilters, matchesFilters } from '@/lib/matchFilters';
-
-function getRelativeTime(date: Date): string {
-  const diff = date.getTime() - Date.now();
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  if (h > 0) return `${h}h ${m > 0 ? `${m}m` : ''}`.trim();
-  if (m > 0) return `${m}m`;
-  return 'Soon';
-}
 
 const SPORT_ICON_OPTIONS: { label: string; icon: string }[] = [
   { label: 'All',        icon: '🏆' },
@@ -33,8 +23,8 @@ const SPORT_ICONS = new Map(
 );
 
 interface MatchListWithSearchProps {
-  liveMatches: Match[];
-  upcomingMatches: Match[];
+  liveMatches: CatalogMatch[];
+  upcomingMatches: CatalogMatch[];
 }
 
 export default function MatchListWithSearch({ liveMatches, upcomingMatches }: MatchListWithSearchProps) {
@@ -281,7 +271,12 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                       e.currentTarget.style.boxShadow   = 'none';
                     }}
                   >
-                    <MatchCard match={match} score={entry?.score} scoreMinute={entry?.minute} />
+                    <MatchCard
+                      match={match}
+                      score={entry?.score}
+                      scoreMinute={entry?.minute}
+                      broadcasts={match.broadcasts}
+                    />
                   </Link>
                 );
               })}
@@ -355,7 +350,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
                   e.currentTarget.style.boxShadow   = 'none';
                 }}
               >
-                <MatchCard match={match} />
+                <MatchCard match={match} broadcasts={match.broadcasts} />
               </Link>
             ))}
           </div>
@@ -364,7 +359,7 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
 
       {/* ── No matches ── */}
       {liveMatches.length === 0 && upcomingMatches.length === 0 && (
-        <EmptyState icon="📺" hint="Streams typically go live 30 minutes before kickoff.">
+        <EmptyState icon="📺" hint="Only matches with a working source are listed — check back closer to kickoff.">
           No matches available right now
         </EmptyState>
       )}
@@ -374,80 +369,6 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
         </EmptyState>
       )}
     </>
-  );
-}
-
-// ─── Upcoming Row ─────────────────────────────────────────────────────────────
-
-function UpcomingRow({ match }: { match: Match }) {
-  const startTime = match.startTime ? new Date(match.startTime) : null;
-  const localTime = useLocalTime(startTime);
-  const relTime   = startTime ? getRelativeTime(startTime) : '';
-
-  return (
-    <Link
-      href={`/match/${match.id}`}
-      style={{
-        display: 'flex', alignItems: 'center', width: '100%',
-        padding: '0.75rem 1rem', textDecoration: 'none', color: 'inherit',
-        background: 'var(--bg-1)', borderBottom: '1px solid var(--line)',
-        transition: 'background 0.12s', gap: '1rem',
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-2)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-1)'; }}
-    >
-      {/* Time */}
-      <div style={{ width: '56px', flexShrink: 0, textAlign: 'center' }}>
-        <div suppressHydrationWarning style={{
-          fontFamily: 'var(--font-body)', fontSize: '0.8rem',
-          fontWeight: 600, color: 'var(--text)', lineHeight: 1.2,
-        }}>
-          {localTime}
-        </div>
-        <div style={{ fontSize: '0.58rem', color: 'var(--muted)', marginTop: '2px' }}>{relTime}</div>
-      </div>
-
-      {/* Divider */}
-      <div style={{ width: '1px', height: '32px', background: 'var(--line)', flexShrink: 0 }} />
-
-      {/* Match info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em',
-          textTransform: 'uppercase', color: 'var(--subtle)', marginBottom: '0.3rem',
-        }}>
-          {match.league || match.sport}
-        </div>
-        {match.team2 ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '0.02em', lineHeight: 1 }}>
-              {match.team1}
-            </span>
-            <span style={{
-              fontSize: '0.55rem', fontWeight: 700, color: 'var(--muted)',
-              letterSpacing: '0.1em', padding: '0.1rem 0.35rem',
-              border: '1px solid var(--line)', borderRadius: '2px', flexShrink: 0,
-            }}>VS</span>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '0.02em', lineHeight: 1 }}>
-              {match.team2}
-            </span>
-          </div>
-        ) : (
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '0.02em' }}>
-            {match.team1}
-          </span>
-        )}
-      </div>
-
-      {/* Sport pill */}
-      <span style={{
-        flexShrink: 0, fontSize: '0.58rem', fontWeight: 600,
-        letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--subtle)',
-        padding: '0.2rem 0.5rem', border: '1px solid var(--line)', borderRadius: '2px',
-      }}>
-        {match.sport}
-      </span>
-    </Link>
   );
 }
 
