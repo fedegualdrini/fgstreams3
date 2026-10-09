@@ -10,7 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-**[Live demo](https://fgstreams3.vercel.app)** · [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Contributing](CONTRIBUTING.md)
+**[Live demo](https://fgstreams3.vercel.app)** · [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Contributing](.github/CONTRIBUTING.md)
 
 </div>
 
@@ -125,7 +125,7 @@ streamed.pk, Promiedos and the angulismo feed are combined into one cached catal
 - [Architecture](docs/ARCHITECTURE.md): data flow from the upstream feeds to the screen
 - [Project structure](docs/PROJECT_STRUCTURE.md): every folder and module, plus coding conventions
 - [Channel import](docs/CHANNEL_IMPORT.md): merging an external playlist into the catalog
-- [Contributing](CONTRIBUTING.md): setup, checks and conventions
+- [Contributing](.github/CONTRIBUTING.md): setup, checks and conventions
 
 ## Disclaimer
 

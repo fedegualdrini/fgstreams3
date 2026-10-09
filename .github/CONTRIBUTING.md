@@ -11,7 +11,7 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-Copy the variables from the [Environment section of the README](README.md#environment) into `.env.local` if you need movie/TV search or the HLS proxy.
+Copy the variables from the [Environment section of the README](../README.md#environment) into `.env.local` if you need movie/TV search or the HLS proxy.
 
 ## Before you open a pull request
 
@@ -25,9 +25,9 @@ npm test
 
 ## Where things live
 
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): how data flows from the upstream feeds to the screen.
-- [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md): what each folder and module is for.
-- [docs/CHANNEL_IMPORT.md](docs/CHANNEL_IMPORT.md): merging an external playlist into the channel catalog.
+- [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md): how data flows from the upstream feeds to the screen.
+- [docs/PROJECT_STRUCTURE.md](../docs/PROJECT_STRUCTURE.md): what each folder and module is for.
+- [docs/CHANNEL_IMPORT.md](../docs/CHANNEL_IMPORT.md): merging an external playlist into the channel catalog.
 
 ## Conventions
 

@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=20.19.0"
   },
+  "eslintConfig": {
+    "extends": "next/core-web-vitals"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
