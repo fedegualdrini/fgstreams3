@@ -1,0 +1,32 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The page or match/channel URL helps a lot.
+      placeholder: |
+        1. Open https://fgstreams3.vercel.app/match/...
+        2. Click ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 130 on Windows 11
+  - type: textarea
+    id: console
+    attributes:
+      label: Console or network errors
+      description: Paste anything relevant from the browser dev tools.
+      render: shell
