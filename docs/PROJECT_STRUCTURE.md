@@ -75,6 +75,7 @@ types/
   api.ts                           Sports, stream, score, catalog and feed types
   channels.ts                      Channel catalog types
   movies.ts                        Movie and TV metadata types
+  vitest-setup.ts                  Vitest setup: jest-dom matchers (runtime and types)
 
 scripts/
   import-playlist.mjs              CLI: arguments, files, console output
@@ -92,10 +93,9 @@ docs/
                                    Images used by README.md and the GitHub social card
   plans/                           Planning notes
 
-.github/                           CI workflow, issue forms, pull request template
+.github/                           CONTRIBUTING.md, CI workflow, issue forms, pull request template
 
 vitest.config.ts                   Vitest configuration
-vitest.setup.ts                    Vitest setup
 ```
 
 ## Conventions
