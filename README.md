@@ -1,234 +1,136 @@
-# Sports Streaming Mirror
+<div align="center">
 
-A Next.js sports streaming app with match listings, match detail playback, live scores, match statistics, channel playback, movie and TV search, watch history, multi-match viewing, and stream fallback on playback failures.
+<img src="docs/banner.png" alt="FGStreams: live sports, TV channels, movies and series" width="100%">
 
-**Live:** [fgstreams3.vercel.app](https://fgstreams3.vercel.app)
+<br>
+
+[![CI](https://github.com/fedegualdrini/fgstreams3/actions/workflows/ci.yml/badge.svg)](https://github.com/fedegualdrini/fgstreams3/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/fedegualdrini/fgstreams3)](LICENSE)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+
+**[Live demo](https://fgstreams3.vercel.app)** · [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Contributing](CONTRIBUTING.md)
+
+</div>
+
+---
+
+FGStreams lists what is live right now, finds a playable source for it, and keeps playing when a source fails. Matches, TV channels, and movies and series share one fast, clutter-free interface.
+
+<p align="center">
+  <img src="docs/screenshots/home.webp" alt="Home page: live matches first, then upcoming" width="100%">
+</p>
 
 ## Features
 
-- **Matches**: Lists live and upcoming matches from the Streamed API, grouped with live matches first and upcoming matches by start time. Rendered per request, so the first load always reflects the current schedule.
-- **Source-Verified Listings**: Every listed match has its stream endpoints resolved server-side before render. Matches with no working stream and no TV channel carrying them are not listed at all.
-- **TV Channel Detection**: Fixtures are matched against promiedos.com.ar to find the broadcaster, which is then resolved against the local channel catalog. Argentine league and Latin American cup matches show the carrying channel (ESPN Premium, TNT Sports, Superliga Argentina, …) as a playable source on the match page and as a badge on the card.
-- **Match Search and Sport Filter**: Filters matches by team, league, or sport, with quick sport buttons for common categories.
-- **Match Detail Playback**: Stream sources arrive with the server-rendered page, so the player and the source list are populated on first paint. The preferred stream is chosen by language, quality, and original source order.
-- **Stream Fallback**: If a match stream fails to load, the player rotates to the next untried stream. When all streams fail, the UI shows a Try Again action that refetches streams.
-- **Multi-Match View**: Lets a user watch up to four matches from one match page, choose grid or side-by-side layout, mute individual streams, remove matches, and switch each match's selected stream.
-- **Live Scores**: Polls live score data for active matches and displays matched score/minute data on match cards.
-- **Match Statistics**: Shows Flashscore-backed match detail data on match pages when available, including score, events, statistics, and lineups.
-- **Watch History**: Stores recently watched matches in local browser storage and shows them on the home page.
-- **Channels**: Loads visible channels from `public/channels.json`, validates stream URLs, supports channel search, remembers the selected channel/source in the URL, and provides retry/next-option controls.
-- **Movies and Series**: Searches TMDB-backed movie and TV metadata, embeds selected media, and supports season/episode selection for TV shows.
+| | |
+|---|---|
+| **Only matches you can watch** | Stream endpoints are resolved server-side before render. A match with no working stream and no TV channel carrying it is never listed. |
+| **Automatic stream fallback** | When a stream fails to load, the player rotates to the next untried one. If all fail, **Try Again** refetches. The best stream is picked by language, quality and source order. |
+| **TV channel detection** | Fixtures are matched against [Promiedos](https://www.promiedos.com.ar) and the angulismo feed to find the broadcaster, then resolved against the local channel catalog (ESPN Premium, TNT Sports, ...). The channel shows as a playable source and a badge on the card. |
+| **Multi-match view** | Watch up to four matches at once, with per-stream mute, remove and source switching. |
+| **Live scores and stats** | Polled scores and minute on cards. Match pages add events, statistics and lineups when available (Flashscore-backed). |
+| **Search and filters** | Filter by team, league or sport, with quick sport buttons. |
+| **Watch history** | Recently watched matches are kept in local storage and shown on the home page. |
+| **Channels** | A searchable catalog of hundreds of channels. The selected channel and source live in the URL, with retry and next-option controls. HLS and DASH (ClearKey) play natively. |
+| **Movies and series** | TMDB-backed search, embedded playback, and season/episode selection for TV. |
+| **Keyboard shortcuts** | `N` next stream, `F` fullscreen, `?` shortcut help. |
 
-## Tech Stack
+## Screenshots
 
-- **Next.js 14** with App Router
-- **React 18**
-- **TypeScript**
-- **Tailwind CSS**
-- **Vitest**
-- **hls.js** for HLS channel playback
-- **Zod** for API response validation
+<table>
+  <tr>
+    <td width="33%"><a href="docs/screenshots/match.webp"><img src="docs/screenshots/match.webp" alt="Match page with TV channels and sources"></a></td>
+    <td width="33%"><a href="docs/screenshots/channels.webp"><img src="docs/screenshots/channels.webp" alt="Channel browser"></a></td>
+    <td width="33%"><a href="docs/screenshots/movies.webp"><img src="docs/screenshots/movies.webp" alt="Movies and series search"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Match page</b>: TV channels and fallback sources</sub></td>
+    <td align="center"><sub><b>Channels</b>: searchable catalog</sub></td>
+    <td align="center"><sub><b>Movies &amp; series</b>: TMDB search</sub></td>
+  </tr>
+</table>
 
-## External Data Sources
+## Quick start
 
-- **Streamed API** (`https://streamed.pk/api`) for matches (`/matches/all-today`), the live feed (`/matches/live`), per-match streams, and Streamed-hosted images.
-- **Promiedos** (`https://www.promiedos.com.ar`) for fixture broadcasters, read from the `__NEXT_DATA__` payload embedded in the page. Broad competition coverage, but it only names the broadcaster. Promiedos renders kickoff in the requesting IP's timezone, so the offset between feeds is measured per build rather than assumed — see `estimateFeedOffsetMs` in `lib/teamMatch.ts`.
-- **angulismotv feed** (`datos.json`, the file behind angulismotv.pages.dev) for both a channel catalog and a fixture→channel mapping that already carries playable URLs. Narrower coverage than Promiedos, so the two are merged with this one first.
-- **Flashscore mobile pages** through local API routes for live scores and match detail data.
-- **TMDB API** for movie and TV search metadata. Set `TMDB_API_KEY` before using the Movies page search routes.
-- **Local channel catalog** from `public/channels.json`.
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm
-
-### Install
+Requires Node.js 20.19+ (22 recommended).
 
 ```bash
+git clone https://github.com/fedegualdrini/fgstreams3.git
+cd fgstreams3
 npm install
+npm run dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000).
 
 ### Environment
 
-Create a local environment file when using movie or TV search:
+Sports matches and channels need no configuration. Create `.env.local` for the rest:
 
 ```bash
-TMDB_API_KEY=your_tmdb_api_key
-HLS_PROXY_SECRET=any_long_random_string
+TMDB_API_KEY=your_tmdb_api_key          # movie and TV search
+HLS_PROXY_SECRET=any_long_random_string # signs the URLs /api/hls-proxy hands back
 ```
 
-Sports matches and channels do not require the TMDB key. `HLS_PROXY_SECRET` signs
-the stream URLs `/api/hls-proxy` hands back to the player; set it in production so
-those signatures cannot be produced by anyone else.
+Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy signatures.
 
-## Commands
+### Commands
 
-```bash
-npm run dev        # Start the Next.js development server
-npm run test       # Run the Vitest test suite once
-npm run test:watch # Run Vitest in watch mode
-npm run lint       # Run Next.js linting
-npm run build      # Build the production app
-npm start          # Start the built production app
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the development server |
+| `npm run build` / `npm start` | Build and serve the production app |
+| `npm test` / `npm run test:watch` | Run the Vitest suite once / in watch mode |
+| `npm run lint` | Next.js linting |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run import:playlist -- <playlist.json>` | Merge an external channel playlist ([guide](docs/CHANNEL_IMPORT.md)) |
 
-npm run import:playlist -- <playlist.json>   # Merge an external channel playlist
+## How it works
+
+```mermaid
+flowchart LR
+  A[streamed.pk<br/>matches and streams] --> C
+  B[Promiedos and angulismo<br/>TV broadcasters] --> C
+  D[channels.json<br/>channel catalog] --> C
+  C[Catalog<br/>normalize, resolve streams,<br/>match fixtures to channels] --> P[Server pages<br/>and API routes]
+  P --> U[Client components<br/>player, multi-view, stats]
+  F[Flashscore<br/>live scores and detail] --> U
 ```
 
-Open [http://localhost:3000](http://localhost:3000) after starting the development server.
+streamed.pk, Promiedos and the angulismo feed are combined into one cached catalog (`lib/catalog.ts`), then served to the pages and API routes. Only the match feed is mandatory: the other sources degrade to "no extra data", and an empty upstream response is never cached. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full walkthrough.
 
-### Importing a channel playlist
+## Tech stack
 
-`npm run import:playlist -- <playlist.json>` merges an external list (the
-group/station/option JSON that OTT list apps publish) into `public/channels.json`.
-Every candidate stream is fetched first, so unreachable manifests are dropped and
-the ones whose origin sends no CORS header are flagged to go through
-`/api/hls-proxy`; the allowlist of origins that proxy may reach is regenerated
-into `lib/proxyHosts.ts`. Stations join an existing channel when their names match
-after normalisation, and a URL already in the list is never added twice.
-Add `--dry-run` to see the counts without writing, `--probe-cache <file>` to reuse
-an earlier run's probe results, and `--mark-new` to prefix the option names it
-adds with `NEW ·` so the additions are easy to find in the channel list.
+- **[Next.js 14](https://nextjs.org)** (App Router), **React 18**, **TypeScript** in strict mode
+- **Tailwind CSS** plus a small set of shared CSS primitives (`.btn`, `.kbd`, `.status-panel`)
+- **[hls.js](https://github.com/video-dev/hls.js)** and **[Shaka Player](https://github.com/shaka-project/shaka-player)** for HLS and DASH playback
+- **[Zod](https://zod.dev)** to validate every upstream response
+- **Vitest** and Testing Library for tests; GitHub Actions for CI
 
-The script is split by responsibility: `scripts/import-playlist.mjs` is the CLI
-shell (arguments, files, output), `scripts/playlistImport.mjs` holds the pure
-rules (flatten, classify, merge) and `scripts/libProbe.mjs` does the network
-probing. Only the pure rules and the token helpers are unit-tested.
+## Data sources
 
-A stream is only imported when it can actually be played:
+| Source | Used for |
+|---|---|
+| [streamed.pk](https://streamed.pk) | Matches, live flags, per-match streams, images |
+| [Promiedos](https://www.promiedos.com.ar) | Fixture broadcasters, read from the page's `__NEXT_DATA__` |
+| angulismotv feed | Channel catalog and fixture-to-channel mapping with playable URLs |
+| Flashscore (mobile pages) | Live scores and match detail, through local API routes |
+| [TMDB](https://www.themoviedb.org) | Movie and TV metadata (needs `TMDB_API_KEY`) |
+| `public/channels.json` | Local channel catalog |
 
-- Widevine and PlayReady are skipped; only ClearKey can be decrypted in-browser.
-- A ClearKey entry whose key no longer matches the manifest's `default_KID` is
-  dropped — providers rotate keys, and a stale one fails with an opaque error.
-- Entries whose URL holds a `{token}` placeholder are resolved through the
-  `token` endpoint the playlist supplies. The token it returns is a JWT scoped to
-  one directory; when that is not the directory the media sits in, the token
-  only buys the manifest and the segments stay behind the provider's paywall, so
-  those entries are skipped.
+## Documentation
 
-## Project Structure
+- [Architecture](docs/ARCHITECTURE.md): data flow from the upstream feeds to the screen
+- [Project structure](docs/PROJECT_STRUCTURE.md): every folder and module, plus coding conventions
+- [Channel import](docs/CHANNEL_IMPORT.md): merging an external playlist into the catalog
+- [Contributing](CONTRIBUTING.md): setup, checks and conventions
 
-```text
-app/
-  page.tsx                         Home page with match list/search
-  layout.tsx                       Root layout and metadata
-  error.tsx                        Root error boundary
-  sitemap.ts                       Sitemap generation
-  globals.css                      Design tokens and shared UI primitives
-  channels/                        Channels page (+ error boundary)
-  movies/                          Movies and series page (+ error boundary)
-  match/[id]/                      Match detail page, metadata and error boundary
-  api/
-    hls-proxy/route.ts             HTTP HLS proxy for selected channel streams
-    media/search/route.ts          TMDB movie/TV search endpoint
-    media/tv/[id]/route.ts         TMDB TV season metadata endpoint
-    scores/[sport]/route.ts        Live score endpoint
-    scores/match/[flashscoreId]/route.ts
-                                    Match detail/statistics endpoint
-    streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
-    diagnostics/broadcasts/route.ts
-                                    Broadcast pipeline health; ?q=<team> traces one match
+## Disclaimer
 
-components/                        Shared and page-level components
-  ErrorPanel.tsx                   Body for route-level error.tsx boundaries
-  ErrorBoundary.tsx                Client error boundary
-  MatchListWithSearch.tsx          Home page list: search, filters, scores, watch history
-  MatchDetailClient.tsx            Match playback, fallback, stats and multi-match entry
-  MultiMatchView.tsx               Up-to-four match viewing mode
-  ChannelsPageClient.tsx           Channels page entry
-  MoviesPageClient.tsx             Movies page entry
-  channels/ match-detail/ match-list/ movies/ multi-match/ players/
-                                   Feature folders: the sub-components and hooks each
-                                   page-level component above is assembled from
-  *.tsx                            Remaining single-purpose pieces (cards, players,
-                                   header, toast, spinner, skeletons, ...)
-
-lib/
-  # Data layer (server)
-  api.ts                           Streamed API: matches, live ids, streams, sports
-  promiedos.ts                     Promiedos fixtures + TV networks (__NEXT_DATA__)
-  angulismo.ts                     angulismotv feed: live channels and fixture broadcasters
-  flashscore.ts                    Flashscore HTTP client (live scores, match detail)
-  flashscoreParse.ts               Flashscore HTML -> typed data (pure, unit-tested)
-  catalog.ts                       Cached match catalog (build, fallback, sort)
-  catalogWindow.ts                 Listing window and live-state rules
-  catalogStreams.ts                Bounded-concurrency stream resolution
-  catalogBroadcasts.ts             Feed offsets and fixture -> channel matching
-  channelCatalog.ts                Shipped channels.json merged with the live catalog
-  broadcasters.ts                  Broadcaster name -> local channel resolution
-  teamMatch.ts                     Fuzzy fixture matching and feed clock alignment
-  diagnosticsBroadcasts.ts         Report builders for the diagnostics route
-  httpClient.ts                    fetchJson / fetchText: timeout, retry, validation, logging
-  httpRoute.ts                     Route helpers: withErrorResponse, jsonWithCache
-  logger.ts                        createLogger(scope): the only console writer
-  schemas.ts                       Zod schemas for external API data
-  constants.ts                     Cache windows, timeouts and limits, with rationale
-  # Shared / client
-  matchUtils.ts                    Match normalization, liveness, and image helpers
-  matchFilters.ts, matchListView.ts, matchDetailStreams.ts, multiMatch.ts
-                                   Pure view-model logic behind the match components
-  channelOptions.ts                Playable-option filtering for channels
-  movieEmbed.ts, movieTmdb.ts      Movie/TV embed URLs and TMDB mapping
-  playerHls.ts                     hls.js configuration
-  streamSelector.ts                Preferred stream selection
-  scoreAliases.ts, scoreUtils.ts   Team alias data and score matching
-  sportMap.ts                      Sport name mapping
-  urlValidation.ts, proxyHosts.ts  Stream URL validation; generated HLS-proxy allowlist
-  dateUtils.ts                     Client-safe date formatting helpers
-  useLiveScores.ts                 Live score polling hook
-  useMatchStats.ts                 Match detail polling hook
-  watchHistory.ts                  Local storage watch history helpers
-
-types/
-  api.ts                           Sports, stream, score, catalog and feed types
-  channels.ts                      Channel catalog types
-  movies.ts                        Movie and TV metadata types
-
-scripts/
-  import-playlist.mjs              CLI: arguments, files, console output
-  playlistImport.mjs               Pure rules: flatten, classify, merge, proxy hosts
-  libProbe.mjs                     Network probing of candidate streams
-
-public/
-  channels.json                    Channel catalog
-  noise.svg                        Background texture asset
-
-docs/
-  ARCHITECTURE.md                  Data flow from upstream feeds to the screen
-  plans/                           Planning notes
-
-vitest.config.ts                   Vitest configuration
-vitest.setup.ts                    Vitest setup
-```
-
-## Architecture
-
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) walks through the data flow: streamed.pk, Promiedos and the angulismo feed are combined in `lib/catalog.ts`, then served to the pages, API routes and client components.
-
-## Conventions
-
-### Server code
-
-- **One fetch path.** Upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot).
-- **One logger.** `createLogger('scope')` from `lib/logger.ts` prints `scope: message` plus any error as a trailing argument. Do not call `console.*` in `lib/` or `app/api`.
-- **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` and respond with `jsonWithCache(data, maxAge, swr)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`.
-- **Named limits.** Timeouts, cache windows and CDN headers are constants in `lib/constants.ts`, each with a comment explaining the value.
-
-### UI
-
-Shared primitives live in `app/globals.css`; prefer them over per-component inline styles and keep inline `style` for truly dynamic values.
-
-- `.btn` — small uppercase button. Active state via `aria-pressed="true"` or `.is-active`; modifiers `.btn--primary` (filled call to action) and `.btn--icon` (square glyph button).
-- `.kbd` — keyboard key cap.
-- `.status-panel` (+ `__title`, `__message`) — centered column for error, empty and "nothing to play" states. `components/ErrorPanel.tsx` builds on it for route-level `error.tsx` files.
-- Colors, fonts and spacing come from the CSS variables at the top of the file (`--bg`, `--line`, `--accent`, `--font-display`, ...).
-
-## Testing
-
-Unit tests (Vitest) cover stream selection, match normalization, score matching, Flashscore parsing, Promiedos and angulismo parsing, the match catalog, cross-feed fixture matching, broadcaster-to-channel resolution and the playlist importer (`lib/*.test.ts`, `scripts/*.test.mjs`, `components/*.test.tsx`).
+FGStreams does not host, upload or store any video content. It aggregates links and embeds that third-party services make publicly available. Whether a given stream is legal to watch depends on your jurisdiction and the source, and that is your responsibility. If you are a rights holder and want something removed, open an issue.
 
 ## License
 
-MIT
+[MIT](LICENSE)
