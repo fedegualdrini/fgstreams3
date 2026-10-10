@@ -70,6 +70,8 @@ lib/
   useLiveScores.ts                 Live score polling hook
   useMatchStats.ts                 Match detail polling hook
   watchHistory.ts                  Local storage watch history helpers
+  adBlockBanner.ts                 Boot script and keys that keep the ad-block banner from shifting the layout
+  useAfterPageLoad.ts              Hook gating third-party embeds until the page itself has loaded
 
 types/
   api.ts                           Sports, stream, score, catalog and feed types
@@ -84,6 +86,7 @@ scripts/
 
 public/
   channels.json                    Channel catalog
+  logos/                           Channel logos downloaded and shrunk by npm run optimize:logos
 
 docs/
   ARCHITECTURE.md                  Data flow from upstream feeds to the screen
@@ -115,3 +118,13 @@ Shared primitives live in `app/globals.css`; prefer them over per-component inli
 - `.kbd` — keyboard key cap.
 - `.status-panel` (+ `__title`, `__message`) — centered column for error, empty and "nothing to play" states. `components/ErrorPanel.tsx` builds on it for route-level `error.tsx` files.
 - Colors, fonts and spacing come from the CSS variables at the top of the file (`--bg`, `--line`, `--accent`, `--font-display`, ...).
+
+### Performance
+
+Rules that keep the Core Web Vitals where they are (measured with Lighthouse; Vercel Speed Insights reports real-user numbers):
+
+- **No layout shifts after hydration.** Anything that appears late (banners, badges) is rendered in the server HTML and hidden with CSS, or reserves its space. The ad-block banner works this way (`lib/adBlockBanner.ts`).
+- **Images are sized and lazy.** Give every `<img>` a width and height and `loading="lazy"` unless it is above the fold; above-the-fold posters use `priority`. Channel logos are shrunk once into `public/logos/` by `npm run optimize:logos` rather than loaded from third-party hosts.
+- **Third-party embeds wait for the page.** Stream iframes pull in ads and their own video stack, so `StreamPlayer` mounts them after the window `load` event (`lib/useAfterPageLoad.ts`).
+- **Send the list only what it renders.** The home page maps catalog matches to `ListedMatch` (`toListedMatch`) so stream URLs and broadcast options stay on the server, and the upcoming grid renders 24 cards at a time.
+- **Cache what can be cached.** `/channels` is ISR (10 minutes, matching its upstream feed). The home and match pages stay dynamic on purpose, but send `no-cache` rather than `no-store` so browsers can restore them on Back.

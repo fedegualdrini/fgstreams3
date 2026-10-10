@@ -1,7 +1,7 @@
 [
   {
     "name": "Amistosos",
-    "logo": "https://angulismo-pics.pages.dev/fut.png",
+    "logo": "/logos/03f24c944757.webp",
     "options": [
       {
         "name": "Disney+ 2",
@@ -48,7 +48,7 @@
   },
   {
     "name": "Otros",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "Flow",
@@ -95,7 +95,7 @@
   },
   {
     "name": "Premier League",
-    "logo": "https://angulismo-pics.pages.dev/premier.png",
+    "logo": "/logos/2756b9b6c6a8.webp",
     "options": [
       {
         "name": "ESPN 1 - Opción 1",
@@ -142,13 +142,13 @@
   },
   {
     "name": "Serie A",
-    "logo": "https://angulismo-pics.pages.dev/serie-a.png",
+    "logo": "/logos/47a9f55dddc5.webp",
     "options": [],
     "show": false
   },
   {
     "name": "LaLiga",
-    "logo": "https://angulismo-pics.pages.dev/la-liga.png",
+    "logo": "/logos/c23e8aff35c7.webp",
     "options": [
       {
         "name": "ESPN Deportes - 2",
@@ -185,7 +185,7 @@
   },
   {
     "name": "SporTV BR",
-    "logo": "https://angulismo-pics.pages.dev/fut.png",
+    "logo": "/logos/03f24c944757.webp",
     "options": [
       {
         "name": "SporTV - Opcion 1",
@@ -220,7 +220,7 @@
   },
   {
     "name": "Superliga Argentina",
-    "logo": "https://angulismo-pics.pages.dev/saf.png",
+    "logo": "/logos/b9755b491280.webp",
     "options": [
       {
         "name": "ESPN Premium - Opción 1",
@@ -325,7 +325,7 @@
   },
   {
     "name": "Brasileirao",
-    "logo": "https://images.seeklogo.com/logo-png/57/2/taca-brasileirao-serie-a-logo-png_seeklogo-577657.png",
+    "logo": "/logos/75615534c57c.webp",
     "options": [
       {
         "name": "Premiere 1 - Opcion 1",
@@ -408,7 +408,7 @@
   },
   {
     "name": "Champions League",
-    "logo": "https://th.bing.com/th/id/OIP.3R_r3xVNkhdUgSkMYNDw5QHaHa?w=159&h=180&c=7&r=0&o=7&pid=1.7&rm=3",
+    "logo": "/logos/3086ab9312e6.webp",
     "options": [
       {
         "name": "ESPN 1 - Opción 1",
@@ -495,7 +495,7 @@
   },
   {
     "name": "Europa League",
-    "logo": "https://tse4.mm.bing.net/th/id/OIP.7G1qMaeTER8tdkUUxRR9hQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+    "logo": "/logos/e2cb17482d6d.webp",
     "options": [
       {
         "name": "ESPN 1 - Opción 1",
@@ -582,7 +582,7 @@
   },
   {
     "name": "Copa Libertadores",
-    "logo": "https://cdn.conmebol.com/wp-content/uploads/2015/05/logo_bridgestone_libertadores_0.jpg",
+    "logo": "/logos/0527bc8ab48f.webp",
     "options": [
       {
         "name": "ESPN - Opción 1",
@@ -617,7 +617,7 @@
   },
   {
     "name": "Copa Sudamericana",
-    "logo": "https://tse4.mm.bing.net/th/id/OIP.jWBlsTbagCmQljLOd5arrwHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+    "logo": "/logos/d233bf487a56.webp",
     "options": [
       {
         "name": "Opción 1 (PC)",
@@ -644,7 +644,7 @@
   },
   {
     "name": "Eliminatorias UEFA",
-    "logo": "https://www.bing.com/th/id/OIP.zEqraM7whkmXD5hTwtcBlgHaHa?w=204&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
+    "logo": "/logos/e87a212b9f95.webp",
     "options": [
       {
         "name": "no programado, avisenle al obeso de angulismo",
@@ -655,7 +655,7 @@
   },
   {
     "name": "Onboards",
-    "logo": "https://images.seeklogo.com/logo-png/32/1/formula-one-2017-logo-png_seeklogo-322033.png",
+    "logo": "/logos/0ad52748bd12.webp",
     "options": [
       {
         "name": "Tututurutu Max Verstappen",
@@ -674,7 +674,7 @@
   },
   {
     "name": "Formula 1",
-    "logo": "https://images.seeklogo.com/logo-png/32/1/formula-one-2017-logo-png_seeklogo-322033.png",
+    "logo": "/logos/0ad52748bd12.webp",
     "options": [
       {
         "name": "FOX Sports - Opción 1",
@@ -769,7 +769,7 @@
   },
   {
     "name": "Mundial 2026",
-    "logo": "https://images.seeklogo.com/logo-png/39/1/fifa-united-2026-logo-png_seeklogo-398253.png",
+    "logo": "/logos/ac01f431e19d.webp",
     "options": [
       {
         "name": "FS1 (720p)",
@@ -963,7 +963,7 @@
   },
   {
     "name": "MLS",
-    "logo": "https://images.seeklogo.com/logo-png/26/2/mls-logo-png_seeklogo-264551.png",
+    "logo": "/logos/722706ad56bf.webp",
     "options": [
       {
         "name": "Opcion 1",
@@ -986,7 +986,7 @@
   },
   {
     "name": "ESPN+",
-    "logo": "https://images.seeklogo.com/logo-png/36/2/espn-logo-png_seeklogo-368956.png",
+    "logo": "/logos/7186ff1be2a1.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1001,7 +1001,7 @@
   },
   {
     "name": "ESPN Premium",
-    "logo": "https://angulismo-pics.pages.dev/espn-premium.png",
+    "logo": "/logos/57b23fc85244.webp",
     "options": [
       {
         "name": "(1)",
@@ -1188,7 +1188,7 @@
   },
   {
     "name": "ESPN 5",
-    "logo": "https://images.seeklogo.com/logo-png/52/1/espn-5-logo-png_seeklogo-522715.png",
+    "logo": "/logos/dea396aaf5d0.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1211,7 +1211,7 @@
   },
   {
     "name": "ESPN 6",
-    "logo": "https://images.seeklogo.com/logo-png/52/1/espn-6-logo-png_seeklogo-522717.png",
+    "logo": "/logos/f4b8b1e1fe63.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1234,7 +1234,7 @@
   },
   {
     "name": "ESPN 7",
-    "logo": "https://images.seeklogo.com/logo-png/52/1/espn-7-logo-png_seeklogo-522718.png",
+    "logo": "/logos/e4e60c57975a.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1257,7 +1257,7 @@
   },
   {
     "name": "TNT Sports",
-    "logo": "https://angulismo-pics.pages.dev/tnt-sports.png",
+    "logo": "/logos/c0378897f0fa.webp",
     "options": [
       {
         "name": "(1)",
@@ -1311,7 +1311,7 @@
   },
   {
     "name": "TyC Sports",
-    "logo": "https://angulismo-pics.pages.dev/tyc-sports.png",
+    "logo": "/logos/bd5fbb7ebf80.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1342,7 +1342,7 @@
   },
   {
     "name": "FOX Sports",
-    "logo": "https://logowik.com/content/uploads/images/fox-sports3529.jpg",
+    "logo": "/logos/d1dd3a17c35f.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1361,7 +1361,7 @@
   },
   {
     "name": "FOX Sports 2",
-    "logo": "https://images.seeklogo.com/logo-png/36/1/fox-sports-2-logo-png_seeklogo-369602.png",
+    "logo": "/logos/00a57f0a1536.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1380,7 +1380,7 @@
   },
   {
     "name": "FOX Sports 3",
-    "logo": "https://images.seeklogo.com/logo-png/51/1/fox-sports-3-logo-png_seeklogo-510012.png",
+    "logo": "/logos/aa9066bf422c.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1414,7 +1414,7 @@
   },
   {
     "name": "Telefe",
-    "logo": "https://images.seeklogo.com/logo-png/45/2/telefe-tv-logo-png_seeklogo-451860.png",
+    "logo": "/logos/c5d9da3c56bc.webp",
     "options": [
       {
         "name": "Opcion 1",
@@ -1441,7 +1441,7 @@
   },
   {
     "name": "Bandsports (BR)",
-    "logo": "https://images.seeklogo.com/logo-png/47/1/bandsports-tv-logo-png_seeklogo-476278.png",
+    "logo": "/logos/5bb8cf306aac.webp",
     "options": [
       {
         "name": "Opción 1 (SOLO BRASIL, USAR VPN)",
@@ -1452,7 +1452,7 @@
   },
   {
     "name": "TIGO Sports",
-    "logo": "https://images.seeklogo.com/logo-png/24/2/tigo-logo-png_seeklogo-244591.png",
+    "logo": "/logos/51cbe0781c49.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1463,7 +1463,7 @@
   },
   {
     "name": "TV Publica",
-    "logo": "https://images.seeklogo.com/logo-png/46/2/tv-publica-argentina-2014-logo-png_seeklogo-462615.png",
+    "logo": "/logos/46b96f3eb582.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1493,7 +1493,7 @@
   },
   {
     "name": "WIN Sports",
-    "logo": "https://images.seeklogo.com/logo-png/25/1/win-sports-logo-png_seeklogo-259337.png",
+    "logo": "/logos/5dcd2c66127a.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1512,7 +1512,7 @@
   },
   {
     "name": "WIN Sports+",
-    "logo": "https://images.seeklogo.com/logo-png/37/1/win-sport-logo-png_seeklogo-371670.png",
+    "logo": "/logos/05a360df7100.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1527,7 +1527,7 @@
   },
   {
     "name": "GOLPERU",
-    "logo": "https://tse4.mm.bing.net/th/id/OIP.RRwd-20Z5BExVjjhw5fp0QHaHo?r=0&w=908&h=936&rs=1&pid=ImgDetMain&o=7&rm=3",
+    "logo": "/logos/5d3f6f713885.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1568,7 +1568,7 @@
   },
   {
     "name": "WRC",
-    "logo": "https://images.seeklogo.com/logo-png/19/1/wrc-fia-world-rally-logo-png_seeklogo-196351.png",
+    "logo": "/logos/6f9588501d9f.webp",
     "options": [
       {
         "name": "Opción 1 - TNT Sports EN",
@@ -1587,7 +1587,7 @@
   },
   {
     "name": "MotoGP",
-    "logo": "https://images.seeklogo.com/logo-png/9/1/motogp-logo-png_seeklogo-95111.png",
+    "logo": "/logos/885b62a767d3.webp",
     "options": [
       {
         "name": "Opción 1 - EN",
@@ -1632,7 +1632,7 @@
   },
   {
     "name": "DAZN 1",
-    "logo": "https://tse2.mm.bing.net/th/id/OIP.1_oRiOthCWD64KIGtCh0xAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+    "logo": "/logos/9faa8045eb00.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1651,7 +1651,7 @@
   },
   {
     "name": "DAZN La Liga",
-    "logo": "https://tse2.mm.bing.net/th/id/OIP.1_oRiOthCWD64KIGtCh0xAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+    "logo": "/logos/9faa8045eb00.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1666,7 +1666,7 @@
   },
   {
     "name": "MLB",
-    "logo": "https://images.seeklogo.com/logo-png/25/1/mlb-logo-png_seeklogo-250501.png",
+    "logo": "/logos/a37aa6e3df70.webp",
     "options": [
       {
         "name": "Opción 1 (USA)",
@@ -1681,7 +1681,7 @@
   },
   {
     "name": "NBA",
-    "logo": "https://images.seeklogo.com/logo-png/18/2/nba-national-basketball-association-logo-png_seeklogo-188902.png",
+    "logo": "/logos/1cca7693deab.webp",
     "options": [
       {
         "name": "Opción 1 (USA)",
@@ -1796,7 +1796,7 @@
   },
   {
     "name": "TNT Sports Chile",
-    "logo": "https://angulismo-pics.pages.dev/tnt-sports.png",
+    "logo": "/logos/c0378897f0fa.webp",
     "options": [
       {
         "name": "Opción 1",
@@ -1807,7 +1807,7 @@
   },
   {
     "name": "beIN Sports (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "beIN 1 - Opción 1",
@@ -1934,7 +1934,7 @@
   },
   {
     "name": "Canal+ (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "Canal+ - Opción 1",
@@ -1989,7 +1989,7 @@
   },
   {
     "name": "Eurosport (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "Eurosport 1 - Opción 1",
@@ -2020,7 +2020,7 @@
   },
   {
     "name": "RMC Sport (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "RMC Sport 1 - Opción 1",
@@ -2051,7 +2051,7 @@
   },
   {
     "name": "L'Equipe / Automoto (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "L'Equipe - Opción 1",
@@ -2082,7 +2082,7 @@
   },
   {
     "name": "Ligue 1 (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "LIGUE 1 (CH20) - Opción 1",
@@ -2125,7 +2125,7 @@
   },
   {
     "name": "TV Nacional (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "TF1 - Opción 1",
@@ -2216,7 +2216,7 @@
   },
   {
     "name": "Canal+ Live (Francia)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "C+Live 1 - Opción 1",
@@ -2439,7 +2439,7 @@
   },
   {
     "name": "Canales de España",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "M. LaLiga - Opción 1",
@@ -2674,7 +2674,7 @@
   },
   {
     "name": "Canales de USA (Español)",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "TUDN USA - Opción 1",
@@ -2769,7 +2769,7 @@
   },
   {
     "name": "Canales de Sudamérica",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "TNT Sport arg - Opción 1",
@@ -3052,7 +3052,7 @@
   },
   {
     "name": "Canales de México",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "ESPN1MX - Opción 1",
@@ -3223,7 +3223,7 @@
   },
   {
     "name": "Canales de Alemania",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "DE bundliga10 - Opción 1",
@@ -3422,7 +3422,7 @@
   },
   {
     "name": "Canales de UK",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "UK TNT SPORT - Opción 1",
@@ -3561,7 +3561,7 @@
   },
   {
     "name": "Canales de Italia",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "IT DAZN - Opción 1",
@@ -3616,7 +3616,7 @@
   },
   {
     "name": "Canales de Países Bajos",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "NL ESPN 1 - Opción 1",
@@ -3659,7 +3659,7 @@
   },
   {
     "name": "Canales de Portugal",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "PT SPORT 1 - Opción 1",
@@ -3714,7 +3714,7 @@
   },
   {
     "name": "Canales de Grecia",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "GR SPORT 1 - Opción 1",
@@ -3757,7 +3757,7 @@
   },
   {
     "name": "Canales de Turquía",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "TR BeIN sport 1 - Opción 1",
@@ -3788,7 +3788,7 @@
   },
   {
     "name": "Canales de Bélgica",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "BE channel1 - Opción 1",
@@ -3819,7 +3819,7 @@
   },
   {
     "name": "EXTRA SPORTS",
-    "logo": "https://images.seeklogo.com/logo-png/64/2/supercopa-de-espana-logo-png_seeklogo-649352.png",
+    "logo": "/logos/2c030d3e1c3b.webp",
     "options": [
       {
         "name": "EXTRA SPORT 1 - Opción 1",
@@ -4378,7 +4378,7 @@
   },
   {
     "name": "ABC",
-    "logo": "https://cdn.abcotvs.com/dip/images/11479454_011822-cc-abc-generic-thumb-img.jpg",
+    "logo": "/logos/920826bc7059.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4389,7 +4389,7 @@
   },
   {
     "name": "ACC Network",
-    "logo": "https://theacc.com/images/2018/11/30/ACCN_Launch.png",
+    "logo": "/logos/6727ae9df77c.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4400,7 +4400,7 @@
   },
   {
     "name": "AE",
-    "logo": "https://www.aetv.com/assets/images/aetv/generic-thumb.jpg",
+    "logo": "/logos/cfa69afc1168.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4411,7 +4411,7 @@
   },
   {
     "name": "AMC",
-    "logo": "https://tvseriesfinale.com/wp-content/uploads/2014/08/amc02.jpg",
+    "logo": "/logos/d1d0c15f2985.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4422,7 +4422,7 @@
   },
   {
     "name": "American Heroes Channel",
-    "logo": "https://payload.cargocollective.com/1/10/342209/9724942/AHC_15a_3_1340_c.jpg",
+    "logo": "/logos/f7a272405c3f.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4433,7 +4433,7 @@
   },
   {
     "name": "Animal Planet",
-    "logo": "https://mir-s3-cdn-cf.behance.net/project_modules/disp/f9ee57107702215.5facf9f601507.jpg",
+    "logo": "/logos/ff16ddd85db2.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4444,7 +4444,7 @@
   },
   {
     "name": "AXS TV",
-    "logo": "https://www.hcc.net/wp-content/uploads/2012/06/AXS_TV_BlueWhite.jpg",
+    "logo": "/logos/e7f06f4c0c71.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4466,7 +4466,7 @@
   },
   {
     "name": "BBC One London",
-    "logo": "https://ichef.bbci.co.uk/images/ic/1200x675/p0dkt7rv.jpg",
+    "logo": "/logos/7dc887bdde1d.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4477,7 +4477,7 @@
   },
   {
     "name": "BBC Two",
-    "logo": "https://ichef.bbci.co.uk/images/ic/1200x675/p0bvs8dg.jpg",
+    "logo": "/logos/0b72a35df63b.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4488,7 +4488,7 @@
   },
   {
     "name": "beIN Sports",
-    "logo": "https://assets-us-01.kc-usercontent.com/31dbcbc6-da4c-0033-328a-d7621d0fa726/1318873e-8501-4f79-bb69-182d741cf9ad/beIN%20SPORTS%20Portada.jpg?ver=03-06-2025?w=3840&q=75",
+    "logo": "/logos/5e0257d8e991.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4499,7 +4499,7 @@
   },
   {
     "name": "Bravo",
-    "logo": "https://www.bravotv.com/sites/bravo/files/2024/05/bravo-logo-2jpg.jpg",
+    "logo": "/logos/07e1288dcae8.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4510,7 +4510,7 @@
   },
   {
     "name": "Boomerang",
-    "logo": "https://cdn.broadbandtvnews.com/wp-content/uploads/2024/08/05120702/Boomerang.jpg",
+    "logo": "/logos/befeab0f955f.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4521,7 +4521,7 @@
   },
   {
     "name": "CANAL+ Sport PL",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "logo": "/logos/33841702b43a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4532,7 +4532,7 @@
   },
   {
     "name": "CANAL+ Sport 2 PL",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "logo": "/logos/33841702b43a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4543,7 +4543,7 @@
   },
   {
     "name": "CANAL+ Sport 3 PL",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "logo": "/logos/33841702b43a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4554,7 +4554,7 @@
   },
   {
     "name": "CANAL+ Sport 4 PL",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "logo": "/logos/33841702b43a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4565,7 +4565,7 @@
   },
   {
     "name": "CANAL+ Sport 5 PL",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/canansport.png",
+    "logo": "/logos/33841702b43a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4576,7 +4576,7 @@
   },
   {
     "name": "Cartoon Network",
-    "logo": "https://1000logos.net/wp-content/uploads/2016/10/Cartoon-Network-logo.jpg",
+    "logo": "/logos/e4738f652291.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4587,7 +4587,7 @@
   },
   {
     "name": "CBeebies",
-    "logo": "https://static.files.bbci.co.uk/core/website/assets/static/childrens-web/images/metadata/cbeebies-poster-1024x576.8eb27aa32e.png",
+    "logo": "/logos/daa38b81fcdb.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4598,7 +4598,7 @@
   },
   {
     "name": "CBS",
-    "logo": "https://wwwimage-tve.cbsstatic.com/base/files/seo/cbs_seo_1200x627_1.jpg",
+    "logo": "/logos/f6bc152dc4e7.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4609,7 +4609,7 @@
   },
   {
     "name": "CBS Sports Network",
-    "logo": "https://www.paramountshop.com/cdn/shop/files/cbssportsnetwork-mobile-min.png",
+    "logo": "/logos/72b8c851a05f.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4620,7 +4620,7 @@
   },
   {
     "name": "CNBC",
-    "logo": "https://cdn.versantmedia.com/versantmedia/styles/newsroom/s3/2025-11/cnbc%281600x900%29.png",
+    "logo": "/logos/9625a41a7442.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4631,7 +4631,7 @@
   },
   {
     "name": "Comedy Central",
-    "logo": "https://wwwimage-us.pplusstatic.com/base/files/seo/og-brand-comedy-central.jpg?format=webp",
+    "logo": "/logos/e69d5854ca8c.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4642,7 +4642,7 @@
   },
   {
     "name": "CW",
-    "logo": "https://www.wavy.com/wp-content/uploads/sites/3/2024/08/cw-logo-white-on-blue-wavy-background.jpg?w=1280",
+    "logo": "/logos/568678b1da57.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4653,7 +4653,7 @@
   },
   {
     "name": "DAZN 1 Germany",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=12dpnhddhmpm71228raanhyxs2_image-header_pDach_1723627450000&quality=70",
+    "logo": "/logos/22aa2224b9b7.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4664,7 +4664,7 @@
   },
   {
     "name": "DAZN 2 Germany",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=1ni1lpwjtnxmr1xklfoptrt2mz_image-header_pDach_1723628653000",
+    "logo": "/logos/43bc2cf2bd08.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4675,7 +4675,7 @@
   },
   {
     "name": "DAZN 1 Italia",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=pterrit4f2xu1pa2r6x87y5e9_image-header_pIt_1724315365000&quality=70",
+    "logo": "/logos/afd7e1d9e7e6.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4686,7 +4686,7 @@
   },
   {
     "name": "DAZN 1 Spain",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=hn9vkic8rbfi1ndrym8sw2qh7_image-header_pEs_1723035920000",
+    "logo": "/logos/a5de5fba7246.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4697,7 +4697,7 @@
   },
   {
     "name": "DAZN 2 Spain",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=2ouwtae8ad7l1fxviow9bowpk_image-header_pEs_1723118632000&quality=70",
+    "logo": "/logos/4994913748a5.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4708,7 +4708,7 @@
   },
   {
     "name": "DAZN 1 USA",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=1owzb99m9mnzy15hjxolpukwul_image-header_pUs_1771501796000&quality=70",
+    "logo": "/logos/5b641df152d7.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4719,7 +4719,7 @@
   },
   {
     "name": "DAZN F1",
-    "logo": "https://image.discovery.indazn.com/ca/v2/ca/image?id=14ln25pmjdv031ejxsmg8dczsu_image-header_pEs_1723117975000&quality=70",
+    "logo": "/logos/1cc0a00cc451.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4730,7 +4730,7 @@
   },
   {
     "name": "Discovery Channel",
-    "logo": "https://i.ibb.co/k2rbB1jc/e35d6be84084fed1d756c39242f13163.webp",
+    "logo": "/logos/821dc5b54a0c.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4741,7 +4741,7 @@
   },
   {
     "name": "Discovery Family",
-    "logo": "https://i.ibb.co/wFmT9Q5t/Discovery-Family-ID-Let-s-Go-Yellow.webp",
+    "logo": "/logos/9cef2cb8191a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4752,7 +4752,7 @@
   },
   {
     "name": "Discovery Turbo",
-    "logo": "https://i.ibb.co/20MgSXjy/featured-Image-1767979538707.jpg",
+    "logo": "/logos/65cc208c734a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4774,7 +4774,7 @@
   },
   {
     "name": "Disney Junior",
-    "logo": "https://thewaltdisneycompany.com/app/uploads/2021/02/021221_Disney-Junior-10th-Anniversary-00.jpg",
+    "logo": "/logos/57dc94e676f1.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4785,7 +4785,7 @@
   },
   {
     "name": "Disney XD",
-    "logo": "https://www.laughingplace.com/uploads/2015/10/d128457e3b3ab8c050f306aa8e23666b9b05d3cc.jpg",
+    "logo": "/logos/9dd312880df3.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4796,7 +4796,7 @@
   },
   {
     "name": "Eleven Sports 1",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
+    "logo": "/logos/b6cd884b2f66.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4807,7 +4807,7 @@
   },
   {
     "name": "Eleven Sports 2",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
+    "logo": "/logos/b6cd884b2f66.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4818,7 +4818,7 @@
   },
   {
     "name": "Eleven Sports 3",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
+    "logo": "/logos/b6cd884b2f66.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4829,7 +4829,7 @@
   },
   {
     "name": "Eleven Sports 4",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/100659.png",
+    "logo": "/logos/b6cd884b2f66.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4840,7 +4840,7 @@
   },
   {
     "name": "ESPN",
-    "logo": "https://a1.espncdn.com/combiner/i?img=%2Fi%2Fespn%2Fespn_logos%2Fespn_red.png",
+    "logo": "/logos/6fe86f358d60.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4859,7 +4859,7 @@
   },
   {
     "name": "ESPN Deportes",
-    "logo": "https://i.ibb.co/Y7zHmbbz/i.png",
+    "logo": "/logos/c1217b590416.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4874,7 +4874,7 @@
   },
   {
     "name": "ESPN2",
-    "logo": "https://discgolf.ultiworld.com/wp-content/uploads/2020/10/ESPN2.png",
+    "logo": "/logos/29a9c43131c6.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4885,7 +4885,7 @@
   },
   {
     "name": "ESPNEWS",
-    "logo": "https://i.ibb.co/5h4LGFHq/image.png",
+    "logo": "/logos/e94e42c04c6b.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4896,7 +4896,7 @@
   },
   {
     "name": "ESPNU",
-    "logo": "https://i.ibb.co/Lh5jHVDm/ESPNU-logo-1-jpg.webp",
+    "logo": "/logos/ec322291efb8.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4907,7 +4907,7 @@
   },
   {
     "name": "Food Network",
-    "logo": "https://i.ibb.co/5WcnZbYf/food-network-jpg.jpg",
+    "logo": "/logos/af9aa3a969b7.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4918,7 +4918,7 @@
   },
   {
     "name": "Fox",
-    "logo": "https://i.ibb.co/8JdwqP4/foxusa.png",
+    "logo": "/logos/82d1234f7521.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4929,7 +4929,7 @@
   },
   {
     "name": "Fox Deportes",
-    "logo": "https://foxsports-wordpress-www-prsupports-prod.s3.amazonaws.com/uploads/sites/2/2016/12/LOGO-DEPORTES-1040x585.jpg",
+    "logo": "/logos/63754f3696f4.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4944,7 +4944,7 @@
   },
   {
     "name": "Fox Sports 1",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/2015_Fox_Sports_1_logo.svg/1280px-2015_Fox_Sports_1_logo.svg.png",
+    "logo": "/logos/74882d95ba68.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4955,7 +4955,7 @@
   },
   {
     "name": "Fox Sports 2 (US)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/FS2_logo_2015.svg/1280px-FS2_logo_2015.svg.png",
+    "logo": "/logos/6480c660f2f7.webp",
     "options": [
       {
         "name": "Timstreams",
@@ -4966,7 +4966,7 @@
   },
   {
     "name": "Fox Sports 501 (Cricket)",
-    "logo": "https://i.ibb.co/Y4bTS1p7/image.webp",
+    "logo": "/logos/ade749526e3d.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4977,7 +4977,7 @@
   },
   {
     "name": "Fox Sports 502 (League)",
-    "logo": "https://i.ibb.co/tppZhDrb/image.webp",
+    "logo": "/logos/9cd3f78f7c96.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4988,7 +4988,7 @@
   },
   {
     "name": "Fox Sports 503",
-    "logo": "https://i.ibb.co/xS4MkGSL/image.webp",
+    "logo": "/logos/9866e657e733.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -4999,7 +4999,7 @@
   },
   {
     "name": "Fox Sports 504 (Footy)",
-    "logo": "https://i.ibb.co/SXvQLc0M/image.webp",
+    "logo": "/logos/e3a1646cc891.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5010,7 +5010,7 @@
   },
   {
     "name": "Fox Sports 505",
-    "logo": "https://i.ibb.co/prKZGNLt/image.webp",
+    "logo": "/logos/0c9ef0488902.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5021,7 +5021,7 @@
   },
   {
     "name": "Fox Sports 506",
-    "logo": "https://i.ibb.co/Swks4Lmj/image.webp",
+    "logo": "/logos/a91c2839123e.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5032,7 +5032,7 @@
   },
   {
     "name": "Fox Sports 507",
-    "logo": "https://i.ibb.co/7d6VgDVL/image.webp",
+    "logo": "/logos/b7ca23a13bd3.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5043,7 +5043,7 @@
   },
   {
     "name": "FX",
-    "logo": "https://static0.srcdn.com/wordpress/wp-content/uploads/2026/01/gold-fx-channel-logo-1.jpg",
+    "logo": "/logos/b594bac60f3e.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5054,7 +5054,7 @@
   },
   {
     "name": "FXM",
-    "logo": "https://www.awn.com/sites/default/files/styles/original/public/image/featured/50716-buster-creates-brand-id-new-fxm-programming-block_0.jpg",
+    "logo": "/logos/0ba912ff7756.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5065,7 +5065,7 @@
   },
   {
     "name": "FXX",
-    "logo": "https://thestreamable.com/media/pages/channels/fxx/b6fc72ce3d-1756344305/fxx-banner-1536x864-crop.png",
+    "logo": "/logos/78f8bb8ff4c9.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5076,7 +5076,7 @@
   },
   {
     "name": "Freeform",
-    "logo": "https://d2z00kf51ll94q.cloudfront.net//archive/2023/large/ADC102_BCD021B_0.jpg",
+    "logo": "/logos/7fea453998e6.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5087,7 +5087,7 @@
   },
   {
     "name": "GOLF Channel",
-    "logo": "https://corporate.comcast.com/media/img/1000w/2020/01/corporate_golf-channel-16x9-social.jpg",
+    "logo": "/logos/aeaae1e23756.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5098,7 +5098,7 @@
   },
   {
     "name": "HBO",
-    "logo": "https://static.hbo.com/2021-11/hbo-static-1920.jpg",
+    "logo": "/logos/5d9cc70301f2.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5109,7 +5109,7 @@
   },
   {
     "name": "HBO Comedy",
-    "logo": "https://www.tvinsider.com/wp-content/uploads/2022/03/hbo-comedy.png",
+    "logo": "/logos/47a0a112be74.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5120,7 +5120,7 @@
   },
   {
     "name": "HBO Drama",
-    "logo": "https://i.ibb.co/Qv2Mz3ZB/https-archive-images-prod-global-a201836-reutersmedia-net-2016-10-30-LYNXMPEC9-T08-O.avif",
+    "logo": "/logos/92813600961f.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5131,7 +5131,7 @@
   },
   {
     "name": "HBO Latino",
-    "logo": "https://i.ibb.co/TMzmbVYq/maxresdefault.jpg",
+    "logo": "/logos/e544dd1bd05e.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5142,7 +5142,7 @@
   },
   {
     "name": "HBO Movies",
-    "logo": "https://i.ibb.co/Qv2Mz3ZB/https-archive-images-prod-global-a201836-reutersmedia-net-2016-10-30-LYNXMPEC9-T08-O.avif",
+    "logo": "/logos/92813600961f.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5153,7 +5153,7 @@
   },
   {
     "name": "HGTV",
-    "logo": "https://i.ibb.co/gbtDnLhS/hgtv-jpg.jpg",
+    "logo": "/logos/3a21f80fddbb.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5164,7 +5164,7 @@
   },
   {
     "name": "MLB Network",
-    "logo": "https://img.mlbstatic.com/mlb-images/image/private/t_16x9/t_w2208/mlb/xtkynqe5wgtzaddnsus2.jpg",
+    "logo": "/logos/4eb67cfeeac0.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5175,7 +5175,7 @@
   },
   {
     "name": "MotoGP Channel",
-    "logo": "https://sportbikesincmag.com/wp-content/uploads/2024/11/New-MotoGP-Logo-sportbikesincmag.com-4.jpg",
+    "logo": "/logos/f72b80425cc1.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5186,7 +5186,7 @@
   },
   {
     "name": "MTV",
-    "logo": "https://static0.colliderimages.com/wordpress/wp-content/uploads/2025/12/mtv-logo-1.jpg",
+    "logo": "/logos/0e2748752223.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5197,7 +5197,7 @@
   },
   {
     "name": "NBA TV",
-    "logo": "https://static.cdn.turner.com/styles/header_image_1500x500_cropped/s3/nba-tv-16x9-1.jpg?itok=6H8mrlyR",
+    "logo": "/logos/14a258e6e6fd.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5208,7 +5208,7 @@
   },
   {
     "name": "NBC",
-    "logo": "https://cdn.mos.cms.futurecdn.net/zP42nmS7MRj2kvBqNEs8CE.jpg",
+    "logo": "/logos/eb08b1394bd6.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5219,7 +5219,7 @@
   },
   {
     "name": "NBC Sports Bay Area",
-    "logo": "https://cdn.mos.cms.futurecdn.net/d7jWexxhtezRZ6ryLHyKmd.jpeg",
+    "logo": "/logos/d4ea9844a9df.webp",
     "options": [
       {
         "name": "Timstreams",
@@ -5234,7 +5234,7 @@
   },
   {
     "name": "NBC Sports Philadelphia",
-    "logo": "https://media.nbcsportsphiladelphia.com/2023/04/Philly-Landmark.png?resize=1200%2C675&quality=85&strip=all",
+    "logo": "/logos/e328aaf71ba1.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5245,7 +5245,7 @@
   },
   {
     "name": "NFL Network",
-    "logo": "https://i.ibb.co/ZRsTndvV/tfki7njrm3y8jycbtkrx.jpg",
+    "logo": "/logos/65e925ea2325.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5263,7 +5263,7 @@
   },
   {
     "name": "NHL Network",
-    "logo": "https://media.d3.nhle.com/image/private/t_ratio16_9-size50/prd/lhum6z3hyaga9ahnjow0.png",
+    "logo": "/logos/e88199c08e70.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5274,7 +5274,7 @@
   },
   {
     "name": "Nick Jr.",
-    "logo": "https://i.ibb.co/xS6CMxZD/nick-jr-logo-2023-4.jpg",
+    "logo": "/logos/464df3a39c7e.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5285,7 +5285,7 @@
   },
   {
     "name": "Nickelodeon",
-    "logo": "https://i.ibb.co/xSM8bDYh/roger-nickelodeon-graphic-design-format-webp-width-2880-8-Yj-L2u3-KSI20j-HDQ.webp",
+    "logo": "/logos/13e8189899b0.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5296,7 +5296,7 @@
   },
   {
     "name": "Nicktoons",
-    "logo": "https://i.ibb.co/XfX32tyx/nicktoons-logo-2023-rebrand-2.png",
+    "logo": "/logos/1dceb938873a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5312,7 +5312,7 @@
   },
   {
     "name": "Polsat Sport 1",
-    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COEd/3809-polsat-sport-1-hd.png",
+    "logo": "/logos/e7f84d3ce662.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5323,7 +5323,7 @@
   },
   {
     "name": "Polsat Sport 2",
-    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COId/3810-polsat-sport-2-hd.png",
+    "logo": "/logos/9a2646cec1cb.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5334,7 +5334,7 @@
   },
   {
     "name": "Polsat Sport 3",
-    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COMd/3811-polsat-sport-3-hd.png",
+    "logo": "/logos/35f6d114d73c.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5345,7 +5345,7 @@
   },
   {
     "name": "Polsat Sport Fight",
-    "logo": "https://staticeu.sweet.tv/images/cache/v2/channel_banner/COUd/3813-polsat-sport-fight-hd.png",
+    "logo": "/logos/a2bb3e4f39e1.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5356,7 +5356,7 @@
   },
   {
     "name": "Premiere",
-    "logo": "https://s3.glbimg.com/v1/AUTH_36abb2af534644878388f516c38b89ac/prod/home-share-1b75cdaa.png",
+    "logo": "/logos/971a2b958939.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5374,7 +5374,7 @@
   },
   {
     "name": "RACER Network",
-    "logo": "https://cdn-cs-images.racer.com/v3/assets/blte77f57883ea46be1/bltb30b537c79808b35/680f2c517c8c98109d720e49/Racer_Network_1920x1080_Presser_V1.jpg",
+    "logo": "/logos/d8ded90fb538.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5385,7 +5385,7 @@
   },
   {
     "name": "Showtime",
-    "logo": "https://i.ibb.co/v7vcNY4/Showtime-Logo.webp",
+    "logo": "/logos/f8a181c46128.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5396,7 +5396,7 @@
   },
   {
     "name": "Showtime 2",
-    "logo": "https://i.ibb.co/8gCRbv0s/Showtime-2-svg.webp",
+    "logo": "/logos/2635409c8c10.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5407,7 +5407,7 @@
   },
   {
     "name": "Showtime Extreme",
-    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "logo": "/logos/8c21bc82d1d5.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5418,7 +5418,7 @@
   },
   {
     "name": "Showtime Family Zone",
-    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "logo": "/logos/8c21bc82d1d5.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5429,7 +5429,7 @@
   },
   {
     "name": "Showtime Next",
-    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "logo": "/logos/8c21bc82d1d5.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5440,7 +5440,7 @@
   },
   {
     "name": "Showtime Women",
-    "logo": "https://i.ibb.co/1t5fNwpQ/Showtime-Closing-2013.webp",
+    "logo": "/logos/8c21bc82d1d5.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5451,7 +5451,7 @@
   },
   {
     "name": "Sky Sport 1 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5462,7 +5462,7 @@
   },
   {
     "name": "Sky Sport 2 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5473,7 +5473,7 @@
   },
   {
     "name": "Sky Sport 3 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5484,7 +5484,7 @@
   },
   {
     "name": "Sky Sport 4 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5495,7 +5495,7 @@
   },
   {
     "name": "Sky Sport 5 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5506,7 +5506,7 @@
   },
   {
     "name": "Sky Sport 6 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5517,7 +5517,7 @@
   },
   {
     "name": "Sky Sport 7 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5528,7 +5528,7 @@
   },
   {
     "name": "Sky Sport 8 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5539,7 +5539,7 @@
   },
   {
     "name": "Sky Sport 9 NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5550,7 +5550,7 @@
   },
   {
     "name": "Sky Sport Select NZ",
-    "logo": "https://i.ibb.co/v4NvkZst/Untitled-design.png",
+    "logo": "/logos/d5201fd2b253.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5561,7 +5561,7 @@
   },
   {
     "name": "Sky Sports+",
-    "logo": "https://e0.365dm.com/24/07/2048x1152/skysports-ssplus-sky-sports-plus_6644064.jpg",
+    "logo": "/logos/478bdfeab397.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5572,7 +5572,7 @@
   },
   {
     "name": "Sky Sports Action",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/skysportsaction.png",
+    "logo": "/logos/fa0cb6d69f8e.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5583,7 +5583,7 @@
   },
   {
     "name": "Sky Sports Cricket",
-    "logo": "https://e0.365dm.com/17/07/2048x1152/skysports-sky-sports-cricket-podcast-sky-cricket-podcast_4004801.jpg",
+    "logo": "/logos/2b6aa3fe3156.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5594,7 +5594,7 @@
   },
   {
     "name": "Sky Sports F1",
-    "logo": "https://e0.365dm.com/21/03/1600x900/skysports-f1-2021-graphic_5299452.png",
+    "logo": "/logos/d8c5b9872d73.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5609,7 +5609,7 @@
   },
   {
     "name": "Sky Sports Football",
-    "logo": "https://images.squarespace-cdn.com/content/v1/6380a5b12f7b6f632e16ce77/46d62da8-e650-4d2b-a5bc-48a5648edb8e/Beth_Mead.jpg",
+    "logo": "/logos/bf1c1010531c.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5620,7 +5620,7 @@
   },
   {
     "name": "Sky Sports Golf",
-    "logo": "https://e0.365dm.com/23/05/1600x900/skysports-golf-sky-sports-golf_6158933.jpg",
+    "logo": "/logos/47b33533b5fb.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5631,7 +5631,7 @@
   },
   {
     "name": "Sky Sports Main Event",
-    "logo": "https://e0.365dm.com/17/07/1600x900/skysports-all-new-rebrand-f1-premier-league-golf-cricket_4001810.jpg",
+    "logo": "/logos/9c0961c6d5d2.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5642,7 +5642,7 @@
   },
   {
     "name": "Sky Sports Mix",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/Sky_Sports_Mix_Generic_ID_2017.webp",
+    "logo": "/logos/2646954f1634.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5653,7 +5653,7 @@
   },
   {
     "name": "Sky Sports News",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/image.jpg",
+    "logo": "/logos/0defc45d7a68.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5664,7 +5664,7 @@
   },
   {
     "name": "Sky Sports Premier League",
-    "logo": "https://e0.365dm.com/25/06/2048x1152/skysports-premier-league-fixtures_6937276.jpg",
+    "logo": "/logos/0af50d73ace6.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5675,7 +5675,7 @@
   },
   {
     "name": "Sky Sports Racing",
-    "logo": "https://e0.365dm.com/23/07/2048x1152/skysports-racing-league-sky-sports-racing_6230990.jpg",
+    "logo": "/logos/e89dd134e618.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5686,7 +5686,7 @@
   },
   {
     "name": "Sky Sports Tennis",
-    "logo": "https://e0.365dm.com/24/01/2048x1152/skysports-sky-sports-tennis_6437709.jpg",
+    "logo": "/logos/f932925e7c3d.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5697,7 +5697,7 @@
   },
   {
     "name": "Sony Sports Network",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "logo": "/logos/dcb3d98b2d56.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5708,7 +5708,7 @@
   },
   {
     "name": "Sony Sports Network 2",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "logo": "/logos/dcb3d98b2d56.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5719,7 +5719,7 @@
   },
   {
     "name": "Sony Sports Network 3",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "logo": "/logos/dcb3d98b2d56.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5730,7 +5730,7 @@
   },
   {
     "name": "Sony Sports Network 4",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "logo": "/logos/dcb3d98b2d56.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5741,7 +5741,7 @@
   },
   {
     "name": "Sony Sports Network 5",
-    "logo": "https://cdn.jsdelivr.net/gh/willthequeencome/img-cdn/085457534.png",
+    "logo": "/logos/dcb3d98b2d56.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5752,7 +5752,7 @@
   },
   {
     "name": "STARZ",
-    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "logo": "/logos/37c668466700.webp",
     "options": [
       {
         "name": "Timstreams",
@@ -5763,7 +5763,7 @@
   },
   {
     "name": "STARZ Cinema",
-    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "logo": "/logos/37c668466700.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5774,7 +5774,7 @@
   },
   {
     "name": "STARZ Comedy",
-    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "logo": "/logos/37c668466700.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5785,7 +5785,7 @@
   },
   {
     "name": "STARZ Kids and Family",
-    "logo": "https://careers.starz.com/wp-content/uploads/2025/01/STARZ-LOGO-IMAGE.png",
+    "logo": "/logos/37c668466700.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5796,7 +5796,7 @@
   },
   {
     "name": "SYFY",
-    "logo": "https://assets.goal.com/images/v3/blt1be56273baf0440d/syfy%20logo.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+    "logo": "/logos/48e1a9afea05.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5807,7 +5807,7 @@
   },
   {
     "name": "TBS",
-    "logo": "https://cdn.sanity.io/images/1pn9obcz/production/a6971fbe09c85f2deeb480fc494a39219d039135-1920x1080.jpg",
+    "logo": "/logos/c6b8b5ed9c1c.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5818,7 +5818,7 @@
   },
   {
     "name": "Teenick",
-    "logo": "https://i.ibb.co/3yCJDVrW/Teen-Nick-2023.webp",
+    "logo": "/logos/532bf0a84a4d.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5829,7 +5829,7 @@
   },
   {
     "name": "Telemundo",
-    "logo": "https://media-cldnry.s-nbcnews.com/image/upload/newscms/2020_20/3352176/telemundo-social-default.png",
+    "logo": "/logos/be572bc0f572.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5840,7 +5840,7 @@
   },
   {
     "name": "Tennis Channel",
-    "logo": "https://s10019.cdn.ncms.io/wp-content/uploads/2026/05/tenn2.jpg.jpeg",
+    "logo": "/logos/ace0c437b70a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5856,7 +5856,7 @@
   },
   {
     "name": "The Weather Channel",
-    "logo": "https://i.ibb.co/bRJqL6WK/LWRBPBUMCVFA3-G5-Q4-ZH3-XJYDNY.avif",
+    "logo": "/logos/360d58453da3.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5867,7 +5867,7 @@
   },
   {
     "name": "TNT",
-    "logo": "https://i.ytimg.com/vi/F-AHKcxi3pY/maxresdefault.jpg",
+    "logo": "/logos/5aaaa49c8b17.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5878,7 +5878,7 @@
   },
   {
     "name": "TNT Sports 1",
-    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "logo": "/logos/d8b7bd7fadb4.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5889,7 +5889,7 @@
   },
   {
     "name": "TNT Sports 2",
-    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "logo": "/logos/d8b7bd7fadb4.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5900,7 +5900,7 @@
   },
   {
     "name": "TNT Sports 3",
-    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "logo": "/logos/d8b7bd7fadb4.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5911,7 +5911,7 @@
   },
   {
     "name": "TNT Sports 4",
-    "logo": "https://cdn.mos.cms.futurecdn.net/y3oPitXYAwGJnyTHFYo5qB.jpeg",
+    "logo": "/logos/d8b7bd7fadb4.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5922,7 +5922,7 @@
   },
   {
     "name": "TruTV",
-    "logo": "https://i.ibb.co/DfGcnjXY/Header-tru-TV.webp",
+    "logo": "/logos/f72b97fce24a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5933,7 +5933,7 @@
   },
   {
     "name": "TUDN",
-    "logo": "https://cdn.aptoide.com/imgs/e/e/6/ee65573e3ed2c5fcafa0191860afdf51_fgraphic.png",
+    "logo": "/logos/a9537010e3a9.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5959,7 +5959,7 @@
   },
   {
     "name": "TYC Sports Internacional",
-    "logo": "https://assets.goal.com/images/v3/blta396e76391fffdfa/TyC_Sports_logo.jpg",
+    "logo": "/logos/4a7c109b1c04.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5981,7 +5981,7 @@
   },
   {
     "name": "USA Network",
-    "logo": "https://variety.com/wp-content/uploads/2013/10/usa-network-logo1.jpg",
+    "logo": "/logos/24891feddc12.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -5992,7 +5992,7 @@
   },
   {
     "name": "WAPA America",
-    "logo": "https://m.media-amazon.com/images/I/81AEkpHaIPL._SL1920_.png",
+    "logo": "/logos/eede9802e7b0.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -6003,7 +6003,7 @@
   },
   {
     "name": "WAPA Deportes",
-    "logo": "https://i.ibb.co/pBzhsJ17/WAPA-Deportes.jpg",
+    "logo": "/logos/f3545e3528fd.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -6014,7 +6014,7 @@
   },
   {
     "name": "Willow Cricket",
-    "logo": "https://mgpindia.com/wp-content/uploads/2021/10/willow-logo.jpg",
+    "logo": "/logos/965a8af7843a.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -6025,7 +6025,7 @@
   },
   {
     "name": "Willow Cricket 2",
-    "logo": "https://d229kpbsb5jevy.cloudfront.net/tv/1920/1080/languages/WILLOW-2.jpg",
+    "logo": "/logos/063e64631eb4.webp",
     "options": [
       {
         "name": "TimStreams",
@@ -6180,7 +6180,7 @@
   },
   {
     "name": "Sportv",
-    "logo": "http://api.sofascore.com/api/v1/unique-tournament/16/image/dark",
+    "logo": "/logos/3fd5f336e62c.webp",
     "options": [
       {
         "name": "NEW · SporTV BR FHD",
@@ -6195,7 +6195,7 @@
   },
   {
     "name": "UNIVERSAL CINEMA OESTE",
-    "logo": "https://geo.edge.pontiscloud.com:9002/images/1282/CH_LOGO/800/542/0/0/21817888076947.png",
+    "logo": "/logos/4bf3b996d93b.webp",
     "options": [
       {
         "name": "NEW · UNIVERSAL CINEMA OESTE",
@@ -6210,7 +6210,7 @@
   },
   {
     "name": "UNIVERSAL COMEDY",
-    "logo": "https://geo.edge.pontiscloud.com:9002/images/1283/CH_LOGO/800/542/0/0/94843453076948.png",
+    "logo": "/logos/a5ae4e7ba379.webp",
     "options": [
       {
         "name": "NEW · UNIVERSAL COMEDY",
@@ -6225,7 +6225,7 @@
   },
   {
     "name": "UNIVERSAL CRIME",
-    "logo": "https://geo.edge.pontiscloud.com:9002/images/1284/CH_LOGO/800/542/0/0/34307524076949.png",
+    "logo": "/logos/478dc80a3683.webp",
     "options": [
       {
         "name": "NEW · UNIVERSAL CRIME",
@@ -6240,7 +6240,7 @@
   },
   {
     "name": "UNIVERSAL PREMIERE OESTE",
-    "logo": "https://geo.edge.pontiscloud.com:9002/images/1285/CH_LOGO/800/542/0/0/62685863076950.png",
+    "logo": "/logos/fc88d33b7874.webp",
     "options": [
       {
         "name": "NEW · UNIVERSAL PREMIERE OESTE",
@@ -6255,7 +6255,7 @@
   },
   {
     "name": "UNIVERSAL REALITY",
-    "logo": "https://geo.edge.pontiscloud.com:9002/images/1281/CH_LOGO/800/542/0/0/16370616076951.png",
+    "logo": "/logos/6af6c004bc13.webp",
     "options": [
       {
         "name": "NEW · UNIVERSAL REALITY",
@@ -6270,7 +6270,7 @@
   },
   {
     "name": "CANAL E",
-    "logo": "https://i.ibb.co/zftBZ5j/canal-e.webp",
+    "logo": "/logos/c6fadc4bc0bd.webp",
     "options": [
       {
         "name": "NEW · CANAL E",
@@ -6294,7 +6294,7 @@
   },
   {
     "name": "NICK JR. CLUB",
-    "logo": "https://images.pluto.tv/channels/67f3eb1c443f0671bc03ece8/colorLogoSVG_1748329103439.svg",
+    "logo": "/logos/02057ca02407.webp",
     "options": [
       {
         "name": "NEW · NICK JR. CLUB",
@@ -6307,7 +6307,7 @@
   },
   {
     "name": "TEENNICK",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/TeenNick_logo_2023_%28outline%29.svg/1280px-TeenNick_logo_2023_%28outline%29.svg.png",
+    "logo": "/logos/a8890b94b2e1.webp",
     "options": [
       {
         "name": "NEW · TEENNICK",
@@ -6320,7 +6320,7 @@
   },
   {
     "name": "NICKREWIND",
-    "logo": "https://i.imgur.com/Bw8rdAb.png",
+    "logo": "/logos/e479af688da1.webp",
     "options": [
       {
         "name": "NEW · NICKREWIND",
@@ -6333,7 +6333,7 @@
   },
   {
     "name": "BabyFirst",
-    "logo": "https://i.imgur.com/WxLHBwu.png",
+    "logo": "/logos/d9990decea9c.webp",
     "options": [
       {
         "name": "NEW · BabyFirst",
@@ -6346,7 +6346,7 @@
   },
   {
     "name": "BAND",
-    "logo": "https://i.pinimg.com/564x/61/d8/07/61d807daca7fb95995f174d67c6be4f9.jpg",
+    "logo": "/logos/423c01559e6f.webp",
     "options": [
       {
         "name": "NEW · BAND",
@@ -6362,7 +6362,7 @@
   },
   {
     "name": "JP NEWS",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Jovem_Pan_logo_2018.svg/960px-Jovem_Pan_logo_2018.svg.png",
+    "logo": "/logos/c8b76e2d5515.webp",
     "options": [
       {
         "name": "NEW · JP NEWS",
@@ -6375,7 +6375,7 @@
   },
   {
     "name": "GLOBO R.D.J",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Globo_2024.svg/960px-Globo_2024.svg.png",
+    "logo": "/logos/dc272dad5e38.webp",
     "options": [
       {
         "name": "NEW · GLOBO R.D.J",
@@ -6388,7 +6388,7 @@
   },
   {
     "name": "TV FRONTEIRA",
-    "logo": "https://i.imgur.com/NtcoW6G.png",
+    "logo": "/logos/b5162d392575.webp",
     "options": [
       {
         "name": "NEW · TV FRONTEIRA",
@@ -6400,7 +6400,7 @@
   },
   {
     "name": "TV BAHIA",
-    "logo": "https://i.imgur.com/sJOrvHg.png",
+    "logo": "/logos/9eb04995e9eb.webp",
     "options": [
       {
         "name": "NEW · TV BAHIA",
@@ -6475,7 +6475,7 @@
   },
   {
     "name": "RECORD NEWS",
-    "logo": "https://i.imgur.com/HZDRG0K.png",
+    "logo": "/logos/4f8c4d54cfc6.webp",
     "options": [
       {
         "name": "NEW · RECORD NEWS",
@@ -6488,7 +6488,7 @@
   },
   {
     "name": "PLUTO TV RECORD NEWS",
-    "logo": "https://images.pluto.tv/channels/6102e04e9ab1db0007a980a1/colorLogoSVG.svg",
+    "logo": "/logos/f1e8ba040502.webp",
     "options": [
       {
         "name": "NEW · PLUTO TV RECORD NEWS",
@@ -6501,7 +6501,7 @@
   },
   {
     "name": "FUTURA",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Canal_Futura.png/960px-Canal_Futura.png",
+    "logo": "/logos/26dbd9e0fd6d.webp",
     "options": [
       {
         "name": "NEW · FUTURA",
@@ -6519,7 +6519,7 @@
   },
   {
     "name": "REDE MINAS BR",
-    "logo": "https://i.postimg.cc/85wczdN9/download-32.png",
+    "logo": "/logos/9a76761c0d38.webp",
     "options": [
       {
         "name": "NEW · REDE MINAS BR",
@@ -6531,7 +6531,7 @@
   },
   {
     "name": "TV MORENA",
-    "logo": "https://i.imgur.com/AJ0xqPT.png",
+    "logo": "/logos/10542894d608.webp",
     "options": [
       {
         "name": "NEW · TV MORENA",
@@ -6543,7 +6543,7 @@
   },
   {
     "name": "TV MAIS BR",
-    "logo": "https://i.postimg.cc/tRwytvSP/download-70.jpg",
+    "logo": "/logos/e7a24c1e1778.webp",
     "options": [
       {
         "name": "NEW · TV MAIS BR",
@@ -6555,7 +6555,7 @@
   },
   {
     "name": "TV PANAENSE",
-    "logo": "https://duckduckgo.com/i/e408ea02.png",
+    "logo": "/logos/f849faab9b22.webp",
     "options": [
       {
         "name": "NEW · TV PANAENSE",
@@ -6567,7 +6567,7 @@
   },
   {
     "name": "TV BRASIL",
-    "logo": "https://i.postimg.cc/65x9SxzP/TVBRASIL.png",
+    "logo": "/logos/f054614aed73.webp",
     "options": [
       {
         "name": "NEW · TV BRASIL",
@@ -6579,7 +6579,7 @@
   },
   {
     "name": "TV CULTURA",
-    "logo": "https://m.media-amazon.com/images/I/51yXxzQXi1L.png",
+    "logo": "/logos/ea2feb5bd0a6.webp",
     "options": [
       {
         "name": "NEW · TV CULTURA",
@@ -6591,7 +6591,7 @@
   },
   {
     "name": "TV CULTURAL FAST",
-    "logo": "https://images.pluto.tv/channels/62e010e6cd663f0007e57dc8/colorLogoSVG.svg",
+    "logo": "/logos/88320ca1cc95.webp",
     "options": [
       {
         "name": "NEW · TV CULTURAL FAST",
@@ -6604,7 +6604,7 @@
   },
   {
     "name": "CANAL UOL",
-    "logo": "https://images.pluto.tv/channels/64b9370b409629000802d32b/colorLogoSVG.svg",
+    "logo": "/logos/f2a68f68b969.webp",
     "options": [
       {
         "name": "NEW · CANAL UOL",
@@ -6617,7 +6617,7 @@
   },
   {
     "name": "MONUMENTAL",
-    "logo": "https://i.imgur.com/kEcOYML.png",
+    "logo": "/logos/217824ab62fd.webp",
     "options": [
       {
         "name": "NEW · MONUMENTAL",
@@ -6629,7 +6629,7 @@
   },
   {
     "name": "MEGA TV",
-    "logo": "https://i.ibb.co/hfFmYXz/WW.jpg",
+    "logo": "/logos/133e23c515df.webp",
     "options": [
       {
         "name": "NEW · MEGA TV",
@@ -6654,7 +6654,7 @@
   },
   {
     "name": "RADIO NACIONAL DEL PARAGUAY",
-    "logo": "https://i.imgur.com/ksh20I5.png",
+    "logo": "/logos/6b629c08880a.webp",
     "options": [
       {
         "name": "NEW · RADIO NACIONAL DEL PARAGUAY",
@@ -6667,7 +6667,7 @@
   },
   {
     "name": "RED DIGITAL",
-    "logo": "https://i.imgur.com/3jj0MQP.jpg",
+    "logo": "/logos/536b2d65e44d.webp",
     "options": [
       {
         "name": "NEW · RED DIGITAL",
@@ -6679,7 +6679,7 @@
   },
   {
     "name": "CANAL PRO",
-    "logo": "https://www.desdeparaguay.com/images_hpy/logos/radios/90x90px2/pro.png",
+    "logo": "/logos/a5d274a510a5.webp",
     "options": [
       {
         "name": "NEW · CANAL PRO",
@@ -6691,7 +6691,7 @@
   },
   {
     "name": "TVS",
-    "logo": "https://i.ibb.co/s14qLnR/TVS.png",
+    "logo": "/logos/3915ed27625a.webp",
     "options": [
       {
         "name": "NEW · TVS",
@@ -6703,7 +6703,7 @@
   },
   {
     "name": "NPY",
-    "logo": "https://i.imgur.com/pUEkaiW.png",
+    "logo": "/logos/226c98748a7d.webp",
     "options": [
       {
         "name": "NEW · NPY",
@@ -6715,7 +6715,7 @@
   },
   {
     "name": "LA TELE",
-    "logo": "https://i.imgur.com/Qcf6Qev.png",
+    "logo": "/logos/ac1c685ab39a.webp",
     "options": [
       {
         "name": "NEW · LA TELE",
@@ -6727,7 +6727,7 @@
   },
   {
     "name": "HEI NOW",
-    "logo": "https://i.imgur.com/oMHiGRN.png",
+    "logo": "/logos/bcf6cbadb25b.webp",
     "options": [
       {
         "name": "NEW · HEI NOW",
@@ -6739,7 +6739,7 @@
   },
   {
     "name": "E40",
-    "logo": "https://i.ibb.co/jz9XkvP/e40.png",
+    "logo": "/logos/7035649b6992.webp",
     "options": [
       {
         "name": "NEW · E40",
@@ -6751,7 +6751,7 @@
   },
   {
     "name": "Mi Tv",
-    "logo": "https://i.postimg.cc/qvvgzQzD/1200px-LOGO-MITV-ALTA-DEFINICION-2020-PNG.png",
+    "logo": "/logos/e8c8b97f88b4.webp",
     "options": [
       {
         "name": "NEW · Mi Tv",
@@ -6775,7 +6775,7 @@
   },
   {
     "name": "Ñanduti TV",
-    "logo": "https://i0.wp.com/logoroga.com/wp-content/uploads/2017/10/nanduti-previa.png?w=1000&ssl=1",
+    "logo": "/logos/a8592e607f73.webp",
     "options": [
       {
         "name": "NEW · Ñanduti TV",
@@ -6787,7 +6787,7 @@
   },
   {
     "name": "ÑANDEJARA ÑE´E TV",
-    "logo": "https://i.postimg.cc/VLn9kH7Z/nande-jara.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · ÑANDEJARA ÑE´E TV",
@@ -6799,7 +6799,7 @@
   },
   {
     "name": "Union TV",
-    "logo": "https://i.imgur.com/No9YzNC.png",
+    "logo": "/logos/b4366eb30867.webp",
     "options": [
       {
         "name": "NEW · Union TV",
@@ -6811,7 +6811,7 @@
   },
   {
     "name": "Educanal",
-    "logo": "https://i.imgur.com/857OkFf.png",
+    "logo": "/logos/10ce0ae15613.webp",
     "options": [
       {
         "name": "NEW · Educanal",
@@ -6823,7 +6823,7 @@
   },
   {
     "name": "RCC",
-    "logo": "https://i.imgur.com/qdjBnRl.png",
+    "logo": "/logos/352cf287c854.webp",
     "options": [
       {
         "name": "NEW · RCC",
@@ -6835,7 +6835,7 @@
   },
   {
     "name": "TV CHAQUEÑA",
-    "logo": "https://i.postimg.cc/wTZxC8bG/tv-chaquena.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · TV CHAQUEÑA",
@@ -6847,7 +6847,7 @@
   },
   {
     "name": "TVAIRE CORONEL OVIEDO",
-    "logo": "https://i.postimg.cc/LX4WNDTj/tva.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · TVAIRE CORONEL OVIEDO",
@@ -6871,7 +6871,7 @@
   },
   {
     "name": "BRUNO MASI TV",
-    "logo": "https://i.ibb.co/pK5SNMT/bruno-masi-tv.png",
+    "logo": "/logos/7c64a69b9178.webp",
     "options": [
       {
         "name": "NEW · BRUNO MASI TV",
@@ -6883,7 +6883,7 @@
   },
   {
     "name": "FARRA TV",
-    "logo": "https://i.imgur.com/bXWzstH.png",
+    "logo": "/logos/39ad9fe32bc6.webp",
     "options": [
       {
         "name": "NEW · FARRA TV",
@@ -6895,7 +6895,7 @@
   },
   {
     "name": "TVE",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e7/TVE.svg",
+    "logo": "/logos/45a1a6cfb14b.webp",
     "options": [
       {
         "name": "NEW · TVE",
@@ -6907,7 +6907,7 @@
   },
   {
     "name": "EL PAIS",
-    "logo": "https://i.ytimg.com/vi/4MrSOuQGmeU/hqdefault.jpg",
+    "logo": "/logos/bf4ffdf0bf6f.webp",
     "options": [
       {
         "name": "NEW · EL PAIS",
@@ -6920,7 +6920,7 @@
   },
   {
     "name": "TELEMUNDO NOTICIAS",
-    "logo": "https://i.postimg.cc/yx613kKm/TELEMUNDOMX.png",
+    "logo": "/logos/7e3832fb662f.webp",
     "options": [
       {
         "name": "NEW · TELEMUNDO NOTICIAS",
@@ -6933,7 +6933,7 @@
   },
   {
     "name": "ARIRANG HD",
-    "logo": "https://i.imgur.com/Jdy3WNm.png",
+    "logo": "/logos/f0905944c369.webp",
     "options": [
       {
         "name": "NEW · ARIRANG HD",
@@ -6945,7 +6945,7 @@
   },
   {
     "name": "TELESUR",
-    "logo": "https://i.imgur.com/P50VjRX.png",
+    "logo": "/logos/db653ad45571.webp",
     "options": [
       {
         "name": "NEW · TELESUR",
@@ -6957,7 +6957,7 @@
   },
   {
     "name": "TELESUR SUB ENGLISH",
-    "logo": "https://i.imgur.com/P50VjRX.png",
+    "logo": "/logos/db653ad45571.webp",
     "options": [
       {
         "name": "NEW · TELESUR SUB ENGLISH",
@@ -6969,7 +6969,7 @@
   },
   {
     "name": "DW",
-    "logo": "https://i.imgur.com/8MRNFb9.png",
+    "logo": "/logos/4acfe867c608.webp",
     "options": [
       {
         "name": "NEW · DW",
@@ -6981,7 +6981,7 @@
   },
   {
     "name": "UCL",
-    "logo": "https://i.imgur.com/BzQphbw.png",
+    "logo": "/logos/d39ec8efd7fc.webp",
     "options": [
       {
         "name": "NEW · UCL",
@@ -7006,7 +7006,7 @@
   },
   {
     "name": "TELEMUNDO INTERNACIONAL",
-    "logo": "https://i.postimg.cc/yx613kKm/TELEMUNDOMX.png",
+    "logo": "/logos/7e3832fb662f.webp",
     "options": [
       {
         "name": "NEW · TELEMUNDO INTERNACIONAL",
@@ -7019,7 +7019,7 @@
   },
   {
     "name": "LAS ESTRELLAS",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Las_Estrellas_logo_%282016%29.png",
+    "logo": "/logos/758194c33736.webp",
     "options": [
       {
         "name": "NEW · LAS ESTRELLAS",
@@ -7032,7 +7032,7 @@
   },
   {
     "name": "Azteca Internacional",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Azteca_Internacional_logo_2023.png",
+    "logo": "/logos/bcadf03201e6.webp",
     "options": [
       {
         "name": "NEW · Azteca Internacional",
@@ -7058,7 +7058,7 @@
   },
   {
     "name": "PASIONES",
-    "logo": "https://ipuntotv.com/IMAGES/Cabezales/4625.jpg",
+    "logo": "/logos/5fc89414bdba.webp",
     "options": [
       {
         "name": "NEW · PASIONES",
@@ -7071,7 +7071,7 @@
   },
   {
     "name": "TODO NOVELAS, MAS PASIONES",
-    "logo": "https://ipuntotv.com/IMAGES/Cabezales/4625.jpg",
+    "logo": "/logos/5fc89414bdba.webp",
     "options": [
       {
         "name": "NEW · TODO NOVELAS, MAS PASIONES",
@@ -7084,7 +7084,7 @@
   },
   {
     "name": "TLN",
-    "logo": "https://i.ibb.co/KHSrKnN/7314320.png",
+    "logo": "/logos/a2c242d6c5d9.webp",
     "options": [
       {
         "name": "NEW · TLN",
@@ -7097,7 +7097,7 @@
   },
   {
     "name": "PLUTO.TV NOVELAS",
-    "logo": "https://images.pluto.tv/channels/5dcde0cc2efd2700090b7ff4/colorLogoPNG.png",
+    "logo": "/logos/d596cfda90f0.webp",
     "options": [
       {
         "name": "NEW · PLUTO.TV NOVELAS",
@@ -7110,7 +7110,7 @@
   },
   {
     "name": "AZ CORAZÓN",
-    "logo": "https://images.pluto.tv/channels/646ccdd0939a5900088a1980/colorLogoPNG.png",
+    "logo": "/logos/8b2a36b39daf.webp",
     "options": [
       {
         "name": "NEW · AZ CORAZÓN",
@@ -7123,7 +7123,7 @@
   },
   {
     "name": "PLUTO.TV NOVELAS CONTINENTALES",
-    "logo": "https://images.pluto.tv/channels/686eed4c677f2f98b4a1ccd4/colorLogoPNG.png",
+    "logo": "/logos/0b3ffb8f3721.webp",
     "options": [
       {
         "name": "NEW · PLUTO.TV NOVELAS CONTINENTALES",
@@ -7136,7 +7136,7 @@
   },
   {
     "name": "PLUTO.TV NOVELAS DE MEXICO",
-    "logo": "https://images.pluto.tv/channels/6474a7958e3c0a0008b97cae/colorLogoPNG.png",
+    "logo": "/logos/d621f74d4607.webp",
     "options": [
       {
         "name": "NEW · PLUTO.TV NOVELAS DE MEXICO",
@@ -7149,7 +7149,7 @@
   },
   {
     "name": "SIN ##### NO HAY PARAÍSO",
-    "logo": "https://images.pluto.tv/channels/604bdf4e6d0abc0007ba77ad/colorLogoPNG.png",
+    "logo": "/logos/41a1397a866d.webp",
     "options": [
       {
         "name": "NEW · SIN ##### NO HAY PARAÍSO",
@@ -7162,7 +7162,7 @@
   },
   {
     "name": "LA SELECC10N",
-    "logo": "https://images.pluto.tv/channels/63211ba9cad976000794f988/colorLogoPNG.png",
+    "logo": "/logos/e9ad61284174.webp",
     "options": [
       {
         "name": "NEW · LA SELECC10N",
@@ -7175,7 +7175,7 @@
   },
   {
     "name": "PLUTO.TV NOVELAS DE VENEZUELA",
-    "logo": "https://images.pluto.tv/channels/6474a86917f5e100089a0c1c/colorLogoPNG.png",
+    "logo": "/logos/ebf26e637c5d.webp",
     "options": [
       {
         "name": "NEW · PLUTO.TV NOVELAS DE VENEZUELA",
@@ -7188,7 +7188,7 @@
   },
   {
     "name": "PLUTO.TV AMOR Y MENTIRA",
-    "logo": "https://images.pluto.tv/channels/698a45156dc3c71eb1ba6599/colorLogoPNG.png",
+    "logo": "/logos/69fa3316b562.webp",
     "options": [
       {
         "name": "NEW · PLUTO.TV AMOR Y MENTIRA",
@@ -7201,7 +7201,7 @@
   },
   {
     "name": "CLARO SPORTS LATAM",
-    "logo": "https://www.clarosports.com/resources/themes/clarosports-v4/assets/images/claroSportsSitio-170x36.png",
+    "logo": "/logos/4989903a95b7.webp",
     "options": [
       {
         "name": "NEW · CLARO SPORTS LATAM",
@@ -7213,7 +7213,7 @@
   },
   {
     "name": "CLARO SPORTS MX/C.A.",
-    "logo": "https://www.clarosports.com/resources/themes/clarosports-v4/assets/images/claroSportsSitio-170x36.png",
+    "logo": "/logos/4989903a95b7.webp",
     "options": [
       {
         "name": "NEW · CLARO SPORTS MX/C.A.",
@@ -7225,7 +7225,7 @@
   },
   {
     "name": "TYC SPORTS FAN",
-    "logo": "https://freecast.com/_next/image?url=https%3A%2F%2Fd3e3bui7xn67l.cloudfront.net%2Fcms_media%2Fmedia%2Flive%2Fchannel%2Ff9ed6770-e2fe-4147-81f6-a083cf6390d4-1771856213.119908.256x256.jpg&w=128&q=75",
+    "logo": "/logos/c9f4219edc44.webp",
     "options": [
       {
         "name": "NEW · TYC SPORTS FAN",
@@ -7237,7 +7237,7 @@
   },
   {
     "name": "CHILEVISION DEPORTES (SOLO CHILE)",
-    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdPHoAXsb35yNW6Z-R7Z7t_g7PzsgWr8rD_ZmcqQetQA&s=10",
+    "logo": "/logos/b7d801220db2.webp",
     "options": [
       {
         "name": "NEW · CHILEVISION DEPORTES (SOLO CHILE)",
@@ -7249,7 +7249,7 @@
   },
   {
     "name": "PLUTO TV DEPORTES",
-    "logo": "https://images.pluto.tv/channels/5dcde07af1c85b0009b18651/colorLogoPNG.png",
+    "logo": "/logos/e0483f70b8b8.webp",
     "options": [
       {
         "name": "NEW · PLUTO TV DEPORTES",
@@ -7262,7 +7262,7 @@
   },
   {
     "name": "BEIN SPORTS Ñ",
-    "logo": "https://i.imgur.com/J5aurrb.png",
+    "logo": "/logos/fca1a744cf38.webp",
     "options": [
       {
         "name": "NEW · BEIN SPORTS Ñ",
@@ -7274,7 +7274,7 @@
   },
   {
     "name": "BEIN SPORTS XTRA Ñ",
-    "logo": "https://i.imgur.com/V562tpO.png",
+    "logo": "/logos/e7f57ec8e7e6.webp",
     "options": [
       {
         "name": "NEW · BEIN SPORTS XTRA Ñ",
@@ -7286,7 +7286,7 @@
   },
   {
     "name": "ZONA TUDN",
-    "logo": "https://i.ibb.co/WDt6Sc6/zona-tudn.png",
+    "logo": "/logos/66a2c2e06d6b.webp",
     "options": [
       {
         "name": "NEW · ZONA TUDN",
@@ -7301,7 +7301,7 @@
   },
   {
     "name": "BAND SPORTS",
-    "logo": "https://i.ibb.co/WWrRh4X/Band-Sports.png",
+    "logo": "/logos/b9a1ce3ebd7c.webp",
     "options": [
       {
         "name": "NEW · BAND SPORTS",
@@ -7314,7 +7314,7 @@
   },
   {
     "name": "GE TV",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Logo_GE_TV.svg/960px-Logo_GE_TV.svg.png",
+    "logo": "/logos/5cbfceb44c94.webp",
     "options": [
       {
         "name": "NEW · GE TV",
@@ -7327,7 +7327,7 @@
   },
   {
     "name": "CAZE TV LIVE EVENT 1",
-    "logo": "https://i.ibb.co/W3XpzQy/cazetv.png",
+    "logo": "/logos/c99eb471fc9f.webp",
     "options": [
       {
         "name": "NEW · CAZE TV LIVE EVENT 1",
@@ -7342,7 +7342,7 @@
   },
   {
     "name": "CAZE TV LIVE EVENT 2",
-    "logo": "https://i.ibb.co/W3XpzQy/cazetv.png",
+    "logo": "/logos/c99eb471fc9f.webp",
     "options": [
       {
         "name": "NEW · CAZE TV LIVE EVENT 2",
@@ -7357,7 +7357,7 @@
   },
   {
     "name": "CAZE TV LIVE EVENT 3",
-    "logo": "https://i.ibb.co/W3XpzQy/cazetv.png",
+    "logo": "/logos/c99eb471fc9f.webp",
     "options": [
       {
         "name": "NEW · CAZE TV LIVE EVENT 3",
@@ -7372,7 +7372,7 @@
   },
   {
     "name": "SPORTV 2",
-    "logo": "https://i.ibb.co/L6MdcHL/sportv2.png",
+    "logo": "/logos/a05fee1fd97e.webp",
     "options": [
       {
         "name": "NEW · SPORTV 2",
@@ -7387,7 +7387,7 @@
   },
   {
     "name": "SPORTV 3",
-    "logo": "https://i.ibb.co/db4L078/sportv3.png",
+    "logo": "/logos/d3a75049ef77.webp",
     "options": [
       {
         "name": "NEW · SPORTV 3",
@@ -7402,7 +7402,7 @@
   },
   {
     "name": "PREMIERE 2",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 2",
@@ -7417,7 +7417,7 @@
   },
   {
     "name": "PREMIERE 3",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 3",
@@ -7432,7 +7432,7 @@
   },
   {
     "name": "PREMIERE 4",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 4",
@@ -7447,7 +7447,7 @@
   },
   {
     "name": "PREMIERE 5",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 5",
@@ -7462,7 +7462,7 @@
   },
   {
     "name": "PREMIERE 6",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 6",
@@ -7477,7 +7477,7 @@
   },
   {
     "name": "PREMIERE 7",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 7",
@@ -7492,7 +7492,7 @@
   },
   {
     "name": "PREMIERE 8",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Premiere_(2017)_logo.png/960px-Premiere_(2017)_logo.png",
+    "logo": "/logos/b97693eadb31.webp",
     "options": [
       {
         "name": "NEW · PREMIERE 8",
@@ -7533,7 +7533,7 @@
   },
   {
     "name": "DSports2",
-    "logo": "https://d18o29lhcg4kda.cloudfront.net/fit-in/1440x1080/Y2gwMTAwMDAwMDAwMTI4X2xpbmVhcl9jaGFubmVsX3NzbGE_11002_LOGO_1440x1080.png",
+    "logo": "/logos/9cc010ea4bcf.webp",
     "options": [
       {
         "name": "NEW · DSports2",
@@ -7548,7 +7548,7 @@
   },
   {
     "name": "DSports+",
-    "logo": "https://d18o29lhcg4kda.cloudfront.net/fit-in/1440x1080/Y2gwMTAwMDAwMDAwMTM5X2xpbmVhcl9jaGFubmVsX3NzbGE_11002_LOGO_1440x1080.png",
+    "logo": "/logos/50b659473870.webp",
     "options": [
       {
         "name": "NEW · DSports+",
@@ -7563,7 +7563,7 @@
   },
   {
     "name": "FS1",
-    "logo": "https://i.imgur.com/O9BapV9.png",
+    "logo": "/logos/d728ffcc3e5b.webp",
     "options": [
       {
         "name": "NEW · FS1",
@@ -7578,7 +7578,7 @@
   },
   {
     "name": "FS2",
-    "logo": "https://i.imgur.com/LHtxKI8.png",
+    "logo": "/logos/5725b4ebf616.webp",
     "options": [
       {
         "name": "NEW · FS2",
@@ -7593,7 +7593,7 @@
   },
   {
     "name": "NBC SPORTS NOW",
-    "logo": "https://i.imgur.com/EzNf2Yx.png",
+    "logo": "/logos/bf6c4142f970.webp",
     "options": [
       {
         "name": "NEW · NBC SPORTS NOW",
@@ -7606,7 +7606,7 @@
   },
   {
     "name": "NBC SPORTS PHILADELFHIA",
-    "logo": "https://i.imgur.com/j9mVaf3.png",
+    "logo": "/logos/c0e064782f6f.webp",
     "options": [
       {
         "name": "NEW · NBC SPORTS PHILADELFHIA",
@@ -7618,7 +7618,7 @@
   },
   {
     "name": "NBC SPORTS BOSTON",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/NBC_Sports_Boston.png/960px-NBC_Sports_Boston.png",
+    "logo": "/logos/ebfc220c7d8d.webp",
     "options": [
       {
         "name": "NEW · NBC SPORTS BOSTON",
@@ -7630,7 +7630,7 @@
   },
   {
     "name": "LALIGA TV",
-    "logo": "https://i.imgur.com/ilay5Jr.png",
+    "logo": "/logos/6e79b5f7cd21.webp",
     "options": [
       {
         "name": "NEW · LALIGA TV",
@@ -7642,7 +7642,7 @@
   },
   {
     "name": "BUNDESLIGA TV",
-    "logo": "https://i.imgur.com/UXtjFtd.png",
+    "logo": "/logos/7dafc4585c8e.webp",
     "options": [
       {
         "name": "NEW · BUNDESLIGA TV",
@@ -7654,7 +7654,7 @@
   },
   {
     "name": "Sky Sports 16",
-    "logo": "https://i.imgur.com/SuTOqKi.png",
+    "logo": "/logos/dbea51e267f2.webp",
     "options": [
       {
         "name": "NEW · Sky Sports 16",
@@ -7684,7 +7684,7 @@
   },
   {
     "name": "Sky Sports 24",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Sky_Sport_24_-_Logo_2020.svg/960px-Sky_Sport_24_-_Logo_2020.svg.png",
+    "logo": "/logos/268f0c051995.webp",
     "options": [
       {
         "name": "NEW · Sky Sports 24",
@@ -7699,7 +7699,7 @@
   },
   {
     "name": "Sky Sports",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Sky_Sport_-_Logo_2026.svg/960px-Sky_Sport_-_Logo_2026.svg.png",
+    "logo": "/logos/1899468ef17e.webp",
     "options": [
       {
         "name": "NEW · Sky Sports",
@@ -7714,7 +7714,7 @@
   },
   {
     "name": "Sky Live Event 2",
-    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
+    "logo": "/logos/d2a2d4eb0399.webp",
     "options": [
       {
         "name": "NEW · Sky Live Event 2",
@@ -7729,7 +7729,7 @@
   },
   {
     "name": "Sky Live Event 3",
-    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
+    "logo": "/logos/d2a2d4eb0399.webp",
     "options": [
       {
         "name": "NEW · Sky Live Event 3",
@@ -7744,7 +7744,7 @@
   },
   {
     "name": "Sky Live Event 4",
-    "logo": "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/512/512/skychb1301.png",
+    "logo": "/logos/d2a2d4eb0399.webp",
     "options": [
       {
         "name": "NEW · Sky Live Event 4",
@@ -7759,7 +7759,7 @@
   },
   {
     "name": "GOLF CHANNEL LATIN AMERICA",
-    "logo": "https://geo.edge.pontiscloud.com:9002/images/224/CH_LOGO/160/160/0/0/6885621707734.png",
+    "logo": "/logos/19563a80fe55.webp",
     "options": [
       {
         "name": "NEW · GOLF CHANNEL LATIN AMERICA",
@@ -7804,7 +7804,7 @@
   },
   {
     "name": "AZTECA DEPORTES NETWORK 2",
-    "logo": "https://i.ibb.co/pLzvPJ3/aztecadeportes.png",
+    "logo": "/logos/5aed115b75b8.webp",
     "options": [
       {
         "name": "NEW · AZTECA DEPORTES NETWORK 2",
@@ -7832,7 +7832,7 @@
   },
   {
     "name": "TVC DEPORTES",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e8/TVCDeportes.png",
+    "logo": "/logos/be97ea95681a.webp",
     "options": [
       {
         "name": "NEW · TVC DEPORTES",
@@ -7844,7 +7844,7 @@
   },
   {
     "name": "TELEMUNDO PR",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Telemundo_logo_2018.svg/960px-Telemundo_logo_2018.svg.png",
+    "logo": "/logos/b572df3556b1.webp",
     "options": [
       {
         "name": "NEW · TELEMUNDO PR",
@@ -7856,7 +7856,7 @@
   },
   {
     "name": "UNIVERSO HD",
-    "logo": "https://i.imgur.com/RZ8pIKe.png",
+    "logo": "/logos/9e48f3a19808.webp",
     "options": [
       {
         "name": "NEW · UNIVERSO HD",
@@ -7869,7 +7869,7 @@
   },
   {
     "name": "TELEMUNDO DEPORTES AHORA",
-    "logo": "https://img.nbc.com/files/2025-12/tda_stacked_logo_color_whitetext.png?impolicy=nbc_com&imwidth=340&imdensity=1",
+    "logo": "/logos/114dac12ac75.webp",
     "options": [
       {
         "name": "NEW · TELEMUNDO DEPORTES AHORA",
@@ -7882,7 +7882,7 @@
   },
   {
     "name": "LA 1 MUNDIAL",
-    "logo": "https://i.ibb.co/DHSH2L0y/Logo-La-1-UHD-2024.jpg",
+    "logo": "/logos/bd0e53617824.webp",
     "options": [
       {
         "name": "NEW · LA 1 MUNDIAL",
@@ -7910,7 +7910,7 @@
   },
   {
     "name": "TSN",
-    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "logo": "/logos/cc34317a77e6.webp",
     "options": [
       {
         "name": "NEW · TSN",
@@ -7925,7 +7925,7 @@
   },
   {
     "name": "TSN 2",
-    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "logo": "/logos/cc34317a77e6.webp",
     "options": [
       {
         "name": "NEW · TSN 2",
@@ -7940,7 +7940,7 @@
   },
   {
     "name": "TSN 3",
-    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "logo": "/logos/cc34317a77e6.webp",
     "options": [
       {
         "name": "NEW · TSN 3",
@@ -7955,7 +7955,7 @@
   },
   {
     "name": "TSN 4",
-    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "logo": "/logos/cc34317a77e6.webp",
     "options": [
       {
         "name": "NEW · TSN 4",
@@ -7970,7 +7970,7 @@
   },
   {
     "name": "TSN 5",
-    "logo": "https://i.ibb.co/p0jRsyX/reduced-20240205-151202.jpg",
+    "logo": "/logos/cc34317a77e6.webp",
     "options": [
       {
         "name": "NEW · TSN 5",
@@ -8030,7 +8030,7 @@
   },
   {
     "name": "FOX ONE USA",
-    "logo": "https://images.seeklogo.com/logo-png/28/1/fox-sports-logo-png_seeklogo-284763.png",
+    "logo": "/logos/c8d346cdec08.webp",
     "options": [
       {
         "name": "NEW · FOX ONE USA",
@@ -8045,7 +8045,7 @@
   },
   {
     "name": "CBS NEW YORK",
-    "logo": "http://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s10098_dark_360w_270h.png",
+    "logo": "/logos/f7eba7713742.webp",
     "options": [
       {
         "name": "NEW · CBS NEW YORK",
@@ -8060,7 +8060,7 @@
   },
   {
     "name": "CBS CHICAGO",
-    "logo": "http://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s10098_dark_360w_270h.png",
+    "logo": "/logos/f7eba7713742.webp",
     "options": [
       {
         "name": "NEW · CBS CHICAGO",
@@ -8075,7 +8075,7 @@
   },
   {
     "name": "CBS Sports Golazo!",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US100000704_20260421T142122SQUARE.png",
+    "logo": "/logos/a467704d4a28.webp",
     "options": [
       {
         "name": "NEW · CBS Sports Golazo!",
@@ -8090,7 +8090,7 @@
   },
   {
     "name": "FIFA+",
-    "logo": "https://m.media-amazon.com/images/I/2185OD67t-L.png",
+    "logo": "/logos/e7011d456479.webp",
     "options": [
       {
         "name": "NEW · FIFA+",
@@ -8103,7 +8103,7 @@
   },
   {
     "name": "FIFA+ LIVE",
-    "logo": "https://m.media-amazon.com/images/I/2185OD67t-L.png",
+    "logo": "/logos/e7011d456479.webp",
     "options": [
       {
         "name": "NEW · FIFA+ LIVE",
@@ -8148,7 +8148,7 @@
   },
   {
     "name": "Red Bull TV",
-    "logo": "https://media.tvup.cloud/canales/color_lg_5c4352438c3e78047f57c408.png",
+    "logo": "/logos/8ff55bca51c1.webp",
     "options": [
       {
         "name": "NEW · Red Bull TV",
@@ -8185,7 +8185,7 @@
   },
   {
     "name": "SPORTDIGITAL SCOOORE",
-    "logo": "https://i.ibb.co/pfHxtNN/scooore.png",
+    "logo": "/logos/79ea86ef1a25.webp",
     "options": [
       {
         "name": "NEW · SPORTDIGITAL SCOOORE",
@@ -8198,7 +8198,7 @@
   },
   {
     "name": "SPORTDIGITAL FREE",
-    "logo": "https://i.ibb.co/XX6rKD0/sdf.png",
+    "logo": "/logos/204568894eb2.webp",
     "options": [
       {
         "name": "NEW · SPORTDIGITAL FREE",
@@ -8286,7 +8286,7 @@
   },
   {
     "name": "TENNIS CHANNEL 2",
-    "logo": "https://i.ibb.co/m8rwcJy/T2-live-tennis.png",
+    "logo": "/logos/5aeb7ff141bc.webp",
     "options": [
       {
         "name": "NEW · TENNIS CHANNEL 2",
@@ -8301,7 +8301,7 @@
   },
   {
     "name": "Tennis Channel US",
-    "logo": "https://tvpnlogopeu.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/ESBD2600001ME_20230809T053838SQUARE.png_20230809053839.png",
+    "logo": "/logos/1d9e7be47e8f.webp",
     "options": [
       {
         "name": "NEW · Tennis Channel US",
@@ -8314,7 +8314,7 @@
   },
   {
     "name": "MTV Biggest Pop",
-    "logo": "https://images.pluto.tv/channels/6047fabfce6e8e00070bcc9f/colorLogoPNG.png",
+    "logo": "/logos/2c0d1f85e148.webp",
     "options": [
       {
         "name": "NEW · MTV Biggest Pop",
@@ -8327,7 +8327,7 @@
   },
   {
     "name": "MTV Spankin' New",
-    "logo": "https://images.pluto.tv/channels/5d14fdb8ca91eedee1633117/colorLogoPNG.png",
+    "logo": "/logos/c384ef0383ee.webp",
     "options": [
       {
         "name": "NEW · MTV Spankin' New",
@@ -8340,7 +8340,7 @@
   },
   {
     "name": "MTV Flow Latino",
-    "logo": "https://images.pluto.tv/channels/62b218fc511d4b00070ddc0c/colorLogoPNG.png",
+    "logo": "/logos/9b3f289121e3.webp",
     "options": [
       {
         "name": "NEW · MTV Flow Latino",
@@ -8353,7 +8353,7 @@
   },
   {
     "name": "MTV CLASSICS",
-    "logo": "https://images.pluto.tv/channels/66a11a21a79dea0008aa90ca/colorLogoPNG.png",
+    "logo": "/logos/8d351d252834.webp",
     "options": [
       {
         "name": "NEW · MTV CLASSICS",
@@ -8366,7 +8366,7 @@
   },
   {
     "name": "MTV ROCKS",
-    "logo": "https://images.pluto.tv/channels/66a01b52a4ee27000808ea36/colorLogoPNG.png",
+    "logo": "/logos/e8e99f3e3902.webp",
     "options": [
       {
         "name": "NEW · MTV ROCKS",
@@ -8379,7 +8379,7 @@
   },
   {
     "name": "STINGRAY TIKTOK RADIO",
-    "logo": "https://images.pluto.tv/channels/63dac1b78795f300086d5ca6/colorLogoPNG.png",
+    "logo": "/logos/256bad5cca9d.webp",
     "options": [
       {
         "name": "NEW · STINGRAY TIKTOK RADIO",
@@ -8392,7 +8392,7 @@
   },
   {
     "name": "CONCERT CHANNEL",
-    "logo": "https://images.pluto.tv/channels/6868152657543d1f8be4ece3/colorLogoPNG.png",
+    "logo": "/logos/3337e251f99e.webp",
     "options": [
       {
         "name": "NEW · CONCERT CHANNEL",
@@ -8420,7 +8420,7 @@
   },
   {
     "name": "Holidayscapes",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500038R6_20251230T035626SQUARE.png",
+    "logo": "/logos/d805beb3c1c7.webp",
     "options": [
       {
         "name": "NEW · Holidayscapes",
@@ -8432,7 +8432,7 @@
   },
   {
     "name": "Conciertos Por Stingray",
-    "logo": "https://images.pluto.tv/channels/5f85ca40eda1b10007b967cd/colorLogoPNG.png",
+    "logo": "/logos/921582883031.webp",
     "options": [
       {
         "name": "NEW · Conciertos Por Stingray",
@@ -8445,7 +8445,7 @@
   },
   {
     "name": "Stingray Qello Concerts",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500024YB_20260421T141917SQUARE.png",
+    "logo": "/logos/4a090d6cedbd.webp",
     "options": [
       {
         "name": "NEW · Stingray Qello Concerts",
@@ -8457,7 +8457,7 @@
   },
   {
     "name": "Stingray Classic Rock",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD35000180U_20250630T232430SQUARE.png",
+    "logo": "/logos/3f863537d298.webp",
     "options": [
       {
         "name": "NEW · Stingray Classic Rock",
@@ -8469,7 +8469,7 @@
   },
   {
     "name": "Stingray Juicebox",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Stingray_Juicebox.jpg",
+    "logo": "/logos/4a60061190e1.webp",
     "options": [
       {
         "name": "NEW · Stingray Juicebox",
@@ -8484,7 +8484,7 @@
   },
   {
     "name": "Stingray Hits!",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/1/15/Stingray_Hits.svg",
+    "logo": "/logos/c37f6edb0f25.webp",
     "options": [
       {
         "name": "NEW · Stingray Hits!",
@@ -8499,7 +8499,7 @@
   },
   {
     "name": "Stingray Retro",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Stingray_RETRO.svg",
+    "logo": "/logos/a318b32694b0.webp",
     "options": [
       {
         "name": "NEW · Stingray Retro",
@@ -8514,7 +8514,7 @@
   },
   {
     "name": "Stingray Classica",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stingray_Classica_Logo_10.2019.svg/3840px-Stingray_Classica_Logo_10.2019.svg.png",
+    "logo": "/logos/e9f43cbc4a59.webp",
     "options": [
       {
         "name": "NEW · Stingray Classica",
@@ -8526,7 +8526,7 @@
   },
   {
     "name": "Stingray CMusic",
-    "logo": "https://i.imgur.com/3UppN5P.png",
+    "logo": "/logos/8403ea775612.webp",
     "options": [
       {
         "name": "NEW · Stingray CMusic",
@@ -8538,7 +8538,7 @@
   },
   {
     "name": "Stingray DJAZZ",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500025GS_20240826T191202SQUARE.png",
+    "logo": "/logos/1c3929f463c0.webp",
     "options": [
       {
         "name": "NEW · Stingray DJAZZ",
@@ -8550,7 +8550,7 @@
   },
   {
     "name": "Stingray Easy Listening",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500011J3_20260421T143139SQUARE.png",
+    "logo": "/logos/5f91a95acc79.webp",
     "options": [
       {
         "name": "NEW · Stingray Easy Listening",
@@ -8562,7 +8562,7 @@
   },
   {
     "name": "Stingray Flashback 70s",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500008IJ_20260421T143136SQUARE.png",
+    "logo": "/logos/90def891a6da.webp",
     "options": [
       {
         "name": "NEW · Stingray Flashback 70s",
@@ -8574,7 +8574,7 @@
   },
   {
     "name": "Stingray Hit List",
-    "logo": "https://i.imgur.com/lgpIwId.png",
+    "logo": "/logos/b5e4eaeea4fc.webp",
     "options": [
       {
         "name": "NEW · Stingray Hit List",
@@ -8586,7 +8586,7 @@
   },
   {
     "name": "Stingray Holiday Hits",
-    "logo": "https://i.imgur.com/4xVVKH8.png",
+    "logo": "/logos/edd3794bfcfb.webp",
     "options": [
       {
         "name": "NEW · Stingray Holiday Hits",
@@ -8598,7 +8598,7 @@
   },
   {
     "name": "Stingray Hot Country",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300021KV_20251230T035621SQUARE.png",
+    "logo": "/logos/62f192a9952d.webp",
     "options": [
       {
         "name": "NEW · Stingray Hot Country",
@@ -8615,7 +8615,7 @@
   },
   {
     "name": "Karaoke Por Stingray",
-    "logo": "https://images.pluto.tv/channels/5f85cf621d6d2200079f1de0/colorLogoPNG.png",
+    "logo": "/logos/b6b0b61641d1.webp",
     "options": [
       {
         "name": "NEW · Karaoke Por Stingray",
@@ -8628,7 +8628,7 @@
   },
   {
     "name": "Stingray Karaoke US",
-    "logo": "https://i.imgur.com/9TLTLS3.png",
+    "logo": "/logos/d7b8a58ce417.webp",
     "options": [
       {
         "name": "NEW · Stingray Karaoke US",
@@ -8640,7 +8640,7 @@
   },
   {
     "name": "Stingray Hip Hop",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500010MT_20260421T141910SQUARE.png",
+    "logo": "/logos/f9cadf707654.webp",
     "options": [
       {
         "name": "NEW · Stingray Hip Hop",
@@ -8653,7 +8653,7 @@
   },
   {
     "name": "Stingray Euro Hits",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700002UF_20260421T143051SQUARE.png",
+    "logo": "/logos/1651af64cb01.webp",
     "options": [
       {
         "name": "NEW · Stingray Euro Hits",
@@ -8665,7 +8665,7 @@
   },
   {
     "name": "Stingray Soft Hits",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700007GV_20260421T143101SQUARE.png",
+    "logo": "/logos/b2d0c155a860.webp",
     "options": [
       {
         "name": "NEW · Stingray Soft Hits",
@@ -8678,7 +8678,7 @@
   },
   {
     "name": "Stingray Jukebox Oldies",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700006XL_20260421T143057SQUARE.png",
+    "logo": "/logos/cb05f90b7f22.webp",
     "options": [
       {
         "name": "NEW · Stingray Jukebox Oldies",
@@ -8690,7 +8690,7 @@
   },
   {
     "name": "Stingray Country Greats",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/US4700005EA_20260421T143054SQUARE.png",
+    "logo": "/logos/00ee0961f638.webp",
     "options": [
       {
         "name": "NEW · Stingray Country Greats",
@@ -8703,7 +8703,7 @@
   },
   {
     "name": "Stingray Greatest Hits",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500022DN_20251230T035623SQUARE.png",
+    "logo": "/logos/3dbeeb8b4a13.webp",
     "options": [
       {
         "name": "NEW · Stingray Greatest Hits",
@@ -8716,7 +8716,7 @@
   },
   {
     "name": "Stingray Naturescape",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USAK3508705A_20250630T232500SQUARE.png",
+    "logo": "/logos/86e56e8a2151.webp",
     "options": [
       {
         "name": "NEW · Stingray Naturescape",
@@ -8728,7 +8728,7 @@
   },
   {
     "name": "Stingray Nothin' But 90s",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD35000149S_20260421T143145SQUARE.png",
+    "logo": "/logos/429c2464182d.webp",
     "options": [
       {
         "name": "NEW · Stingray Nothin' But 90s",
@@ -8740,7 +8740,7 @@
   },
   {
     "name": "Stingray Pop Adult",
-    "logo": "https://i.imgur.com/H2ugC9L.png",
+    "logo": "/logos/c5d9eb42abf1.webp",
     "options": [
       {
         "name": "NEW · Stingray Pop Adult",
@@ -8752,7 +8752,7 @@
   },
   {
     "name": "Stingray Remember the 80s",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300022QK_20260421T143132SQUARE.png",
+    "logo": "/logos/d3288830036f.webp",
     "options": [
       {
         "name": "NEW · Stingray Remember the 80s",
@@ -8764,7 +8764,7 @@
   },
   {
     "name": "Stingray Rock Alternative",
-    "logo": "https://i.imgur.com/mt8ulVX.png",
+    "logo": "/logos/50d7a582d280.webp",
     "options": [
       {
         "name": "NEW · Stingray Rock Alternative",
@@ -8776,7 +8776,7 @@
   },
   {
     "name": "Stingray Romance Latino",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500017CE_20260421T141914SQUARE.png",
+    "logo": "/logos/0a2bea24b35d.webp",
     "options": [
       {
         "name": "NEW · Stingray Romance Latino",
@@ -8788,7 +8788,7 @@
   },
   {
     "name": "Stingray Smooth Jazz",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD35000128A_20260421T143142SQUARE.png",
+    "logo": "/logos/dfebb6096da5.webp",
     "options": [
       {
         "name": "NEW · Stingray Smooth Jazz",
@@ -8800,7 +8800,7 @@
   },
   {
     "name": "Stingray Soul Storm",
-    "logo": "https://i.imgur.com/dU1KC3f.png",
+    "logo": "/logos/f36fb3ee7ca7.webp",
     "options": [
       {
         "name": "NEW · Stingray Soul Storm",
@@ -8812,7 +8812,7 @@
   },
   {
     "name": "Stingray The Spa",
-    "logo": "https://i.imgur.com/ywAN923.png",
+    "logo": "/logos/e32432818ac9.webp",
     "options": [
       {
         "name": "NEW · Stingray The Spa",
@@ -8824,7 +8824,7 @@
   },
   {
     "name": "Stingray Today's KPOP",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500016NH_20250630T232451SQUARE.png",
+    "logo": "/logos/6d68b625b943.webp",
     "options": [
       {
         "name": "NEW · Stingray Today's KPOP",
@@ -8836,7 +8836,7 @@
   },
   {
     "name": "Stingray Today's Latin Pop",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3500009Y3_20260421T141859SQUARE.png",
+    "logo": "/logos/680483ee2161.webp",
     "options": [
       {
         "name": "NEW · Stingray Today's Latin Pop",
@@ -8848,7 +8848,7 @@
   },
   {
     "name": "Stingray Urban Beat",
-    "logo": "https://i.imgur.com/Os3kRRP.png",
+    "logo": "/logos/b73cc647cbbd.webp",
     "options": [
       {
         "name": "NEW · Stingray Urban Beat",
@@ -8860,7 +8860,7 @@
   },
   {
     "name": "Stingray iConcerts",
-    "logo": "https://i.postimg.cc/2ygd92x5/stingray-iconcerts.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · Stingray iConcerts",
@@ -8872,7 +8872,7 @@
   },
   {
     "name": "VEVO POP",
-    "logo": "https://images.pluto.tv/channels/5d93b635b43dd1a399b39eee/colorLogoPNG.png",
+    "logo": "/logos/7a477fd29e6e.webp",
     "options": [
       {
         "name": "NEW · VEVO POP",
@@ -8885,7 +8885,7 @@
   },
   {
     "name": "VEVO POP ESPAÑOL",
-    "logo": "https://images.pluto.tv/channels/5d93b635b43dd1a399b39eee/colorLogoPNG.png",
+    "logo": "/logos/7a477fd29e6e.webp",
     "options": [
       {
         "name": "NEW · VEVO POP ESPAÑOL",
@@ -8898,7 +8898,7 @@
   },
   {
     "name": "VEVO LATINO",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBC3600015GF_20260303T094222SQUARE.png",
+    "logo": "/logos/ec0cc7aebbf6.webp",
     "options": [
       {
         "name": "NEW · VEVO LATINO",
@@ -8910,7 +8910,7 @@
   },
   {
     "name": "VEVO ICONOS LATINOS",
-    "logo": "https://images.pluto.tv/channels/64d161c93c785e0008df575e/colorLogoPNG.png",
+    "logo": "/logos/b171754680a2.webp",
     "options": [
       {
         "name": "NEW · VEVO ICONOS LATINOS",
@@ -8923,7 +8923,7 @@
   },
   {
     "name": "VEVO REGIONAL XM",
-    "logo": "https://images.pluto.tv/channels/64dab5fe35425100080e2991/colorLogoPNG.png",
+    "logo": "/logos/259fc8cfd292.webp",
     "options": [
       {
         "name": "NEW · VEVO REGIONAL XM",
@@ -8936,7 +8936,7 @@
   },
   {
     "name": "VEVO RETRO",
-    "logo": "https://i.postimg.cc/FsHZjDN8/vevo-retro.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VEVO RETRO",
@@ -8949,7 +8949,7 @@
   },
   {
     "name": "VEVO ´70s & ´80s",
-    "logo": "https://i.postimg.cc/ZKTdpP70/vevo-70s-80s.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VEVO ´70s & ´80s",
@@ -8962,7 +8962,7 @@
   },
   {
     "name": "VEVO '90s & '00s",
-    "logo": "https://i.postimg.cc/GhvPrh4f/vevo-90s-00s.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VEVO '90s & '00s",
@@ -8975,7 +8975,7 @@
   },
   {
     "name": "VEVO HIP-HOP & R&B",
-    "logo": "https://i.postimg.cc/ZnpKVkmr/vevo-hip-hop-r-b.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VEVO HIP-HOP & R&B",
@@ -8988,7 +8988,7 @@
   },
   {
     "name": "VEVO HIP-HOP",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBC3600002EK_20260303T094219SQUARE.png",
+    "logo": "/logos/dc8dadf9108d.webp",
     "options": [
       {
         "name": "NEW · VEVO HIP-HOP",
@@ -9000,7 +9000,7 @@
   },
   {
     "name": "VEVO R&B",
-    "logo": "https://images.pluto.tv/channels/5da0d83f66c9700009b96d0e/colorLogoPNG.png",
+    "logo": "/logos/856e76712952.webp",
     "options": [
       {
         "name": "NEW · VEVO R&B",
@@ -9013,7 +9013,7 @@
   },
   {
     "name": "VEVO NAVIDAD",
-    "logo": "https://i.postimg.cc/3r0rkkFd/vevo-navidad.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VEVO NAVIDAD",
@@ -9026,7 +9026,7 @@
   },
   {
     "name": "VEVO CHRISTMAS",
-    "logo": "https://i.postimg.cc/k5MXGwf8/vevo-christmas.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VEVO CHRISTMAS",
@@ -9039,7 +9039,7 @@
   },
   {
     "name": "VEVO ROCK",
-    "logo": "https://images.pluto.tv/channels/61d4b38226b8a50007fe03a6/colorLogoPNG.png",
+    "logo": "/logos/98e05c8be1c2.webp",
     "options": [
       {
         "name": "NEW · VEVO ROCK",
@@ -9052,7 +9052,7 @@
   },
   {
     "name": "XITE ROCK X METAL",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB2300004KV_20240716T002654SQUARE.png",
+    "logo": "/logos/460a54c7e9e4.webp",
     "options": [
       {
         "name": "NEW · XITE ROCK X METAL",
@@ -9065,7 +9065,7 @@
   },
   {
     "name": "XITE 80s FLASHBACK",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB320000647_20260512T070257SQUARE.png",
+    "logo": "/logos/653b0b46301f.webp",
     "options": [
       {
         "name": "NEW · XITE 80s FLASHBACK",
@@ -9078,7 +9078,7 @@
   },
   {
     "name": "XITE 90s THROWBACK",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB3200007AK_20260512T070259SQUARE.png",
+    "logo": "/logos/9b3253ba767b.webp",
     "options": [
       {
         "name": "NEW · XITE 90s THROWBACK",
@@ -9091,7 +9091,7 @@
   },
   {
     "name": "XITE HITS US",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300004RH_20260421T141846SQUARE.png",
+    "logo": "/logos/909a984d3f74.webp",
     "options": [
       {
         "name": "NEW · XITE HITS US",
@@ -9103,7 +9103,7 @@
   },
   {
     "name": "XITE HITS DE",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300004RH_20260421T141846SQUARE.png",
+    "logo": "/logos/909a984d3f74.webp",
     "options": [
       {
         "name": "NEW · XITE HITS DE",
@@ -9116,7 +9116,7 @@
   },
   {
     "name": "XITE HITS UK",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300004RH_20260421T141846SQUARE.png",
+    "logo": "/logos/909a984d3f74.webp",
     "options": [
       {
         "name": "NEW · XITE HITS UK",
@@ -9128,7 +9128,7 @@
   },
   {
     "name": "XITE CELEBRATES",
-    "logo": "https://i.imgur.com/coSrUwV.png",
+    "logo": "/logos/437af7e3975a.webp",
     "options": [
       {
         "name": "NEW · XITE CELEBRATES",
@@ -9141,7 +9141,7 @@
   },
   {
     "name": "XITE JUST CHILL",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBB2300003JZ_20240716T002652SQUARE.png",
+    "logo": "/logos/e1609a64cdfd.webp",
     "options": [
       {
         "name": "NEW · XITE JUST CHILL",
@@ -9154,7 +9154,7 @@
   },
   {
     "name": "XITE GOSPEL",
-    "logo": "https://images.pluto.tv/channels/623b93628e6ded0007337d4d/colorLogoPNG.png",
+    "logo": "/logos/d8911232b30e.webp",
     "options": [
       {
         "name": "NEW · XITE GOSPEL",
@@ -9167,7 +9167,7 @@
   },
   {
     "name": "XITE NUEVO LATINO",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300007PB_20260421T141851SQUARE.png",
+    "logo": "/logos/f26241a65f69.webp",
     "options": [
       {
         "name": "NEW · XITE NUEVO LATINO",
@@ -9180,7 +9180,7 @@
   },
   {
     "name": "XITE SIEMPRE LATINO",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300010L9_20260421T141854SQUARE.png",
+    "logo": "/logos/cb557b3551e7.webp",
     "options": [
       {
         "name": "NEW · XITE SIEMPRE LATINO",
@@ -9193,7 +9193,7 @@
   },
   {
     "name": "XITE CLASSIC COUNTRY",
-    "logo": "https://tvpnlogopus.samsungcloud.tv/platform/image/sourcelogo/vc/00/02/34/USBD3300011UT_20260421T141856SQUARE.png",
+    "logo": "/logos/d6f532150385.webp",
     "options": [
       {
         "name": "NEW · XITE CLASSIC COUNTRY",
@@ -9206,7 +9206,7 @@
   },
   {
     "name": "MTV JP",
-    "logo": "https://i.ibb.co/HqPNtN1/mtv.png",
+    "logo": "/logos/27f449c8a8f2.webp",
     "options": [
       {
         "name": "NEW · MTV JP",
@@ -9219,7 +9219,7 @@
   },
   {
     "name": "SOL MUSICA",
-    "logo": "https://i.postimg.cc/RhWwrHfD/sol-musica.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · SOL MUSICA",
@@ -9232,7 +9232,7 @@
   },
   {
     "name": "QWEST TV",
-    "logo": "https://media.tvup.cloud/canales/color_lg_67b4ba5dfdf20e048d551fab_1739965973280.png",
+    "logo": "/logos/4d23998637be.webp",
     "options": [
       {
         "name": "NEW · QWEST TV",
@@ -9244,7 +9244,7 @@
   },
   {
     "name": "MOVIE MUSIC BY STINGRAY",
-    "logo": "https://i.postimg.cc/mrFCmvpg/movie-music-by-stingray.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · MOVIE MUSIC BY STINGRAY",
@@ -9257,7 +9257,7 @@
   },
   {
     "name": "TIKTOK RADIO",
-    "logo": "https://i.postimg.cc/LsbR87mL/tiktok-radio.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · TIKTOK RADIO",
@@ -9270,7 +9270,7 @@
   },
   {
     "name": "BOX PLAYLIST",
-    "logo": "https://i.ibb.co/RHVnH98/box-playlist.png",
+    "logo": "/logos/2a4c8649e970.webp",
     "options": [
       {
         "name": "NEW · BOX PLAYLIST",
@@ -9282,7 +9282,7 @@
   },
   {
     "name": "VClassicTV",
-    "logo": "https://i.postimg.cc/ZK6g0tTn/vclassic-tv.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VClassicTV",
@@ -9294,7 +9294,7 @@
   },
   {
     "name": "VClassicTV Tropical",
-    "logo": "https://i.postimg.cc/SRLDDptg/vclassic-tv-tropical.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · VClassicTV Tropical",
@@ -9306,7 +9306,7 @@
   },
   {
     "name": "TOP TV",
-    "logo": "https://i.ibb.co/svkq8Y7H/Top-TV-logo-svg.png",
+    "logo": "/logos/97c99861bb14.webp",
     "options": [
       {
         "name": "NEW · TOP TV",
@@ -9318,7 +9318,7 @@
   },
   {
     "name": "NEW KPOP",
-    "logo": "https://i.ibb.co/BGxBxvX/new-kpop.png",
+    "logo": "/logos/7c88d4f6bb1a.webp",
     "options": [
       {
         "name": "NEW · NEW KPOP",
@@ -9331,7 +9331,7 @@
   },
   {
     "name": "K-POP BY CJ ENM",
-    "logo": "https://i.ibb.co/WkFpM7k/k-pop-cj-enm.png",
+    "logo": "/logos/423e36c144e5.webp",
     "options": [
       {
         "name": "NEW · K-POP BY CJ ENM",
@@ -9344,7 +9344,7 @@
   },
   {
     "name": "TRACE URBAN",
-    "logo": "https://i.imgur.com/DLIbUMx.png",
+    "logo": "/logos/8a241ca58144.webp",
     "options": [
       {
         "name": "NEW · TRACE URBAN",
@@ -9356,7 +9356,7 @@
   },
   {
     "name": "TRACE HITS",
-    "logo": "https://i.imgur.com/Vvxz6KX.png",
+    "logo": "/logos/7c02ff3a3247.webp",
     "options": [
       {
         "name": "NEW · TRACE HITS",
@@ -9368,7 +9368,7 @@
   },
   {
     "name": "TRACE LATINA",
-    "logo": "https://i.imgur.com/CUVAi4u.png",
+    "logo": "/logos/3b22a76e2548.webp",
     "options": [
       {
         "name": "NEW · TRACE LATINA",
@@ -9381,7 +9381,7 @@
   },
   {
     "name": "TRACE GOSPEL",
-    "logo": "https://i.imgur.com/X0UmU3K.png",
+    "logo": "/logos/5ac09bf5eabf.webp",
     "options": [
       {
         "name": "NEW · TRACE GOSPEL",
@@ -9405,7 +9405,7 @@
   },
   {
     "name": "CMC TV",
-    "logo": "https://media.tvup.cloud/canales/color_lg_5b1e8713dd713247dee47267.png",
+    "logo": "/logos/6b180f324c9f.webp",
     "options": [
       {
         "name": "NEW · CMC TV",
@@ -9417,7 +9417,7 @@
   },
   {
     "name": "HIP HOP TV",
-    "logo": "https://i.ibb.co/JrGSVR4/hip-hop-tv.png",
+    "logo": "/logos/13893b69aa3c.webp",
     "options": [
       {
         "name": "NEW · HIP HOP TV",
@@ -9430,7 +9430,7 @@
   },
   {
     "name": "ROCK TV",
-    "logo": "https://i.ibb.co/myJgqVR/ROCK-TV.png",
+    "logo": "/logos/b59fae5c93e0.webp",
     "options": [
       {
         "name": "NEW · ROCK TV",
@@ -9443,7 +9443,7 @@
   },
   {
     "name": "70-80 it",
-    "logo": "https://i.ibb.co/HTm3wJW/70-80-it.png",
+    "logo": "/logos/8bab362f11fd.webp",
     "options": [
       {
         "name": "NEW · 70-80 it",
@@ -9455,7 +9455,7 @@
   },
   {
     "name": "RADIO CAPITAL",
-    "logo": "https://i.postimg.cc/4xkSmztV/Radio-Capital-logo-2020-svg.png",
+    "logo": "",
     "options": [
       {
         "name": "NEW · RADIO CAPITAL",

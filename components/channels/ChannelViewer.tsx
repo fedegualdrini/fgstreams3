@@ -20,7 +20,7 @@ export default function ChannelViewer({ channel, optionIndex, onOptionChange, on
         <div className="page-content channel-bar__inner">
           <button type="button" className="channel-bar__back" onClick={onClose} aria-label="Back to channels">←</button>
           <span className="channel-bar__divider">|</span>
-          {channel.logo && <ChannelLogo src={channel.logo} className="channel-bar__logo" />}
+          {channel.logo && <ChannelLogo src={channel.logo} className="channel-bar__logo" size={22} />}
           <span className="channel-bar__name">{channel.name}</span>
           <span className="label channel-bar__count">{pluralize(options.length, 'source')}</span>
         </div>

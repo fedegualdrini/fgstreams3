@@ -1,10 +1,13 @@
 import type { Match } from '@/types/api';
 
+/** The fields search and the sport tabs look at; any listing of matches satisfies it. */
+export type FilterableMatch = Pick<Match, 'team1' | 'team2' | 'league' | 'sport'>;
+
 export const ALL_SPORT_FILTER = 'All';
 
 const normalize = (value: string) => value.trim().toLowerCase();
 
-export function matchesSearch(match: Match, query: string): boolean {
+export function matchesSearch(match: FilterableMatch, query: string): boolean {
   const needle = normalize(query);
   if (!needle) return true;
 
@@ -12,17 +15,17 @@ export function matchesSearch(match: Match, query: string): boolean {
   return fields.some((field) => field.toLowerCase().includes(needle));
 }
 
-export function matchesSport(match: Match, sport: string): boolean {
+export function matchesSport(match: FilterableMatch, sport: string): boolean {
   const wanted = normalize(sport);
   return wanted === normalize(ALL_SPORT_FILTER) || normalize(match.sport) === wanted;
 }
 
-export function matchesFilters(match: Match, query: string, sport: string): boolean {
+export function matchesFilters(match: FilterableMatch, query: string, sport: string): boolean {
   return matchesSport(match, sport) && matchesSearch(match, query);
 }
 
 /** "All" followed by each distinct sport (case-insensitive), alphabetically. */
-export function getAvailableSportFilters(matches: Match[]): string[] {
+export function getAvailableSportFilters(matches: Array<Pick<Match, 'sport'>>): string[] {
   const sportsByKey = new Map<string, string>();
 
   for (const match of matches) {

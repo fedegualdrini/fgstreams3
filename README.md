@@ -86,6 +86,7 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 | `npm run lint` | Next.js linting |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run import:playlist -- <playlist.json>` | Merge an external channel playlist ([guide](docs/CHANNEL_IMPORT.md)) |
+| `npm run optimize:logos` | Download and shrink channel logos into `public/logos/` ([guide](docs/CHANNEL_IMPORT.md)) |
 
 ## How it works
 
