@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getCatalog, sortCatalog } from '@/lib/catalog';
+import { toListedMatch } from '@/lib/matchListView';
 import MatchListWithSearch from '@/components/MatchListWithSearch';
 import SiteHeader from '@/components/SiteHeader';
 import MatchListSkeleton from '@/components/MatchListSkeleton';
@@ -24,8 +25,9 @@ const FOOTER_LINKS = [
 export default async function Home() {
   const sortedMatches = sortCatalog(await getCatalog());
 
-  const liveMatches = sortedMatches.filter((match) => match.isLive);
-  const upcomingMatches = sortedMatches.filter((match) => !match.isLive);
+  // The list only renders cards; stream URLs stay on the server and reach the match page on demand.
+  const liveMatches = sortedMatches.filter((match) => match.isLive).map(toListedMatch);
+  const upcomingMatches = sortedMatches.filter((match) => !match.isLive).map(toListedMatch);
 
   return (
     <>

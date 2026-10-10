@@ -12,7 +12,10 @@ export interface HistoryEntry {
   poster: string;
 }
 
-export function historyEntryFromMatch(match: Match): HistoryEntry {
+/** The fields a history entry keeps; both full and listing matches satisfy it. */
+export type HistorySourceMatch = Pick<Match, 'id' | 'team1' | 'team2' | 'league' | 'sport' | 'poster'>;
+
+export function historyEntryFromMatch(match: HistorySourceMatch): HistoryEntry {
   return {
     id: match.id,
     team1: match.team1,

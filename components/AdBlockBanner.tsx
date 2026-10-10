@@ -1,23 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-const STORAGE_KEY = 'adblock-banner-dismissed';
+import { useState } from 'react';
+import { ADBLOCK_BANNER_STORAGE_KEY } from '@/lib/adBlockBanner';
 
 export default function AdBlockBanner() {
-  const [visible, setVisible] = useState(false);
-
-  // Read after mount: sessionStorage doesn't exist during server rendering.
-  useEffect(() => {
-    if (!sessionStorage.getItem(STORAGE_KEY)) setVisible(true);
-  }, []);
+  const [dismissed, setDismissed] = useState(false);
 
   const dismiss = () => {
-    sessionStorage.setItem(STORAGE_KEY, '1');
-    setVisible(false);
+    try {
+      sessionStorage.setItem(ADBLOCK_BANNER_STORAGE_KEY, '1');
+    } catch {
+      // Storage can be blocked; the banner then simply stays dismissed for this page view.
+    }
+    setDismissed(true);
   };
 
-  if (!visible) return null;
+  if (dismissed) return null;
 
   return (
     <div className="adblock-banner">

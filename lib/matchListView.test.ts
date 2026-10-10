@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CatalogMatch } from '@/types/api';
-import { filterMatchLists, hasNoSearchResults, shouldShowRecentlyWatched } from './matchListView';
+import { filterMatchLists, hasNoSearchResults, shouldShowRecentlyWatched, toListedMatch } from './matchListView';
 
 function match(id: string, sport: string, team1: string): CatalogMatch {
   return { id, sport, team1, team2: 'Rivals', league: 'League', isLive: false, sources: [] } as unknown as CatalogMatch;
@@ -38,5 +38,35 @@ describe('hasNoSearchResults', () => {
     expect(hasNoSearchResults('zzz', { live: [], upcoming: [] })).toBe(true);
     expect(hasNoSearchResults('  ', { live: [], upcoming: [] })).toBe(false);
     expect(hasNoSearchResults('zzz', { live, upcoming: [] })).toBe(false);
+  });
+});
+
+describe('toListedMatch', () => {
+  const full = {
+    id: 'a-vs-b-1',
+    sport: 'football',
+    league: 'Liga',
+    team1: 'A',
+    team2: 'B',
+    startTime: '2026-10-10T18:00:00.000Z',
+    isLive: true,
+    poster: '/p.webp',
+    sources: [{ source: 'alpha', id: '1' }],
+    streams: [{ url: 'https://embed.example/1', embedUrl: 'https://embed.example/1' }],
+    broadcasts: [{ network: 'ESPN', channel: 'ESPN Premium', logo: '/l.webp', options: [{ name: 'o', iframe: 'https://x/y' }] }],
+    liveHint: true,
+  } as unknown as CatalogMatch;
+
+  it('keeps what the cards render and the broadcaster names', () => {
+    const listed = toListedMatch(full);
+    expect(listed).toMatchObject({ id: 'a-vs-b-1', team1: 'A', team2: 'B', isLive: true, poster: '/p.webp' });
+    expect(listed.broadcasts).toEqual([{ network: 'ESPN', channel: 'ESPN Premium' }]);
+  });
+
+  it('drops stream URLs and playable options, which only the match page uses', () => {
+    const serialized = JSON.stringify(toListedMatch(full));
+    expect(serialized).not.toContain('embed.example');
+    expect(serialized).not.toContain('https://x/y');
+    expect(serialized).not.toContain('sources');
   });
 });

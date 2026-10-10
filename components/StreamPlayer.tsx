@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Stream } from '@/types/api';
 import { STREAM_LOAD_TIMEOUT_MS } from '@/lib/constants';
 import Spinner from '@/components/Spinner';
+import { useAfterPageLoad } from '@/lib/useAfterPageLoad';
 
 interface StreamPlayerProps {
   stream: Stream | null;
@@ -46,6 +47,9 @@ export default function StreamPlayer({
 
   const embedUrl = stream?.embedUrl || stream?.url;
 
+  // The embed is third-party weight; it mounts once the page itself has loaded.
+  const pageReady = useAfterPageLoad();
+
   useEffect(() => {
     if (!embedUrl) {
       fail();
@@ -53,9 +57,11 @@ export default function StreamPlayer({
     }
     setError(false);
     setIsLoading(true);
+    // The load timeout measures the embed, so it starts when the iframe mounts.
+    if (!pageReady) return;
     loadTimeoutRef.current = window.setTimeout(fail, STREAM_LOAD_TIMEOUT_MS);
     return () => window.clearTimeout(loadTimeoutRef.current);
-  }, [stream, embedUrl, fail]);
+  }, [stream, embedUrl, fail, pageReady]);
 
   // Aspect-ratio box by default; fills the parent when the page owns the sizing.
   const frameClass = fillParent ? 'stream-player--fill' : 'video-container';
@@ -84,24 +90,26 @@ export default function StreamPlayer({
           <Spinner label="Loading stream…" />
         </div>
       )}
-      <iframe
-        key={embedUrl}
-        ref={iframeRef}
-        src={embedUrl}
-        title="Stream"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="stream-player__frame"
-        onLoad={() => {
-          window.clearTimeout(loadTimeoutRef.current);
-          setIsLoading(false);
-          if (muted) muteEmbeddedVideo(iframeRef.current);
-        }}
-        onError={() => {
-          window.clearTimeout(loadTimeoutRef.current);
-          fail();
-        }}
-      />
+      {pageReady && (
+        <iframe
+          key={embedUrl}
+          ref={iframeRef}
+          src={embedUrl}
+          title="Stream"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="stream-player__frame"
+          onLoad={() => {
+            window.clearTimeout(loadTimeoutRef.current);
+            setIsLoading(false);
+            if (muted) muteEmbeddedVideo(iframeRef.current);
+          }}
+          onError={() => {
+            window.clearTimeout(loadTimeoutRef.current);
+            fail();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -38,6 +38,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Dynamic pages default to `no-store`, which keeps browsers from restoring them
+        // on Back/Forward (the whole page and its data are fetched again). `no-cache`
+        // still revalidates on every normal navigation, so freshness is unchanged.
+        source: '/:path(|match/.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'private, no-cache, max-age=0, must-revalidate' },
+        ],
+      },
     ];
   },
 };

@@ -171,6 +171,20 @@ export interface CatalogMatch extends Match {
   liveHint: boolean;
 }
 
+// A broadcaster as a match card shows it. The playable options only matter on
+// the match page, so the listing leaves them out of the serialized page.
+export type ListedBroadcast = Pick<BroadcastChannel, 'channel' | 'network'>;
+
+// What the home listing needs of a match. Stream URLs and broadcast options are
+// the bulk of a CatalogMatch and are only used on the match page; see
+// toListedMatch in lib/matchListView.ts.
+export type ListedMatch = Pick<
+  Match,
+  'id' | 'sport' | 'league' | 'team1' | 'team2' | 'startTime' | 'isLive' | 'poster'
+> & {
+  broadcasts: ListedBroadcast[];
+};
+
 // ─── angulismotv feed ────────────────────────────────────────────────────────
 
 // A fixture from the angulismo feed, already paired with the channels carrying

@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Match } from '@/types/api';
-import { addToHistory, getHistory, historyEntryFromMatch, type HistoryEntry } from '@/lib/watchHistory';
+import {
+  addToHistory,
+  getHistory,
+  historyEntryFromMatch,
+  type HistoryEntry,
+  type HistorySourceMatch,
+} from '@/lib/watchHistory';
 
 /**
  * Watch history backed by localStorage. Read after mount so server and first
@@ -19,7 +24,7 @@ export function useWatchHistory() {
   }, []);
 
   const recordMatch = useCallback(
-    (match: Match) => recordEntry(historyEntryFromMatch(match)),
+    (match: HistorySourceMatch) => recordEntry(historyEntryFromMatch(match)),
     [recordEntry],
   );
 

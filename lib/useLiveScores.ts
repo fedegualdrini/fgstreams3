@@ -5,6 +5,9 @@ import type { Match, FlashscoreEntry } from '@/types/api';
 import { findMatchingEntry } from './scoreUtils';
 import { SCORES_POLL_INTERVAL_MS } from './constants';
 
+/** The fields score matching reads; both full and listing matches satisfy it. */
+type ScoredMatch = Pick<Match, 'id' | 'team1' | 'team2' | 'sport'>;
+
 async function fetchSportEntries(sport: string): Promise<FlashscoreEntry[]> {
   try {
     const response = await fetch(`/api/scores/${encodeURIComponent(sport)}`);
@@ -15,7 +18,7 @@ async function fetchSportEntries(sport: string): Promise<FlashscoreEntry[]> {
 }
 
 /** Pairs each live match with its best-matching score entry, keyed by match id. */
-function pairMatchesWithEntries(matches: Match[], entries: FlashscoreEntry[]): Map<string, FlashscoreEntry> {
+function pairMatchesWithEntries(matches: ScoredMatch[], entries: FlashscoreEntry[]): Map<string, FlashscoreEntry> {
   const scores = new Map<string, FlashscoreEntry>();
   for (const match of matches) {
     const entry = findMatchingEntry(match.team1, match.team2, entries);
@@ -28,7 +31,7 @@ function pairMatchesWithEntries(matches: Match[], entries: FlashscoreEntry[]): M
  * Live scores keyed by match id. Polling only runs while there are live
  * matches and is skipped while the tab is hidden.
  */
-export function useLiveScores(liveMatches: Match[]): Map<string, FlashscoreEntry> {
+export function useLiveScores(liveMatches: ScoredMatch[]): Map<string, FlashscoreEntry> {
   const [scoreMap, setScoreMap] = useState<Map<string, FlashscoreEntry>>(new Map());
 
   // The polling callback reads the latest list through a ref, so the effect

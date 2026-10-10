@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { CatalogMatch } from '@/types/api';
+import type { ListedMatch } from '@/types/api';
 import { useLiveScores } from '@/lib/useLiveScores';
 import { ALL_SPORT_FILTER, getAvailableSportFilters } from '@/lib/matchFilters';
 import { filterMatchLists, hasNoSearchResults, shouldShowRecentlyWatched } from '@/lib/matchListView';
@@ -13,8 +13,8 @@ import EmptyState from '@/components/match-list/EmptyState';
 import { useWatchHistory } from '@/components/match-list/useWatchHistory';
 
 interface MatchListWithSearchProps {
-  liveMatches: CatalogMatch[];
-  upcomingMatches: CatalogMatch[];
+  liveMatches: ListedMatch[];
+  upcomingMatches: ListedMatch[];
 }
 
 export default function MatchListWithSearch({ liveMatches, upcomingMatches }: MatchListWithSearchProps) {
@@ -47,6 +47,8 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
 
       {filtered.upcoming.length > 0 && (
         <UpcomingMatchGrid
+          // New filters start again from the first page of results.
+          key={`${sport}|${query}`}
           matches={filtered.upcoming}
           hasLiveSection={filtered.live.length > 0}
           onOpen={recordMatch}

@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Bebas_Neue, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import AdBlockBanner from '@/components/AdBlockBanner';
+import { ADBLOCK_BANNER_BOOT_SCRIPT } from '@/lib/adBlockBanner';
 import './globals.css';
 
 // Self-hosted by next/font so the fonts are not a render-blocking third-party
@@ -44,13 +46,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${bebasNeue.variable} ${spaceGrotesk.variable}`}>
+    // suppressHydrationWarning: the banner boot script below may add an attribute to <html> before React hydrates.
+    <html lang="en" className={`${bebasNeue.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: ADBLOCK_BANNER_BOOT_SCRIPT }} />
         <AdBlockBanner />
         <div className="site-container">
           <ErrorBoundary>{children}</ErrorBoundary>
         </div>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

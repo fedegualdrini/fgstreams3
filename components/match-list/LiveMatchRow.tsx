@@ -1,15 +1,15 @@
-import type { CatalogMatch, FlashscoreEntry } from '@/types/api';
+import type { FlashscoreEntry, ListedMatch } from '@/types/api';
 import SectionHeader from './SectionHeader';
-import MatchLink from './MatchLink';
+import MatchLink, { PRIORITY_POSTER_COUNT } from './MatchLink';
 import { useHorizontalScroll } from './useHorizontalScroll';
 
 /** One live card (290px) plus the 12px gap between cards. */
 const SCROLL_STEP_PX = 302;
 
 interface LiveMatchRowProps {
-  matches: CatalogMatch[];
+  matches: ListedMatch[];
   scores: Map<string, FlashscoreEntry>;
-  onOpen: (match: CatalogMatch) => void;
+  onOpen: (match: ListedMatch) => void;
 }
 
 export default function LiveMatchRow({ matches, scores, onOpen }: LiveMatchRowProps) {
@@ -23,12 +23,13 @@ export default function LiveMatchRow({ matches, scores, onOpen }: LiveMatchRowPr
         <ScrollArrow direction="left" enabled={canScrollLeft} onClick={() => scrollBy(-SCROLL_STEP_PX)} />
 
         <div ref={ref} className="live-row__track">
-          {matches.map((match) => {
+          {matches.map((match, index) => {
             const entry = scores.get(match.id);
             return (
               <MatchLink
                 key={match.id}
                 live
+                priorityPoster={index < PRIORITY_POSTER_COUNT}
                 match={match}
                 onOpen={onOpen}
                 score={entry?.score}

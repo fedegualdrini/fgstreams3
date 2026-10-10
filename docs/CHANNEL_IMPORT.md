@@ -16,6 +16,11 @@ shell (arguments, files, output), `scripts/playlistImport.mjs` holds the pure
 rules (flatten, classify, merge) and `scripts/libProbe.mjs` does the network
 probing. Only the pure rules and the token helpers are unit-tested.
 
+After importing, run `npm run optimize:logos` so new channel logos are served from
+`public/logos` instead of third-party hosts. It downloads each remote logo once,
+shrinks it to a 72px WebP and rewrites the channel's `logo`; logos that cannot be
+fetched keep their original URL, and re-running skips files that already exist.
+
 A stream is only imported when it can actually be played:
 
 - Widevine and PlayReady are skipped; only ClearKey can be decrypted in-browser.

@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import type { BroadcastChannel, Match } from '@/types/api';
+import type { ListedBroadcast, ListedMatch } from '@/types/api';
 import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 import PosterImage from '@/components/match-list/PosterImage';
@@ -11,20 +11,22 @@ import { useScoreFlash } from '@/components/match-list/useScoreFlash';
 const MAX_BROADCASTS = 2;
 
 interface MatchCardProps {
-  match: Match;
+  match: ListedMatch;
   score?: string | null;
   scoreMinute?: string;
   /** Channels from the local catalog carrying this match, if any. */
-  broadcasts?: BroadcastChannel[];
+  broadcasts?: ListedBroadcast[];
+  /** Load the poster eagerly; use for cards visible on first paint. */
+  priorityPoster?: boolean;
 }
 
-function MatchCard({ match, score, scoreMinute, broadcasts = [] }: MatchCardProps) {
+function MatchCard({ match, score, scoreMinute, broadcasts = [], priorityPoster = false }: MatchCardProps) {
   const localTime = useLocalTime(match.startTime ? new Date(match.startTime) : null);
   const displayScore = match.isLive && score ? score : null;
 
   return (
     <div className="match-card">
-      <Poster match={match} />
+      <Poster match={match} priority={priorityPoster} />
 
       <div className="match-card__header">
         <span className="match-card__league truncate">{match.league || match.sport}</span>
@@ -50,7 +52,7 @@ function MatchCard({ match, score, scoreMinute, broadcasts = [] }: MatchCardProp
   );
 }
 
-function Poster({ match }: { match: Match }) {
+function Poster({ match, priority }: { match: ListedMatch; priority: boolean }) {
   const posterUrl = getPosterUrl(match.poster);
 
   return (
@@ -61,6 +63,7 @@ function Poster({ match }: { match: Match }) {
           alt={`${match.team1} vs ${match.team2 ?? ''}`}
           sizes="(max-width: 768px) 100vw, 300px"
           className="match-card__poster-image"
+          priority={priority}
         />
       )}
       <div className="match-card__poster-fade" />
@@ -74,7 +77,7 @@ function Poster({ match }: { match: Match }) {
   );
 }
 
-function Broadcasts({ broadcasts }: { broadcasts: BroadcastChannel[] }) {
+function Broadcasts({ broadcasts }: { broadcasts: ListedBroadcast[] }) {
   if (broadcasts.length === 0) return null;
 
   return (
