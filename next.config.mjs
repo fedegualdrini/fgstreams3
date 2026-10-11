@@ -3,9 +3,12 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'streamed.pk' },
-    ],
+    // Every image on the site comes from streamed.pk and is already a small WebP
+    // (posters 444x250, about 15 KB; badges 200x200, about 8 KB), so Vercel's optimizer
+    // saves almost nothing. It does bill one transformation per image, per width, per
+    // device: the daily-changing match list blew through the Hobby plan's 5,000 a month,
+    // after which new images fail to load. Serve them directly instead.
+    unoptimized: true,
   },
   async headers() {
     return [
