@@ -58,10 +58,15 @@ export default function MatchDetailClient({
   const [multiStreamMode, setMultiStreamMode] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('streams');
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [reloadCount, setReloadCount] = useState(0);
 
   const canSkipStream = !multiStreamMode && playback.streams.length > 0 && !playback.allStreamsFailed;
+  // A single player is on screen: a TV channel, or a direct stream that has not failed outright.
+  const hasPlayer = !multiStreamMode && (playback.selectedChannel !== null || canSkipStream);
+  const reloadPlayer = hasPlayer ? () => setReloadCount(count => count + 1) : undefined;
   useKeyboardShortcuts({
     nextStream: () => { if (canSkipStream) playback.rotate(); },
+    reloadPlayer: () => reloadPlayer?.(),
     fullscreen: toggleFullscreen,
     toggleHelp: () => setShowShortcuts(open => !open),
     closeHelp: () => setShowShortcuts(false),
@@ -78,6 +83,7 @@ export default function MatchDetailClient({
           stats={stats}
           actions={
             <MatchActions
+              onReloadPlayer={reloadPlayer}
               shareCopied={share.copied}
               onShare={share.share}
               shortcutsOpen={showShortcuts}
@@ -103,6 +109,7 @@ export default function MatchDetailClient({
               allStreamsFailed={playback.allStreamsFailed}
               onStreamError={playback.rotate}
               onRetry={playback.retry}
+              reloadCount={reloadCount}
             />
             <MatchSidebar
               tab={sidebarTab}

@@ -12,6 +12,8 @@ interface MatchPlayerPaneProps {
   allStreamsFailed: boolean;
   onStreamError: () => void;
   onRetry: () => void;
+  /** Bumped to remount the player: a new key gives the embed a fresh iframe, like a page reload without losing the page. */
+  reloadCount: number;
 }
 
 export default function MatchPlayerPane(props: MatchPlayerPaneProps) {
@@ -29,12 +31,13 @@ function PlayerContent({
   allStreamsFailed,
   onStreamError,
   onRetry,
+  reloadCount,
 }: MatchPlayerPaneProps) {
   if (channel) {
-    return <ChannelPlayer key={channel.channel} channel={broadcastToChannel(channel)} fillContainer />;
+    return <ChannelPlayer key={`${channel.channel}:${reloadCount}`} channel={broadcastToChannel(channel)} fillContainer />;
   }
   if (allStreamsFailed || !hasStreams) {
     return <NoStreamsPanel allFailed={allStreamsFailed} onRetry={onRetry} />;
   }
-  return <StreamPlayer stream={stream} onError={onStreamError} fillParent />;
+  return <StreamPlayer key={reloadCount} stream={stream} onError={onStreamError} fillParent />;
 }

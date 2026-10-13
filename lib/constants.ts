@@ -77,6 +77,9 @@ export const STREAMS_CDN_STALE_WHILE_REVALIDATE = 30;
 export const SCORES_POLL_INTERVAL_MS = 45_000;
 export const FIXTURE_POLL_INTERVAL_MS = 30_000;
 
-// After this delay with no iframe onLoad, the player treats the stream as failed.
-export const STREAM_LOAD_TIMEOUT_MS = 10_000;
+// After this delay with no iframe onLoad, the player treats the stream as failed and
+// rotates to the next stream. Stream embeds ship ads and a video stack of their own and
+// the slowest loads take about 10 s, so a shorter limit abandoned working embeds for a
+// different one (and a different player UI).
+export const STREAM_LOAD_TIMEOUT_MS = 20_000;
 export const CHANNEL_LOAD_TIMEOUT_MS = 15_000;

@@ -4,6 +4,7 @@
  */
 export const SHORTCUTS = [
   { id: 'nextStream', key: 'n', label: 'N', description: 'Next stream' },
+  { id: 'reloadPlayer', key: 'r', label: 'R', description: 'Reload the player' },
   { id: 'fullscreen', key: 'f', label: 'F', description: 'Toggle fullscreen' },
   { id: 'toggleHelp', key: '?', label: '?', description: 'Show/hide shortcuts' },
   { id: 'closeHelp', key: 'escape', label: 'Esc', description: 'Close this panel' },
