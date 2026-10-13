@@ -35,7 +35,7 @@ FGStreams lists what is live right now, finds a playable source for it, and keep
 | **Watch history** | Recently watched matches are kept in local storage and shown on the home page. |
 | **Channels** | A searchable catalog of hundreds of channels. The selected channel and source live in the URL, with retry and next-option controls. HLS and DASH (ClearKey) play natively. |
 | **Movies and series** | TMDB-backed search, embedded playback, and season/episode selection for TV. |
-| **Keyboard shortcuts** | `N` next stream, `F` fullscreen, `?` shortcut help. |
+| **Keyboard shortcuts** | `N` next stream, `R` reload the player, `F` fullscreen, `?` shortcut help. |
 
 ## Screenshots
 
