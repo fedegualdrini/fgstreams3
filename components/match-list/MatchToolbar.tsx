@@ -18,11 +18,11 @@ interface MatchToolbarProps {
 export default function MatchToolbar({ query, onQueryChange, sports, sport, onSportChange }: MatchToolbarProps) {
   return (
     <div className="match-toolbar">
-      <div className="match-search">
-        <span className="match-search__icon" aria-hidden="true">⌕</span>
+      <div className="search-field">
+        <span className="search-field__icon" aria-hidden="true">⌕</span>
         <input
           id="match-search"
-          className="match-search__input"
+          className="search-field__input"
           type="text"
           placeholder="Search teams, leagues…"
           autoComplete="off"

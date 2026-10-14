@@ -22,7 +22,7 @@ export default function SiteHeader({ activeSection, liveCount }: SiteHeaderProps
         <nav aria-label="Main navigation" className="site-nav">
           <NavLink href="/" active={activeSection === 'matches'} badge={liveCount}>Matches</NavLink>
           <NavLink href="/channels" active={activeSection === 'channels'}>Channels</NavLink>
-          <NavLink href="/movies" active={activeSection === 'movies'}>Movies / Series</NavLink>
+          <NavLink href="/movies" active={activeSection === 'movies'}>Movies<span className="sm-hide"> / Series</span></NavLink>
         </nav>
       </div>
     </header>

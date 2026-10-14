@@ -1,4 +1,5 @@
 import type { FlashscoreDetail } from '@/types/api';
+import StatusBadge from '@/components/StatusBadge';
 
 function getStatusLabel({ status, minute }: Pick<FlashscoreDetail, 'status' | 'minute'>): string {
   if (status === 'fin') return 'FT';
@@ -14,11 +15,7 @@ export default function StatsScore({ detail, score }: { detail: FlashscoreDetail
   return (
     <div className="stats-score">
       <span className="stats-score__value">{score}</span>
-      {statusLabel && (
-        <span className={isFinal ? 'stats-score__status stats-score__status--final' : 'stats-score__status'}>
-          {statusLabel}
-        </span>
-      )}
+      {statusLabel && <StatusBadge ended={isFinal}>{statusLabel}</StatusBadge>}
       {detail.periods && <span className="stats-score__periods">{detail.periods}</span>}
     </div>
   );

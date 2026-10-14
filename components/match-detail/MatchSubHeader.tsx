@@ -5,6 +5,7 @@ import type { FlashscoreDetail, Match } from '@/types/api';
 import { getImageUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 import ScoreBadge from './ScoreBadge';
+import StatusBadge from '@/components/StatusBadge';
 
 interface MatchSubHeaderProps {
   match: Match;
@@ -18,10 +19,10 @@ interface MatchSubHeaderProps {
 /** Banner under the site header: teams, score, league, kickoff time and actions. */
 export default function MatchSubHeader({ match, stats, actions, children }: MatchSubHeaderProps) {
   return (
-    <div className="match-subheader">
-      <div className="page-content match-subheader__bar">
-        <Link href="/" className="match-subheader__back" aria-label="Back to matches">←</Link>
-        <span className="match-subheader__divider" aria-hidden="true">|</span>
+    <div className="subheader">
+      <div className="page-content subheader__bar">
+        <Link href="/" className="subheader__back" aria-label="Back to matches">←</Link>
+        <span className="subheader__divider" aria-hidden="true">|</span>
 
         <TeamLogo src={match.image1} name={match.team1} />
         <span className="match-team__name">{match.team1}</span>
@@ -57,12 +58,7 @@ function MatchMeta({ match }: { match: Match }) {
   return (
     <>
       <span className="label match-subheader__league">{match.league || match.sport}</span>
-      {match.isLive && (
-        <span className="match-live-badge">
-          <span className="live-dot match-live-badge__dot" />
-          LIVE
-        </span>
-      )}
+      {match.isLive && <StatusBadge dot />}
       {localTime && !match.isLive && (
         <span suppressHydrationWarning className="match-subheader__time">{localTime}</span>
       )}

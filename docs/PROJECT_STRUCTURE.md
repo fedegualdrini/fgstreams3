@@ -112,12 +112,14 @@ vitest.config.ts                   Vitest configuration
 
 ### UI
 
-Shared primitives live in `app/globals.css`; prefer them over per-component inline styles and keep inline `style` for truly dynamic values.
+Tokens live in `app/globals.css`, shared primitives in `app/styles/primitives.css`, and each area (`chrome`, `layout`, `match-list`, `multi-match`, `channels`, `player`, `movies`, `match-detail`) has its own file under `app/styles/`. Prefer the primitives over per-component inline styles and keep inline `style` for truly dynamic values.
 
-- `.btn` — small uppercase button. Active state via `aria-pressed="true"` or `.is-active`; modifiers `.btn--primary` (filled call to action) and `.btn--icon` (square glyph button).
+- `.btn` — small uppercase button. Active state via `aria-pressed="true"` or `.is-active`; modifiers `.btn--primary` (filled call to action), `.btn--icon` (square glyph button) and `.btn--ghost` (no fill).
+- `StatusBadge` (`.status-badge`) — red LIVE / minute pill; `.status-badge--compact`, `--ended`. Use it instead of a per-feature badge.
+- `.subheader` and `.split-layout` (`layout.css`) — the title bar and the player + sidebar split shared by the match page and the channel viewer. They stack on screens up to 768px.
 - `.kbd` — keyboard key cap.
 - `.status-panel` (+ `__title`, `__message`) — centered column for error, empty and "nothing to play" states. `components/ErrorPanel.tsx` builds on it for route-level `error.tsx` files.
-- Colors, fonts and spacing come from the CSS variables at the top of the file (`--bg`, `--line`, `--accent`, `--font-display`, ...).
+- Colors, shadows, fonts and text sizes come from the CSS variables in `globals.css` (`--bg`, `--line`, `--accent`, `--on-accent`, `--shadow-md`, `--fs-xs`, `--font-display`, ...). Do not write a literal color or a one-off `font-size` in a stylesheet; add or reuse a token.
 
 ### Performance
 

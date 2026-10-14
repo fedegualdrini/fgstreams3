@@ -101,7 +101,7 @@ export default function MatchDetailClient({
         </MatchSubHeader>
 
         {!multiStreamMode && (
-          <div className="detail-layout">
+          <div className="split-layout">
             <MatchPlayerPane
               channel={playback.selectedChannel}
               stream={playback.currentStream}

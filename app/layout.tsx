@@ -6,6 +6,16 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import AdBlockBanner from '@/components/AdBlockBanner';
 import { ADBLOCK_BANNER_BOOT_SCRIPT } from '@/lib/adBlockBanner';
 import './globals.css';
+// Feature stylesheets, loaded after the base so they can build on its tokens.
+import './styles/primitives.css';
+import './styles/layout.css';
+import './styles/chrome.css';
+import './styles/match-list.css';
+import './styles/multi-match.css';
+import './styles/channels.css';
+import './styles/player.css';
+import './styles/movies.css';
+import './styles/match-detail.css';
 
 // Self-hosted by next/font so the fonts are not a render-blocking third-party
 // request. The CSS variables feed --font-display / --font-body in globals.css.

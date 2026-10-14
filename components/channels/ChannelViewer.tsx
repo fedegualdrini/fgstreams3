@@ -16,18 +16,18 @@ export default function ChannelViewer({ channel, optionIndex, onOptionChange, on
 
   return (
     <>
-      <div className="channel-bar">
-        <div className="page-content channel-bar__inner">
-          <button type="button" className="channel-bar__back" onClick={onClose} aria-label="Back to channels">←</button>
-          <span className="channel-bar__divider">|</span>
+      <div className="subheader">
+        <div className="page-content subheader__bar">
+          <button type="button" className="subheader__back" onClick={onClose} aria-label="Back to channels">←</button>
+          <span className="subheader__divider">|</span>
           {channel.logo && <ChannelLogo src={channel.logo} className="channel-bar__logo" size={22} />}
           <span className="channel-bar__name">{channel.name}</span>
           <span className="label channel-bar__count">{pluralize(options.length, 'source')}</span>
         </div>
       </div>
 
-      <div className="detail-layout channel-layout">
-        <section className="detail-player channel-stage">
+      <div className="split-layout">
+        <section className="split-layout__main">
           <ChannelPlayer
             channel={channel}
             initialOptionIndex={optionIndex}
@@ -37,7 +37,7 @@ export default function ChannelViewer({ channel, optionIndex, onOptionChange, on
           />
         </section>
 
-        <div className="detail-sidebar channel-sidebar">
+        <div className="split-layout__aside">
           <div className="channel-sidebar__head">
             <div className="channel-sidebar__title">Channel Sources</div>
           </div>

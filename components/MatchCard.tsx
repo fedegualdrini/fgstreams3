@@ -6,6 +6,7 @@ import { getPosterUrl } from '@/lib/api';
 import { useLocalTime } from '@/lib/dateUtils';
 import PosterImage from '@/components/match-list/PosterImage';
 import { useScoreFlash } from '@/components/match-list/useScoreFlash';
+import StatusBadge from '@/components/StatusBadge';
 
 /** Broadcasters shown on a card; more would crowd out the league name. */
 const MAX_BROADCASTS = 2;
@@ -38,7 +39,7 @@ function MatchCard({ match, score, scoreMinute, broadcasts = [], priorityPoster 
         <ScoreOrVersus score={displayScore} minute={scoreMinute} />
         {match.team2
           ? <span className="match-card__team truncate">{match.team2}</span>
-          : <span style={{ flex: 1 }} />}
+          : <span className="match-card__spacer" />}
       </div>
 
       <div className="match-card__footer">
@@ -67,12 +68,7 @@ function Poster({ match, priority }: { match: ListedMatch; priority: boolean }) 
         />
       )}
       <div className="match-card__poster-fade" />
-      {match.isLive && (
-        <div className="match-card__live">
-          <span className="live-dot match-card__live-dot" />
-          LIVE
-        </div>
-      )}
+      {match.isLive && <StatusBadge dot />}
     </div>
   );
 }

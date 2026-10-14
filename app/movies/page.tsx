@@ -12,7 +12,7 @@ export default function MoviesPage() {
   return (
     <>
       <SiteHeader activeSection="movies" />
-      <main style={{ flex: 1 }}>
+      <main className="page-main">
         <div className="page-content movies-page">
           <h1 className="movies-page__title">Movies &amp; Series</h1>
           <MoviesPageClient />

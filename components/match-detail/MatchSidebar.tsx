@@ -19,7 +19,7 @@ interface MatchSidebarProps {
 
 export default function MatchSidebar({ tab, onTabChange, stats, streamList }: MatchSidebarProps) {
   return (
-    <div className="detail-sidebar">
+    <div className="split-layout__aside">
       <div className="sidebar-tabs">
         {TABS.map(({ id, label }) => (
           <button

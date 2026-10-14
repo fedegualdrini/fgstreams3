@@ -24,9 +24,8 @@ export default function ActiveMatchCard({ active, onToggleMute, onRemove, onChan
         <div className="multi-card__actions">
           <button
             type="button"
-            className={`multi-icon-btn${muted ? '' : ' multi-icon-btn--active'}`}
+            className={`btn btn--icon${muted ? '' : ' is-active'}`}
             onClick={() => onToggleMute(match.id)}
-            aria-pressed={muted}
             aria-label={muted ? 'Unmute this stream' : 'Mute this stream'}
             title={muted ? 'Unmute' : 'Mute'}
           >
@@ -34,7 +33,7 @@ export default function ActiveMatchCard({ active, onToggleMute, onRemove, onChan
           </button>
           <button
             type="button"
-            className="multi-icon-btn"
+            className="btn btn--icon"
             onClick={() => onRemove(match.id)}
             aria-label="Remove this match"
             title="Remove match"

@@ -24,7 +24,7 @@ export default async function ChannelsPage() {
   return (
     <>
       <SiteHeader activeSection="channels" />
-      <main style={{ flex: 1 }}>
+      <main className="page-main">
         <Suspense fallback={<MatchListSkeleton />}>
           <ChannelsPageClient channels={channels} />
         </Suspense>

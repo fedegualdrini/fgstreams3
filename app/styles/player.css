@@ -1,0 +1,109 @@
+.player-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.player-overlay--loading { background: var(--stage); }
+.player-overlay--error { flex-direction: column; gap: 1rem; background: var(--bg); }
+.player-overlay__title {
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.player-overlay__hint {
+  margin-top: -0.5rem;
+  color: var(--subtle);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+.player-overlay__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.player-overlay__actions .btn { padding: 0.5rem 1.25rem; font-size: var(--fs-xs); }
+
+/* Anchored to the top: embeds put their own controls along the bottom edge. */
+.option-picker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 0.5rem 0.75rem;
+  /* Only the control itself is interactive; the rest of the strip must stay
+     transparent to clicks meant for the embed. */
+  pointer-events: none;
+}
+.option-picker--expanded { background: linear-gradient(to bottom, rgb(var(--bg-rgb) / 0.92), transparent); }
+.option-picker__list {
+  display: flex;
+  flex: 1;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  pointer-events: auto;
+}
+.option-picker__list .btn { white-space: nowrap; }
+.option-picker__pill {
+  max-width: 100%;
+  white-space: nowrap;
+  background: rgb(var(--bg-rgb) / 0.78);
+  /* Dimmed while unattended so it reads as chrome, not content. */
+  opacity: 0.4;
+  transition: opacity 0.15s;
+  pointer-events: auto;
+}
+.option-picker__pill.is-attended { opacity: 1; }
+.option-picker__pill-name { overflow: hidden; text-overflow: ellipsis; }
+.option-picker__pill-position { opacity: 0.65; }
+
+.player-frame { position: relative; width: 100%; height: 100%; }
+.player-frame__video { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--stage); }
+.pip-button {
+  position: absolute;
+  bottom: 48px;
+  right: 8px;
+  z-index: 10;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: var(--on-live);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s;
+}
+.pip-button:hover { background: rgba(0, 0, 0, 0.85); }
+
+/* ── Stream player states ── */
+.stream-player--fill { position: relative; width: 100%; height: 100%; }
+.stream-player__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--subtle);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+}
+.stream-player__state--error { background: var(--bg); color: var(--text-dim); }
+.stream-player__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--stage);
+}
+.stream-player__frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }

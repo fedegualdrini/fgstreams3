@@ -41,7 +41,7 @@ export default function ChannelBrowser({ channels, search, onSearchChange, onSel
       {filtered.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state__icon">📺</div>
-          <div className="empty-state__text">No channels match &ldquo;{search}&rdquo;</div>
+          <div className="empty-state__title">No channels match &ldquo;{search}&rdquo;</div>
           <button type="button" className="empty-state__action" onClick={() => onSearchChange('')}>
             Clear search
           </button>

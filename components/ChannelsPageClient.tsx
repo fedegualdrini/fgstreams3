@@ -16,7 +16,7 @@ export default function ChannelsPageClient({ channels }: ChannelsPageClientProps
   const [search, setSearch] = useState('');
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+    <div className="page-fill">
       {selectedChannel ? (
         <ChannelViewer
           channel={selectedChannel}

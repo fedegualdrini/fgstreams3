@@ -23,7 +23,7 @@ export default function MatchPickerDialog({ matches, onPick, onClose }: MatchPic
       <div ref={dialogRef} tabIndex={-1} className="multi-dialog">
         <div className="multi-dialog__header">
           <h3 className="multi-dialog__title">Add a match</h3>
-          <button type="button" className="multi-icon-btn multi-icon-btn--ghost" onClick={onClose} aria-label="Close">
+          <button type="button" className="btn btn--icon btn--ghost" onClick={onClose} aria-label="Close">
             <IconClose size={14} />
           </button>
         </div>

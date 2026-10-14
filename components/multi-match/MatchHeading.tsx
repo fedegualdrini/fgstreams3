@@ -1,4 +1,5 @@
 import type { Match } from '@/types/api';
+import StatusBadge from '@/components/StatusBadge';
 
 interface MatchHeadingProps {
   match: Match;
@@ -19,12 +20,7 @@ export default function MatchHeading({ match, truncate = false, liveDot = false 
         {match.team2 ? ` vs ${match.team2}` : ''}
       </p>
       <p className={`multi-heading__meta${lineClass}`}>{match.league || match.sport}</p>
-      {match.isLive && (
-        <span className="multi-live">
-          {liveDot && <span className="live-dot multi-live__dot" />}
-          LIVE
-        </span>
-      )}
+      {match.isLive && <StatusBadge compact dot={liveDot} />}
     </>
   );
 }

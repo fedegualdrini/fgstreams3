@@ -18,7 +18,7 @@ interface MatchPlayerPaneProps {
 
 export default function MatchPlayerPane(props: MatchPlayerPaneProps) {
   return (
-    <section className="detail-player">
+    <section className="split-layout__main">
       <PlayerContent {...props} />
     </section>
   );

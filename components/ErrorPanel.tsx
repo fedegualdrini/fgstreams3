@@ -9,7 +9,7 @@ interface ErrorPanelProps {
 /** Shared body for route-level `error.tsx` boundaries. */
 export default function ErrorPanel({ title, fallbackMessage, error, onRetry }: ErrorPanelProps) {
   return (
-    <div className="status-panel" style={{ minHeight: '50vh' }} role="alert">
+    <div className="status-panel status-panel--page" role="alert">
       <p className="status-panel__title">{title}</p>
       <p className="status-panel__message">{error.message || fallbackMessage}</p>
       <button type="button" className="btn btn--primary" onClick={onRetry}>
