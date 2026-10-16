@@ -112,7 +112,7 @@ vitest.config.ts                   Vitest configuration
 
 ### Server code
 
-- **One server fetch path.** Upstream data calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). Stream Test additionally makes a browser-side binary POST to the provider so resolution happens on the viewer's IP.
+- **Server fetch paths.** Catalog upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). Stream Test resolves with a browser-side binary POST on the viewer's IP and uses `impit` only for its allowlisted manifest relay, where the provider rejects standard Node fetch.
 - **One logger.** `createLogger('scope')` from `lib/logger.ts` prints `scope: message` plus any error as a trailing argument. Do not call `console.*` in `lib/` or `app/api`.
 - **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`. Cacheable routes use `jsonWithCache`; Stream Test explicitly uses `no-store` for keys, signed URLs and live manifests.
 - **Named limits.** Timeouts, cache windows and CDN headers are constants in `lib/constants.ts`, each with a comment explaining the value.

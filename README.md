@@ -94,7 +94,7 @@ Open `/stream-test` from the main navigation. Paste a current `https://embed.st/
 
 The page requests a fresh binary response in the browser, authenticates and decodes it on the server, then attempts HLS playback without loading the provider iframe or its scripts. Only manifests are relayed; media segments stay direct. Existing match, channel and movie players are not changed.
 
-Decoding does not guarantee playback: the provider can reject manifest requests, and signed URLs expire. Local verification authenticated fresh responses, but the Next.js/Node manifest fetch received upstream HTTP 403; the page reports playback failure separately from successful decoding. There is no automatic iframe fallback.
+The manifest relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider rejects Node's built-in `fetch` with HTTP 403 even for working signed URLs. Keep optional native dependencies enabled when installing (`npm install` / `npm ci`); the matching Windows or Linux binary is required. Signed URLs still expire and streams can go offline; failures remain distinct from successful decoding, with no automatic iframe fallback.
 
 Decoder and proxy-boundary checks: `npx vitest run lib/streamTest.test.ts`.
 

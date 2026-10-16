@@ -2,6 +2,10 @@
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
+  experimental: {
+    // Keep impit's platform-specific native HTTP client out of webpack bundles.
+    serverComponentsExternalPackages: ['impit'],
+  },
   images: {
     // Every image on the site comes from streamed.pk and is already a small WebP
     // (posters 444x250, about 15 KB; badges 200x200, about 8 KB), so Vercel's optimizer

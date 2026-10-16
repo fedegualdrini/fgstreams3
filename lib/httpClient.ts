@@ -18,8 +18,6 @@ export interface FetchOptions {
   /** Next.js Data Cache window in seconds. */
   revalidate: number;
   headers?: HeadersInit;
-  /** Restrict redirects when a caller has allowlisted the upstream origin. */
-  redirect?: RequestRedirect;
   /** Per-attempt deadline. Omit only where a hung request is harmless. */
   timeoutMs?: number;
   /** Extra attempts after the first, used only for network errors and 5xx. */
@@ -29,14 +27,13 @@ export interface FetchOptions {
 const wait = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 async function fetchWithRetry(url: string, options: FetchOptions): Promise<Response> {
-  const { headers, redirect, revalidate, timeoutMs, retries = 0 } = options;
+  const { headers, revalidate, timeoutMs, retries = 0 } = options;
 
   for (let attempt = 0; ; attempt++) {
     const isLastAttempt = attempt >= retries;
     try {
       const response = await fetch(url, {
         headers,
-        redirect,
         signal: timeoutMs === undefined ? undefined : AbortSignal.timeout(timeoutMs),
         next: { revalidate },
       });
