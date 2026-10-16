@@ -3,16 +3,17 @@ import { usePictureInPicture } from './usePictureInPicture';
 
 interface PlayerSurfaceProps {
   videoRef: RefObject<HTMLVideoElement>;
+  muted?: boolean;
 }
 
 /** The `<video>` element and its picture-in-picture button, shared by every engine-backed player. */
-export default function PlayerSurface({ videoRef }: PlayerSurfaceProps) {
+export default function PlayerSurface({ videoRef, muted = false }: PlayerSurfaceProps) {
   const pip = usePictureInPicture(videoRef);
   const pipLabel = pip.active ? 'Exit Picture-in-Picture' : 'Picture-in-Picture';
 
   return (
     <div className="player-frame">
-      <video ref={videoRef} className="player-frame__video" autoPlay playsInline controls />
+      <video ref={videoRef} className="player-frame__video" autoPlay playsInline controls muted={muted} />
       {pip.supported && (
         <button
           type="button"

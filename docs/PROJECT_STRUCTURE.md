@@ -9,7 +9,7 @@ app/
   globals.css                      Design tokens and shared UI primitives
   channels/                        Channels page (+ error boundary)
   movies/                          Movies and series page (+ error boundary)
-  stream-test/                     Isolated embed-response decoder and HLS experiment
+  stream-test/                     Manual embed.st URL diagnostic using the shared player
   match/[id]/                      Match detail page, metadata and error boundary
   api/
     hls-proxy/route.ts             HTTP HLS proxy for selected channel streams
@@ -19,7 +19,7 @@ app/
     scores/match/[flashscoreId]/route.ts
                                     Match detail/statistics endpoint
     streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
-    stream-test/manifest/route.ts  Same-context resolve/decode and manifest-only relay
+    embed-st/manifest/route.ts     Same-context resolve/decode and manifest-only relay
     diagnostics/broadcasts/route.ts
                                     Broadcast pipeline health; ?q=<team> traces one match
 
@@ -32,7 +32,8 @@ components/                        Shared and page-level components
   ChannelsPageClient.tsx           Channels page entry
   MoviesPageClient.tsx             Movies page entry
   StreamTestClient.tsx             Minimal embed URL form and diagnostic playback state
-  players/StreamTestPlayer.tsx     Isolated HLS attempt; stops on fatal errors
+  players/EmbedStPlayer.tsx        Shared embed.st HLS engine; stops on fatal errors
+  players/EmbedStPlayback.tsx      Direct/original engine switch and local failure state
   channels/ match-detail/ match-list/ movies/ multi-match/ players/
                                    Feature folders: the sub-components and hooks each
                                    page-level component above is assembled from
@@ -59,7 +60,7 @@ lib/
   logger.ts                        createLogger(scope): the only console writer
   schemas.ts                       Zod schemas for external API data
   constants.ts                     Cache windows, timeouts and limits, with rationale
-  streamTestServer.ts               Authenticated decoder, scoped variants and manifest rewriting
+  embedStServer.ts                  Authenticated decoder, scoped variants and manifest rewriting
   # Shared / client
   matchUtils.ts                    Match normalization, liveness, and image helpers
   matchFilters.ts, matchListView.ts, matchDetailStreams.ts, multiMatch.ts
@@ -68,7 +69,7 @@ lib/
   movieEmbed.ts, movieTmdb.ts      Movie/TV embed URLs and TMDB mapping
   playerHls.ts                     hls.js configuration
   streamSelector.ts                Preferred stream selection
-  streamTest.ts                    Supported embed URL validation and protobuf request encoding
+  embedSt.ts                        Supported embed URL detection and protobuf request encoding
   scoreAliases.ts, scoreUtils.ts   Team alias data and score matching
   sportMap.ts                      Sport name mapping
   urlValidation.ts, proxyHosts.ts  Stream URL validation; generated HLS-proxy allowlist
@@ -111,9 +112,9 @@ vitest.config.ts                   Vitest configuration
 
 ### Server code
 
-- **Server fetch paths.** Catalog upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). Stream Test uses `impit` for its fixed provider resolver and allowlisted manifest relay, resolving and fetching within each server request rather than forwarding browser-context signed URLs.
+- **Server fetch paths.** Catalog upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). embed.st playback uses `impit` for its fixed provider resolver and allowlisted manifest relay, resolving and fetching within each server request rather than forwarding browser-context signed URLs.
 - **One logger.** `createLogger('scope')` from `lib/logger.ts` prints `scope: message` plus any error as a trailing argument. Do not call `console.*` in `lib/` or `app/api`.
-- **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`. Cacheable routes use `jsonWithCache`; Stream Test explicitly uses `no-store` for keys, signed URLs and live manifests.
+- **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`. Cacheable routes use `jsonWithCache`; the embed.st resolver explicitly uses `no-store` for keys, signed URLs and live manifests.
 - **Named limits.** Timeouts, cache windows and CDN headers are constants in `lib/constants.ts`, each with a comment explaining the value.
 
 ### UI
@@ -134,6 +135,6 @@ Rules that keep the Core Web Vitals where they are (measured with Lighthouse; Ve
 - **No layout shifts after hydration.** Anything that appears late (banners, badges) is rendered in the server HTML and hidden with CSS, or reserves its space. The ad-block banner works this way (`lib/adBlockBanner.ts`).
 - **Images are sized and lazy.** Give every `<img>` a width and height and `loading="lazy"` unless it is above the fold; above-the-fold posters use `priority`. Channel logos are shrunk once into `public/logos/` by `npm run optimize:logos` rather than loaded from third-party hosts.
 - **No Vercel image optimization.** `images.unoptimized` is on in `next.config.mjs`: the posters and badges come from streamed.pk as small WebP files already, and the optimizer bills a transformation per image, width and device, which exhausted the Hobby plan's 5,000 a month (new images then fail). Keep new images small at the source rather than turning the optimizer back on.
-- **Third-party embeds wait for the page.** Stream iframes pull in ads and their own video stack, so `StreamPlayer` mounts them after the window `load` event (`lib/useAfterPageLoad.ts`).
+- **Third-party embeds wait for the page.** Unsupported stream iframes, and supported streams explicitly switched to Original embed, mount after the window `load` event (`lib/useAfterPageLoad.ts`). Supported embed.st sources start directly without fetching provider HTML, scripts or iframes.
 - **Send the list only what it renders.** The home page maps catalog matches to `ListedMatch` (`toListedMatch`) so stream URLs and broadcast options stay on the server, and the upcoming grid renders 24 cards at a time.
 - **Cache what can be cached.** `/channels` is ISR (10 minutes, matching its upstream feed). The home and match pages stay dynamic on purpose, but send `no-cache` rather than `no-store` so browsers can restore them on Back.

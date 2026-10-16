@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import StreamTestPlayer from './players/StreamTestPlayer';
-import { STREAM_TEST_MAX_URL_LENGTH } from '@/lib/constants';
-import { streamTestManifestPath } from '@/lib/streamTest';
+import EmbedStPlayer from './players/EmbedStPlayer';
+import { EMBED_ST_MAX_URL_LENGTH } from '@/lib/constants';
+import { embedStManifestPath } from '@/lib/embedSt';
 
 export default function StreamTestClient() {
   const [input, setInput] = useState('');
@@ -18,7 +18,7 @@ export default function StreamTestClient() {
     setError(null);
     setSrc(null);
     try {
-      setSrc(streamTestManifestPath(input));
+      setSrc(embedStManifestPath(input));
       setAttempt(value => value + 1);
       setStatus('Resolving and loading HLS… Press play if autoplay is blocked.');
     } catch (failure) {
@@ -32,7 +32,7 @@ export default function StreamTestClient() {
       <form className="stream-test__form" onSubmit={resolve}>
         <label htmlFor="stream-test-url" className="label">Embed URL</label>
         <div className="stream-test__controls">
-          <input id="stream-test-url" type="url" required maxLength={STREAM_TEST_MAX_URL_LENGTH} className="search-field__input stream-test__input"
+          <input id="stream-test-url" type="url" required maxLength={EMBED_ST_MAX_URL_LENGTH} className="search-field__input stream-test__input"
             placeholder="https://embed.st/embed/admin/stream-id/1" value={input} onChange={event => setInput(event.target.value)}
             aria-describedby="stream-test-help" autoComplete="off" spellCheck={false} />
           <button type="submit" className="btn btn--primary">Resolve &amp; play</button>
@@ -42,7 +42,7 @@ export default function StreamTestClient() {
       <p role="status" className="stream-test__status">{status}</p>
       {error && <p role="alert" className="stream-test__error">{error}</p>}
       <div className="stream-test__player">
-        {src ? <StreamTestPlayer key={attempt} src={src}
+        {src ? <EmbedStPlayer key={attempt} src={src}
           onPlaying={() => setStatus('Playing decoded HLS stream.')}
           onError={() => {
             setSrc(null);

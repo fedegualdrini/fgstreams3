@@ -31,9 +31,9 @@ npm test
 
 ## Conventions
 
-- **Fetching upstreams:** catalog requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. Stream Test uses `impit` as an explicit exception: resolve and fetch within the same server request, with a deadline and redirects disabled. Keep that native client confined to the fixed resolver and allowlisted manifest relay; do not move resolution back to the browser or load provider scripts/iframes.
+- **Fetching upstreams:** catalog requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. embed.st playback uses `impit` as an explicit exception: resolve and fetch within the same server request, with a deadline and redirects disabled. Keep that native client confined to the fixed resolver and allowlisted manifest relay; do not move resolution back to the browser. Direct mode must not load provider scripts/iframes; Original embed requires explicit selection.
 - **Logging:** use `createLogger('scope')` from `lib/logger.ts`; no `console.*` in `lib/` or `app/api`.
-- **API routes:** wrap handlers with `withErrorResponse` (`lib/httpRoute.ts`); use `jsonWithCache` for cacheable data. Stream Test's decoded signed URLs and live manifests must remain `no-store`.
+- **API routes:** wrap handlers with `withErrorResponse` (`lib/httpRoute.ts`); use `jsonWithCache` for cacheable data. embed.st response keys, signed URLs and live manifests must remain `no-store`.
 - **Limits:** timeouts, cache windows and retry counts are named constants in `lib/constants.ts`, each with the reason for its value.
 - **Styling:** use the shared classes in `app/styles/primitives.css` (`.btn`, `.kbd`, `.status-panel`, ...) and the tokens in `app/globals.css` instead of inline styles and JS hover handlers. Keep inline `style` for truly dynamic values.
 - **Components:** keep them small. Put stateful logic in a hook and pure logic in a plain function under `lib/` so it can be unit-tested.

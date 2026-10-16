@@ -15,7 +15,7 @@ export default function StreamTestPage() {
       <main className="page-main">
         <div className="page-content stream-test">
           <h1 className="display stream-test__title">Stream Test</h1>
-          <p className="stream-test__intro">Test a fresh embed.st stream without loading its iframe, ads or popup scripts. Existing matches, channels and movies are unchanged.</p>
+          <p className="stream-test__intro">Test a fresh embed.st stream without loading its iframe, ads or popup scripts. The same direct player is available on supported match and channel sources.</p>
           <StreamTestClient />
         </div>
       </main>

@@ -88,15 +88,21 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 | `npm run import:playlist -- <playlist.json>` | Merge an external channel playlist ([guide](docs/CHANNEL_IMPORT.md)) |
 | `npm run optimize:logos` | Download and shrink channel logos into `public/logos/` ([guide](docs/CHANNEL_IMPORT.md)) |
 
+### Direct playback (embed.st)
+
+Supported `https://embed.st/embed/<source>/<id>/<stream-number>` sources start in **Direct player** mode on match pages, multi-match cards and channel options. Use the buttons below the video to switch to **Original embed**. Eligibility follows the actual URL, not the source label: a Streamed.pk source qualifies when it returns a supported embed.st URL. Other providers, ordinary HLS/DASH channels and movies retain their existing players.
+
+Direct mode never loads the provider iframe or its ad/popup scripts. A failed attempt offers **Retry direct playback** and, on match pages, **Try next stream**; it does not automatically open the original embed or discard the source. **Original embed** is explicit opt-in and may show provider ads or popups. A different source or player reload starts with Direct mode again.
+
+The browser sends the public embed URL to `/api/embed-st/manifest`. The server requests a fresh binary response, authenticates and decodes it, then fetches the HLS playlist in the same request context. Nested playlists repeat this process using stream-relative paths, not old signed tokens. Media segments stay direct.
+
+The relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider rejects Node's built-in `fetch` with HTTP 403 even for working signed URLs. Browser-resolved tokens also failed when fetched from Vercel, so resolution stays inside each server request. Keep optional native dependencies enabled when installing (`npm install` / `npm ci`); the matching Windows or Linux binary is required. A listed source may still be offline or rejected by the provider.
+
 ### Stream Test (experimental)
 
-Open `/stream-test` from the main navigation. Paste a current `https://embed.st/embed/<source>/<id>/<stream-number>` URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
+Open `/stream-test` from the main navigation to test a URL manually with the same decoder, relay and HLS engine. Paste a current embed.st URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
 
-The page sends the embed URL to our manifest endpoint. The server requests a fresh binary response, authenticates and decodes it, then fetches the HLS playlist in the same request context. Nested playlists repeat this process using stream-relative paths, not old signed tokens. No provider iframe or scripts are loaded; media segments stay direct. Existing match, channel and movie players are not changed.
-
-The relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider rejects Node's built-in `fetch` with HTTP 403 even for working signed URLs. Browser-resolved tokens also failed when fetched from Vercel, so resolution stays inside each server request. Keep optional native dependencies enabled when installing (`npm install` / `npm ci`); the matching Windows or Linux binary is required. Streams can still go offline; failures stop playback without an automatic iframe fallback.
-
-Decoder and proxy-boundary checks: `npx vitest run lib/streamTest.test.ts`.
+Decoder, proxy-boundary and playback-mode checks: `npx vitest run lib/embedSt.test.ts components/players/EmbedStPlayback.test.tsx`.
 
 
 ## How it works

@@ -6,14 +6,15 @@ import { buildHlsConfig } from '@/lib/playerHls';
 import PlayerSurface from './PlayerSurface';
 import { usePlayerCallbacks } from './usePlayerCallbacks';
 
-interface StreamTestPlayerProps {
+interface EmbedStPlayerProps {
   src: string;
+  muted?: boolean;
   onPlaying: () => void;
   onError: () => void;
 }
 
-/** A failed diagnostic attempt stops instead of invoking the channel player's recovery loop. */
-export default function StreamTestPlayer({ src, onPlaying, onError }: StreamTestPlayerProps) {
+/** Stop on fatal errors: selecting the provider's iframe must remain an explicit choice. */
+export default function EmbedStPlayer({ src, muted = false, onPlaying, onError }: EmbedStPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { onPlayingRef, onErrorRef } = usePlayerCallbacks(onPlaying, onError);
   useEffect(() => {
@@ -55,5 +56,5 @@ export default function StreamTestPlayer({ src, onPlaying, onError }: StreamTest
       video.load();
     };
   }, [src, onPlayingRef, onErrorRef]);
-  return <PlayerSurface videoRef={videoRef} />;
+  return <PlayerSurface videoRef={videoRef} muted={muted} />;
 }

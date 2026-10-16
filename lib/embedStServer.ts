@@ -1,12 +1,12 @@
 import { createDecipheriv } from 'node:crypto';
-import { STREAM_TEST_MAX_RESPONSE_BYTES, STREAM_TEST_MAX_URL_LENGTH } from './constants';
-import { streamTestManifestPath } from './streamTest';
+import { EMBED_ST_MAX_RESPONSE_BYTES, EMBED_ST_MAX_URL_LENGTH } from './constants';
+import { embedStManifestPath } from './embedSt';
 
 /** Only this provider's signed playlists may be fetched by the manifest proxy. */
-export function parseStreamTestManifestUrl(input: string): URL {
+export function parseEmbedStManifestUrl(input: string): URL {
   const url = new URL(input);
   if (
-    input.length > STREAM_TEST_MAX_URL_LENGTH || url.protocol !== 'https:' ||
+    input.length > EMBED_ST_MAX_URL_LENGTH || url.protocol !== 'https:' ||
     !/^lb\d+\.strmd\.st$/.test(url.hostname) || url.port ||
     url.username || url.password || url.hash ||
     !url.pathname.startsWith('/secure/') || !url.pathname.endsWith('.m3u8')
@@ -17,11 +17,11 @@ export function parseStreamTestManifestUrl(input: string): URL {
 }
 
 /** Decode the captured protocol, including its authentication tag; never execute provider JS. */
-export function decodeStreamTestResponse(body: Uint8Array, header: string | null): string {
+export function decodeEmbedStResponse(body: Uint8Array, header: string | null): string {
   if (!header || Buffer.byteLength(header, 'utf8') !== 32) {
     throw new Error('Missing or invalid stream response key.');
   }
-  if (body.length < 2 || body.length > STREAM_TEST_MAX_RESPONSE_BYTES || body[0] !== 10) {
+  if (body.length < 2 || body.length > EMBED_ST_MAX_RESPONSE_BYTES || body[0] !== 10) {
     throw new Error('Invalid stream response envelope.');
   }
   let offset = 1;
@@ -49,13 +49,13 @@ export function decodeStreamTestResponse(body: Uint8Array, header: string | null
   });
   decipher.setAuthTag(packet.subarray(-16));
   const plaintext = Buffer.concat([decipher.update(packet.subarray(12, -16)), decipher.final()]);
-  return parseStreamTestManifestUrl(new TextDecoder('utf-8', { fatal: true }).decode(plaintext)).href;
+  return parseEmbedStManifestUrl(new TextDecoder('utf-8', { fatal: true }).decode(plaintext)).href;
 }
 
 /** Apply a variant to a newly resolved signature without allowing another stream or origin. */
-export function resolveStreamTestVariant(rootUrl: string, variant: string | null): string {
-  const root = parseStreamTestManifestUrl(rootUrl);
-  const target = parseStreamTestManifestUrl(new URL(variant || root.href, root).href);
+export function resolveEmbedStVariant(rootUrl: string, variant: string | null): string {
+  const root = parseEmbedStManifestUrl(rootUrl);
+  const target = parseEmbedStManifestUrl(new URL(variant || root.href, root).href);
   if (target.origin !== root.origin || !target.pathname.startsWith(new URL('.', root).pathname)) {
     throw new Error('Variant is outside the resolved stream.');
   }
@@ -63,8 +63,8 @@ export function resolveStreamTestVariant(rootUrl: string, variant: string | null
 }
 
 /** Renew nested playlists in their own server context; media segments stay direct. */
-export function rewriteStreamTestManifest(text: string, baseUrl: string, rootUrl: string, embedUrl: string): string {
-  const base = resolveStreamTestVariant(rootUrl, baseUrl);
+export function rewriteEmbedStManifest(text: string, baseUrl: string, rootUrl: string, embedUrl: string): string {
+  const base = resolveEmbedStVariant(rootUrl, baseUrl);
   const streamDirectory = new URL('.', rootUrl).pathname;
   if (!text.startsWith('#EXTM3U')) throw new Error('Upstream did not return an HLS manifest.');
   const resolve = (input: string) => {
@@ -73,8 +73,8 @@ export function rewriteStreamTestManifest(text: string, baseUrl: string, rootUrl
       throw new Error('Unsupported manifest resource URL.');
     }
     if (!url.pathname.endsWith('.m3u8')) return url.href;
-    const variant = new URL(resolveStreamTestVariant(rootUrl, url.href));
-    return streamTestManifestPath(embedUrl, variant.pathname.slice(streamDirectory.length) + variant.search);
+    const variant = new URL(resolveEmbedStVariant(rootUrl, url.href));
+    return embedStManifestPath(embedUrl, variant.pathname.slice(streamDirectory.length) + variant.search);
   };
   return text.split('\n').map(line => {
     const trimmed = line.trim();

@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
 import { getPlayableOptions } from '@/lib/channelOptions';
+import { isEmbedStUrl } from '@/lib/embedSt';
 import ChannelStream from '@/components/channels/ChannelStream';
 import OptionPicker from '@/components/channels/OptionPicker';
 import { LoadingOverlay, TimeoutOverlay } from '@/components/channels/PlayerOverlays';
@@ -34,6 +35,8 @@ export default function ChannelPlayer({
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
   const hasAlternatives = validOptions.length > 1;
+  // embed.st owns loading/error UI so autoplay blocking never hides its play or mode controls.
+  const ownsPlaybackState = currentOption ? isEmbedStUrl(currentOption.iframe) : false;
 
   if (validOptions.length === 0) {
     return (
@@ -62,8 +65,8 @@ export default function ChannelPlayer({
       )}
 
       <div className={fillContainer ? 'channel-player__stage channel-player__stage--fill' : 'channel-player__stage video-container'}>
-        {load.isLoading && !load.timedOut && <LoadingOverlay seconds={load.loadingSeconds} />}
-        {load.timedOut && (
+        {!ownsPlaybackState && load.isLoading && !load.timedOut && <LoadingOverlay seconds={load.loadingSeconds} />}
+        {!ownsPlaybackState && load.timedOut && (
           <TimeoutOverlay canTryNext={hasAlternatives} onTryNext={tryNextOption} onRetry={load.reload} />
         )}
         {fillContainer && !hideTabs && hasAlternatives && (

@@ -12,7 +12,7 @@ interface MatchPlayerPaneProps {
   allStreamsFailed: boolean;
   onStreamError: () => void;
   onRetry: () => void;
-  /** Bumped to remount the player: a new key gives the embed a fresh iframe, like a page reload without losing the page. */
+  /** Bumped to remount the player and start a fresh playback attempt. */
   reloadCount: number;
 }
 

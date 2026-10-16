@@ -27,7 +27,7 @@ export default function MatchActions({
           className="btn"
           onClick={onReloadPlayer}
           aria-label="Reload player"
-          title="Reload the player. The embed sometimes starts without its quality menu; a reload usually brings it back."
+          title="Reload the player with a fresh connection."
         >
           ↻ Reload
         </button>

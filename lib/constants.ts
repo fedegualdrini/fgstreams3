@@ -84,9 +84,9 @@ export const FIXTURE_POLL_INTERVAL_MS = 30_000;
 export const STREAM_LOAD_TIMEOUT_MS = 20_000;
 export const CHANNEL_LOAD_TIMEOUT_MS = 15_000;
 
-// Experimental stream resolution and live manifests should fail promptly, not hang.
-export const STREAM_TEST_TIMEOUT_MS = 15_000;
+// embed.st resolution and live manifests should fail promptly, not hang.
+export const EMBED_ST_TIMEOUT_MS = 15_000;
 // Provider responses are a few hundred bytes; bound untrusted decoder input.
-export const STREAM_TEST_MAX_RESPONSE_BYTES = 8192;
+export const EMBED_ST_MAX_RESPONSE_BYTES = 8192;
 // Leave room for signed provider paths without accepting arbitrary-sized URLs.
-export const STREAM_TEST_MAX_URL_LENGTH = 2048;
+export const EMBED_ST_MAX_URL_LENGTH = 2048;
