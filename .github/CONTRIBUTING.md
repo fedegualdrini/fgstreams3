@@ -31,9 +31,9 @@ npm test
 
 ## Conventions
 
-- **Fetching upstreams:** go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. Do not call `fetch` for an upstream directly.
+- **Fetching upstreams:** server data requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. Stream Test's browser-side binary POST is an explicit exception; do not add provider scripts or iframes to it.
 - **Logging:** use `createLogger('scope')` from `lib/logger.ts`; no `console.*` in `lib/` or `app/api`.
-- **API routes:** wrap handlers with `withErrorResponse` and answer with `jsonWithCache` (`lib/httpRoute.ts`).
+- **API routes:** wrap handlers with `withErrorResponse` (`lib/httpRoute.ts`); use `jsonWithCache` for cacheable data. Stream Test's decoded signed URLs and live manifests must remain `no-store`.
 - **Limits:** timeouts, cache windows and retry counts are named constants in `lib/constants.ts`, each with the reason for its value.
 - **Styling:** use the shared classes in `app/styles/primitives.css` (`.btn`, `.kbd`, `.status-panel`, ...) and the tokens in `app/globals.css` instead of inline styles and JS hover handlers. Keep inline `style` for truly dynamic values.
 - **Components:** keep them small. Put stateful logic in a hook and pure logic in a plain function under `lib/` so it can be unit-tested.

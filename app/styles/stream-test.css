@@ -1,0 +1,15 @@
+.stream-test { max-width: 960px; padding-top: 2rem; padding-bottom: 2rem; }
+.stream-test__title { margin-bottom: 0.75rem; font-size: 2.5rem; }
+.stream-test__intro { margin-bottom: 1.5rem; color: var(--text-dim); font-size: var(--fs-md); line-height: 1.7; }
+.stream-test__form { display: flex; flex-direction: column; gap: 0.75rem; }
+.stream-test__controls { display: flex; gap: 0.75rem; }
+.stream-test__input { min-width: 0; padding-left: 0.875rem; }
+.stream-test__hint { color: var(--subtle); font-size: var(--fs-sm); line-height: 1.7; }
+.stream-test__status { margin: 1.25rem 0; color: var(--text-dim); font-size: var(--fs-md); }
+.stream-test__error { margin-bottom: 1rem; color: var(--red); font-size: var(--fs-md); overflow-wrap: anywhere; }
+.stream-test__player { width: 100%; aspect-ratio: 16 / 9; margin-bottom: 1rem; background: var(--stage); border: 1px solid var(--line); }
+.stream-test__placeholder { height: 100%; display: flex; align-items: center; justify-content: center; color: var(--subtle); font-size: var(--fs-md); }
+@media (max-width: 640px) {
+  .stream-test__controls { flex-direction: column; }
+  .stream-test__controls .btn { align-self: flex-start; }
+}

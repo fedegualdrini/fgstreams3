@@ -88,6 +88,17 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 | `npm run import:playlist -- <playlist.json>` | Merge an external channel playlist ([guide](docs/CHANNEL_IMPORT.md)) |
 | `npm run optimize:logos` | Download and shrink channel logos into `public/logos/` ([guide](docs/CHANNEL_IMPORT.md)) |
 
+### Stream Test (experimental)
+
+Open `/stream-test` from the main navigation. Paste a current `https://embed.st/embed/<source>/<id>/<stream-number>` URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
+
+The page requests a fresh binary response in the browser, authenticates and decodes it on the server, then attempts HLS playback without loading the provider iframe or its scripts. Only manifests are relayed; media segments stay direct. Existing match, channel and movie players are not changed.
+
+Decoding does not guarantee playback: the provider can reject manifest requests, and signed URLs expire. Local verification authenticated fresh responses, but the Next.js/Node manifest fetch received upstream HTTP 403; the page reports playback failure separately from successful decoding. There is no automatic iframe fallback.
+
+Decoder and proxy-boundary checks: `npx vitest run lib/streamTest.test.ts`.
+
+
 ## How it works
 
 ```mermaid

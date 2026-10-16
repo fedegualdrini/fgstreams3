@@ -9,6 +9,7 @@ app/
   globals.css                      Design tokens and shared UI primitives
   channels/                        Channels page (+ error boundary)
   movies/                          Movies and series page (+ error boundary)
+  stream-test/                     Isolated embed-response decoder and HLS experiment
   match/[id]/                      Match detail page, metadata and error boundary
   api/
     hls-proxy/route.ts             HTTP HLS proxy for selected channel streams
@@ -18,6 +19,8 @@ app/
     scores/match/[flashscoreId]/route.ts
                                     Match detail/statistics endpoint
     streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
+    stream-test/decode/route.ts    Bounded, authenticated binary response decoder
+    stream-test/manifest/route.ts  Allowlisted, no-store manifest-only relay
     diagnostics/broadcasts/route.ts
                                     Broadcast pipeline health; ?q=<team> traces one match
 
@@ -29,6 +32,8 @@ components/                        Shared and page-level components
   MultiMatchView.tsx               Up-to-four match viewing mode
   ChannelsPageClient.tsx           Channels page entry
   MoviesPageClient.tsx             Movies page entry
+  StreamTestClient.tsx             Minimal embed URL form and diagnostic playback state
+  players/StreamTestPlayer.tsx     Isolated HLS attempt; stops on fatal errors
   channels/ match-detail/ match-list/ movies/ multi-match/ players/
                                    Feature folders: the sub-components and hooks each
                                    page-level component above is assembled from
@@ -55,6 +60,7 @@ lib/
   logger.ts                        createLogger(scope): the only console writer
   schemas.ts                       Zod schemas for external API data
   constants.ts                     Cache windows, timeouts and limits, with rationale
+  streamTestServer.ts               Authenticated decoder and manifest rewriting
   # Shared / client
   matchUtils.ts                    Match normalization, liveness, and image helpers
   matchFilters.ts, matchListView.ts, matchDetailStreams.ts, multiMatch.ts
@@ -63,6 +69,7 @@ lib/
   movieEmbed.ts, movieTmdb.ts      Movie/TV embed URLs and TMDB mapping
   playerHls.ts                     hls.js configuration
   streamSelector.ts                Preferred stream selection
+  streamTest.ts                    Supported embed URL validation and protobuf request encoding
   scoreAliases.ts, scoreUtils.ts   Team alias data and score matching
   sportMap.ts                      Sport name mapping
   urlValidation.ts, proxyHosts.ts  Stream URL validation; generated HLS-proxy allowlist
@@ -105,14 +112,14 @@ vitest.config.ts                   Vitest configuration
 
 ### Server code
 
-- **One fetch path.** Upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot).
+- **One server fetch path.** Upstream data calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). Stream Test additionally makes a browser-side binary POST to the provider so resolution happens on the viewer's IP.
 - **One logger.** `createLogger('scope')` from `lib/logger.ts` prints `scope: message` plus any error as a trailing argument. Do not call `console.*` in `lib/` or `app/api`.
-- **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` and respond with `jsonWithCache(data, maxAge, swr)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`.
+- **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`. Cacheable routes use `jsonWithCache`; Stream Test explicitly uses `no-store` for keys, signed URLs and live manifests.
 - **Named limits.** Timeouts, cache windows and CDN headers are constants in `lib/constants.ts`, each with a comment explaining the value.
 
 ### UI
 
-Tokens live in `app/globals.css`, shared primitives in `app/styles/primitives.css`, and each area (`chrome`, `layout`, `match-list`, `multi-match`, `channels`, `player`, `movies`, `match-detail`) has its own file under `app/styles/`. Prefer the primitives over per-component inline styles and keep inline `style` for truly dynamic values.
+Tokens live in `app/globals.css`, shared primitives in `app/styles/primitives.css`, and each area (`chrome`, `layout`, `match-list`, `multi-match`, `channels`, `player`, `movies`, `match-detail`, `stream-test`) has its own file under `app/styles/`. Prefer the primitives over per-component inline styles and keep inline `style` for truly dynamic values.
 
 - `.btn` — small uppercase button. Active state via `aria-pressed="true"` or `.is-active`; modifiers `.btn--primary` (filled call to action), `.btn--icon` (square glyph button) and `.btn--ghost` (no fill).
 - `StatusBadge` (`.status-badge`) — red LIVE / minute pill; `.status-badge--compact`, `--ended`. Use it instead of a per-feature badge.

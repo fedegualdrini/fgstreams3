@@ -36,7 +36,7 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 
 ## Upstream access
 
-- `lib/httpClient.ts` is the only code that calls `fetch` for an upstream: optional timeout, retry on 5xx, Zod validation (`lib/schemas.ts`) and logging. It answers `null` on any failure.
+- Server data fetches go through `lib/httpClient.ts`: optional timeout, retry on 5xx, Zod validation (`lib/schemas.ts`) and logging. It answers `null` on failure. The experimental Stream Test browser request is a binary POST, not a catalog fetch.
 - Each source module (`api`, `promiedos`, `angulismo`, `flashscore`) maps `null` to its own failure signal: `[]`, `ok: false`, or the last good snapshot flagged `stale: true`.
 - `lib/logger.ts` is the only code that writes to the console. Lines read `scope: message`.
 - Timeouts, retry counts, cache windows and CDN headers live in `lib/constants.ts`, each with the reason for its value.
@@ -53,3 +53,12 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 - Server pages pass `CatalogMatch` data down as props, so streams and broadcasters are present on first paint.
 - `lib/useLiveScores.ts` and `lib/useMatchStats.ts` poll the score routes on the intervals in `lib/constants.ts`; score matching helpers are in `lib/scoreUtils.ts`.
 - Playback fallback (rotating to the next stream) uses `lib/streamSelector.ts` for the initial choice.
+
+## Isolated Stream Test
+
+- `/stream-test` accepts only the supported `https://embed.st/embed/<source>/<id>/<number>` shape. It posts the three protobuf fields directly from the browser to `https://embed.st/fetch`; no provider HTML, iframe or JavaScript is loaded.
+- `/api/stream-test/decode` reads at most 8 KiB and uses the response's exposed `Goat` header as a 32-byte UTF-8 key. `lib/streamTestServer.ts` unwraps protobuf field 1, reverses the printable-ASCII rotation, base64-decodes, then authenticates ChaCha20-Poly1305 (12-byte nonce, trailing 16-byte tag, no AAD). Only an authenticated HTTPS playlist on an explicit `lb<number>.strmd.st/secure/` origin is accepted.
+- `/api/stream-test/manifest` uses `fetchText` with the provider Referer/Origin, a deadline and redirects disabled. Nested playlists are rewritten back through this allowlisted route; CDN media URLs remain direct browser requests. It cannot fetch arbitrary hosts or relay segments.
+- Decoder and manifest responses are uncacheable. Response keys and signed playlists are not stored by this feature. The diagnostic player stops on a fatal HLS error instead of entering the channel player's recovery loop.
+- This is not a replacement for existing playback. Fresh decoding succeeded locally, but the local Next.js/Node manifest request received provider HTTP 403. A standalone relay did play video; the transport-dependent rejection is unresolved. The page distinguishes decode success from playback failure and never falls back to an iframe.
+

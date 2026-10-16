@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-type Section = 'matches' | 'channels' | 'movies';
+type Section = 'matches' | 'channels' | 'movies' | 'stream-test';
 
 interface SiteHeaderProps {
   activeSection?: Section;
@@ -23,6 +23,7 @@ export default function SiteHeader({ activeSection, liveCount }: SiteHeaderProps
           <NavLink href="/" active={activeSection === 'matches'} badge={liveCount}>Matches</NavLink>
           <NavLink href="/channels" active={activeSection === 'channels'}>Channels</NavLink>
           <NavLink href="/movies" active={activeSection === 'movies'}>Movies<span className="sm-hide"> / Series</span></NavLink>
+          <NavLink href="/stream-test" active={activeSection === 'stream-test'}><span className="sm-hide">Stream </span>Test</NavLink>
         </nav>
       </div>
     </header>

@@ -16,6 +16,7 @@ import './styles/channels.css';
 import './styles/player.css';
 import './styles/movies.css';
 import './styles/match-detail.css';
+import './styles/stream-test.css';
 
 // Self-hosted by next/font so the fonts are not a render-blocking third-party
 // request. The CSS variables feed --font-display / --font-body in globals.css.
