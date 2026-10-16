@@ -90,9 +90,11 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 
 ### Direct playback (embed.st)
 
-Supported `https://embed.st/embed/<source>/<id>/<stream-number>` sources start in **Direct player** mode on match pages, multi-match cards and channel options. Use the buttons below the video to switch to **Original embed**. Eligibility follows the actual URL, not the source label: a Streamed.pk source qualifies when it returns a supported embed.st URL. Other providers, ordinary HLS/DASH channels and movies retain their existing players.
+Supported `https://embed.st/embed/<source>/<id>/<stream-number>` sources start in **Direct player (HQ)** mode on match pages, multi-match cards and channel options. Use the buttons below the video to switch to **Original embed**. Eligibility follows the actual URL, not the source label: a Streamed.pk source qualifies when it returns a supported embed.st URL. Other providers, ordinary HLS/DASH channels and movies retain their existing players.
 
 Direct mode never loads the provider iframe or its ad/popup scripts. A failed attempt offers **Retry direct playback** and, on match pages, **Try next stream**; it does not automatically open the original embed or discard the source. **Original embed** is explicit opt-in and may show provider ads or popups. A different source or player reload starts with Direct mode again.
+
+Direct HQ exposes only the rendition with the highest advertised `BANDWIDTH`; hls.js and native HLS cannot automatically downgrade to the provider's restricted low-quality CDN. Slow connections may buffer instead. Direct media resources are limited to the verified HTTPS origins `p16-common-sign.tiktokcdn.com` and `p19-common-sign.tiktokcdn.com`. If the selected rendition uses another origin, Direct playback fails locally; retry, choose another source or explicitly select **Original embed**. Media is not proxied through Vercel.
 
 The browser sends the public embed URL to `/api/embed-st/manifest`. The server requests a fresh binary response, authenticates and decodes it, then fetches the HLS playlist in the same request context. Nested playlists repeat this process using stream-relative paths, not old signed tokens. Media segments stay direct.
 

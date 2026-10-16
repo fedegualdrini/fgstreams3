@@ -57,7 +57,7 @@ export default function EmbedStPlayback({
       </div>
       <div role="group" aria-label="Playback mode" className="embed-st-playback__controls">
         <button type="button" className="btn" aria-pressed={mode === 'direct'} onClick={() => selectMode('direct')}
-          title="Play without loading the provider iframe, ads or popup scripts">Direct player</button>
+          title="High quality only on supported CDNs; slow connections may buffer. No provider iframe, ads or popups.">Direct player (HQ)</button>
         <button type="button" className="btn" aria-pressed={mode === 'embed'} onClick={() => selectMode('embed')}
           title="The provider’s original player may show ads or popups">Original embed</button>
       </div>

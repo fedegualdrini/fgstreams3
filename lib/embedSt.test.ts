@@ -90,16 +90,73 @@ describe('manifest proxy boundary', () => {
     expect(() => parseEmbedStManifestUrl(url)).toThrow();
   });
 
-  it('proxies relative variants and alternate audio playlists while keeping CDN segments direct', () => {
-    const manifest = '#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,URI="audio.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\nvideo.m3u8\nhttps://cdn.example/segment.webp\n';
+  it('proxies relative variants and alternate audio playlists', () => {
+    const manifest = '#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,URI="audio.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\nvideo.m3u8\n';
     expect(rewriteEmbedStManifest(manifest, playlist, playlist, embed)).toBe([
       '#EXTM3U',
       `#EXT-X-MEDIA:TYPE=AUDIO,URI="${embedStManifestPath(embed, 'audio.m3u8')}"`,
       '#EXT-X-STREAM-INF:BANDWIDTH=1000000',
       embedStManifestPath(embed, 'video.m3u8'),
-      'https://cdn.example/segment.webp',
       '',
     ].join('\n'));
+  });
+
+  it('advertises only the highest-bandwidth rendition, not the first or last alternative', () => {
+    const manifest = [
+      '#EXTM3U',
+      '#EXT-X-INDEPENDENT-SEGMENTS',
+      '#EXT-X-STREAM-INF:BANDWIDTH=700000,RESOLUTION=960x540',
+      'low/mono.m3u8',
+      '#EXT-X-STREAM-INF:BANDWIDTH=8000000,RESOLUTION=1920x1080',
+      'high/mono.m3u8',
+      '#EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720',
+      'medium/mono.m3u8',
+    ].join('\n');
+    const rewritten = rewriteEmbedStManifest(manifest, playlist, playlist, embed);
+    expect(rewritten.split('\n').filter(line => line.startsWith('#EXT-X-STREAM-INF:'))).toEqual([
+      '#EXT-X-STREAM-INF:BANDWIDTH=8000000,RESOLUTION=1920x1080',
+    ]);
+    expect(rewritten.split('\n').filter(line => line && !line.startsWith('#'))).toEqual([
+      embedStManifestPath(embed, 'high/mono.m3u8'),
+    ]);
+    expect(rewritten).toContain('#EXT-X-INDEPENDENT-SEGMENTS');
+  });
+
+  it('ranks by BANDWIDTH, not AVERAGE-BANDWIDTH or attribute-like text inside a quoted name', () => {
+    const manifest = '#EXTM3U\n#EXT-X-STREAM-INF:NAME="low,BANDWIDTH=99000000,extra",AVERAGE-BANDWIDTH=90000000,BANDWIDTH=700000\nlow/mono.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\nhigh/mono.m3u8';
+    const rewritten = rewriteEmbedStManifest(manifest, playlist, playlist, embed);
+    expect(rewritten.split('\n').filter(line => line && !line.startsWith('#'))).toEqual([
+      embedStManifestPath(embed, 'high/mono.m3u8'),
+    ]);
+  });
+
+  it('keeps signed media URLs intact on the verified direct CDNs', () => {
+    const urls = [
+      'https://p16-common-sign.tiktokcdn.com/video-a.webp?x-expires=123&x-signature=abc%2Fdef',
+      'https://p19-common-sign.tiktokcdn.com/video-b.webp?x-expires=456&x-signature=ghi%2Bjkl',
+    ];
+    const manifest = `#EXTM3U\n#EXTINF:5,\n${urls[0]}\n#EXTINF:5,\n${urls[1]}\n`;
+    const rewritten = rewriteEmbedStManifest(manifest, playlist, playlist, embed);
+    expect(rewritten.split('\n').filter(line => line && !line.startsWith('#'))).toEqual(urls);
+  });
+
+  it.each([
+    'https://lb19.strmd.st/b/stream/m/segment.ts',
+    'https://unverified.example/segment.ts',
+    'https://p16-common-sign.tiktokcdn.com.evil.example/segment.webp',
+    'https://p16-common-sign.tiktokcdn.com:444/segment.webp',
+  ])('does not expose a media resource on an unsupported origin: %s', url => {
+    expect(() => rewriteEmbedStManifest(`#EXTM3U\n#EXTINF:5,\n${url}`, playlist, playlist, embed)).toThrow();
+  });
+
+  it('also checks indirect media resources in URI attributes', () => {
+    const manifest = '#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="https://lb19.strmd.st/b/stream/key"\n';
+    expect(() => rewriteEmbedStManifest(manifest, playlist, playlist, embed)).toThrow();
+  });
+
+  it('rejects an incomplete rendition instead of exposing an unranked or missing playlist', () => {
+    expect(() => rewriteEmbedStManifest('#EXTM3U\n#EXT-X-STREAM-INF:RESOLUTION=1920x1080\nhigh/mono.m3u8', playlist, playlist, embed)).toThrow();
+    expect(() => rewriteEmbedStManifest('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\n', playlist, playlist, embed)).toThrow();
   });
 
   it('carries a relative variant across renewed signatures instead of reusing the old signed URL', () => {

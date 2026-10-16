@@ -60,6 +60,6 @@ export const GET = withErrorResponse('embed-st manifest', 'Unable to load stream
       headers: { ...headers, 'Content-Type': 'application/vnd.apple.mpegurl' },
     });
   } catch {
-    return NextResponse.json({ error: 'The provider returned an unsupported manifest.' }, { status: 502, headers });
+    return NextResponse.json({ error: 'The provider returned a manifest unsupported by Direct HQ playback.' }, { status: 502, headers });
   }
 });

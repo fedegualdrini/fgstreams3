@@ -51,7 +51,7 @@ export default function StreamTestClient() {
           }} />
           : <p className="stream-test__placeholder">Resolve a stream to test playback.</p>}
       </div>
-      <p className="stream-test__hint">Experimental: supports this provider’s decoded HLS format only. Manifests pass through our server; media segments load directly from the CDN. Provider restrictions can still prevent playback.</p>
+      <p className="stream-test__hint">Experimental: highest-quality rendition only, using supported CDN hosts. Slow connections may buffer instead of switching to low quality. Manifests pass through our server; media segments load directly from the CDN. Provider restrictions can still prevent playback.</p>
     </>
   );
 }

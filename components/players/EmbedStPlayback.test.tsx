@@ -33,10 +33,10 @@ describe('embed.st playback choice', () => {
     expect(container.querySelector('video')).not.toBeInTheDocument();
     expect(container.querySelector('iframe')).toHaveAttribute('src', embedUrl);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Direct player' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Direct player/ }));
     expect(container.querySelector('iframe')).not.toBeInTheDocument();
     expect(container.querySelector('video')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Direct player' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /^Direct player/ })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('keeps a direct failure local, retries without an iframe, and rotates only on an explicit next-stream action', () => {

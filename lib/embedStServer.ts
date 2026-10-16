@@ -62,6 +62,50 @@ export function resolveEmbedStVariant(rootUrl: string, variant: string | null): 
   return target.href;
 }
 
+const DIRECT_MEDIA_ORIGINS: Record<string, true> = {
+  'https://p16-common-sign.tiktokcdn.com': true,
+  'https://p19-common-sign.tiktokcdn.com': true,
+};
+
+/** Expose one rendition so automatic quality changes cannot enter the restricted low CDN. */
+function highestBandwidthOnly(lines: string[]): string[] {
+  let selected = -1;
+  let highestBandwidth = 0;
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index].trim();
+    if (!line.startsWith('#EXT-X-STREAM-INF:')) continue;
+    let bandwidth = 0;
+    // Quoted attribute values can contain commas and text resembling another attribute.
+    for (const attribute of line.slice(18).matchAll(/(?:^|,)([A-Z0-9-]+)=("[^"]*"|[^,]*)/g)) {
+      if (attribute[1] === 'BANDWIDTH') {
+        bandwidth = Number(attribute[2]);
+        break;
+      }
+    }
+    if (!Number.isFinite(bandwidth) || bandwidth <= 0) throw new Error('Missing stream bandwidth.');
+    if (bandwidth > highestBandwidth) {
+      highestBandwidth = bandwidth;
+      selected = index;
+    }
+  }
+  if (selected === -1) return lines;
+  const result: string[] = [];
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index];
+    if (!line.trim().startsWith('#EXT-X-STREAM-INF:')) {
+      result.push(line);
+      continue;
+    }
+    const tagIndex = index;
+    while (++index < lines.length && !lines[index].trim()) { /* Skip blank lines before the URI. */ }
+    if (index === lines.length || lines[index].trim().startsWith('#')) {
+      throw new Error('Missing stream playlist URI.');
+    }
+    if (tagIndex === selected) result.push(line, lines[index]);
+  }
+  return result;
+}
+
 /** Renew nested playlists in their own server context; media segments stay direct. */
 export function rewriteEmbedStManifest(text: string, baseUrl: string, rootUrl: string, embedUrl: string): string {
   const base = resolveEmbedStVariant(rootUrl, baseUrl);
@@ -72,11 +116,14 @@ export function rewriteEmbedStManifest(text: string, baseUrl: string, rootUrl: s
     if (url.protocol !== 'https:' || url.username || url.password) {
       throw new Error('Unsupported manifest resource URL.');
     }
-    if (!url.pathname.endsWith('.m3u8')) return url.href;
+    if (!url.pathname.endsWith('.m3u8')) {
+      if (!DIRECT_MEDIA_ORIGINS[url.origin]) throw new Error('Unsupported direct media origin.');
+      return url.href;
+    }
     const variant = new URL(resolveEmbedStVariant(rootUrl, url.href));
     return embedStManifestPath(embedUrl, variant.pathname.slice(streamDirectory.length) + variant.search);
   };
-  return text.split('\n').map(line => {
+  return highestBandwidthOnly(text.split('\n')).map(line => {
     const trimmed = line.trim();
     if (!trimmed) return line;
     if (trimmed.startsWith('#')) return line.replace(/URI="([^"]+)"/g, (_, uri: string) => `URI="${resolve(uri)}"`);
