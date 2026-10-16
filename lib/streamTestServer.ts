@@ -1,5 +1,6 @@
 import { createDecipheriv } from 'node:crypto';
 import { STREAM_TEST_MAX_RESPONSE_BYTES, STREAM_TEST_MAX_URL_LENGTH } from './constants';
+import { streamTestManifestPath } from './streamTest';
 
 /** Only this provider's signed playlists may be fetched by the manifest proxy. */
 export function parseStreamTestManifestUrl(input: string): URL {
@@ -13,11 +14,6 @@ export function parseStreamTestManifestUrl(input: string): URL {
     throw new Error('Unsupported stream manifest URL.');
   }
   return url;
-}
-
-export function streamTestManifestPath(input: string): string {
-  const url = parseStreamTestManifestUrl(input);
-  return `/api/stream-test/manifest?url=${encodeURIComponent(url.href)}`;
 }
 
 /** Decode the captured protocol, including its authentication tag; never execute provider JS. */
@@ -56,38 +52,29 @@ export function decodeStreamTestResponse(body: Uint8Array, header: string | null
   return parseStreamTestManifestUrl(new TextDecoder('utf-8', { fatal: true }).decode(plaintext)).href;
 }
 
-/** Stop reading as soon as the decoder's bound is exceeded, including chunked requests. */
-export async function readStreamTestResponse(request: Request): Promise<Uint8Array> {
-  if (!request.body) throw new Error('Missing stream response.');
-  const reader = request.body.getReader();
-  const bytes = new Uint8Array(STREAM_TEST_MAX_RESPONSE_BYTES);
-  let size = 0;
-  try {
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) return bytes.subarray(0, size);
-      if (size + value.length > bytes.length) {
-        await reader.cancel();
-        throw new Error('Stream response is too large.');
-      }
-      bytes.set(value, size);
-      size += value.length;
-    }
-  } finally {
-    reader.releaseLock();
+/** Apply a variant to a newly resolved signature without allowing another stream or origin. */
+export function resolveStreamTestVariant(rootUrl: string, variant: string | null): string {
+  const root = parseStreamTestManifestUrl(rootUrl);
+  const target = parseStreamTestManifestUrl(new URL(variant || root.href, root).href);
+  if (target.origin !== root.origin || !target.pathname.startsWith(new URL('.', root).pathname)) {
+    throw new Error('Variant is outside the resolved stream.');
   }
+  return target.href;
 }
 
-/** Proxy nested playlists only; CDN media segments remain direct browser requests. */
-export function rewriteStreamTestManifest(text: string, baseUrl: string): string {
-  parseStreamTestManifestUrl(baseUrl);
+/** Renew nested playlists in their own server context; media segments stay direct. */
+export function rewriteStreamTestManifest(text: string, baseUrl: string, rootUrl: string, embedUrl: string): string {
+  const base = resolveStreamTestVariant(rootUrl, baseUrl);
+  const streamDirectory = new URL('.', rootUrl).pathname;
   if (!text.startsWith('#EXTM3U')) throw new Error('Upstream did not return an HLS manifest.');
   const resolve = (input: string) => {
-    const url = new URL(input, baseUrl);
+    const url = new URL(input, base);
     if (url.protocol !== 'https:' || url.username || url.password) {
       throw new Error('Unsupported manifest resource URL.');
     }
-    return url.pathname.endsWith('.m3u8') ? streamTestManifestPath(url.href) : url.href;
+    if (!url.pathname.endsWith('.m3u8')) return url.href;
+    const variant = new URL(resolveStreamTestVariant(rootUrl, url.href));
+    return streamTestManifestPath(embedUrl, variant.pathname.slice(streamDirectory.length) + variant.search);
   };
   return text.split('\n').map(line => {
     const trimmed = line.trim();

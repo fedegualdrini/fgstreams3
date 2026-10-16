@@ -31,7 +31,7 @@ npm test
 
 ## Conventions
 
-- **Fetching upstreams:** catalog requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. Stream Test's browser-side binary POST and `impit` manifest relay are explicit exceptions: the provider rejects standard Node fetch. Keep that native client confined to the allowlisted relay, with its deadline and redirects disabled; do not add provider scripts or iframes.
+- **Fetching upstreams:** catalog requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. Stream Test uses `impit` as an explicit exception: resolve and fetch within the same server request, with a deadline and redirects disabled. Keep that native client confined to the fixed resolver and allowlisted manifest relay; do not move resolution back to the browser or load provider scripts/iframes.
 - **Logging:** use `createLogger('scope')` from `lib/logger.ts`; no `console.*` in `lib/` or `app/api`.
 - **API routes:** wrap handlers with `withErrorResponse` (`lib/httpRoute.ts`); use `jsonWithCache` for cacheable data. Stream Test's decoded signed URLs and live manifests must remain `no-store`.
 - **Limits:** timeouts, cache windows and retry counts are named constants in `lib/constants.ts`, each with the reason for its value.

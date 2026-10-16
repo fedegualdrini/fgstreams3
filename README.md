@@ -92,9 +92,9 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 
 Open `/stream-test` from the main navigation. Paste a current `https://embed.st/embed/<source>/<id>/<stream-number>` URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
 
-The page requests a fresh binary response in the browser, authenticates and decodes it on the server, then attempts HLS playback without loading the provider iframe or its scripts. Only manifests are relayed; media segments stay direct. Existing match, channel and movie players are not changed.
+The page sends the embed URL to our manifest endpoint. The server requests a fresh binary response, authenticates and decodes it, then fetches the HLS playlist in the same request context. Nested playlists repeat this process using stream-relative paths, not old signed tokens. No provider iframe or scripts are loaded; media segments stay direct. Existing match, channel and movie players are not changed.
 
-The manifest relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider rejects Node's built-in `fetch` with HTTP 403 even for working signed URLs. Keep optional native dependencies enabled when installing (`npm install` / `npm ci`); the matching Windows or Linux binary is required. Signed URLs still expire and streams can go offline; failures remain distinct from successful decoding, with no automatic iframe fallback.
+The relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider rejects Node's built-in `fetch` with HTTP 403 even for working signed URLs. Browser-resolved tokens also failed when fetched from Vercel, so resolution stays inside each server request. Keep optional native dependencies enabled when installing (`npm install` / `npm ci`); the matching Windows or Linux binary is required. Streams can still go offline; failures stop playback without an automatic iframe fallback.
 
 Decoder and proxy-boundary checks: `npx vitest run lib/streamTest.test.ts`.
 

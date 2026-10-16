@@ -2,17 +2,17 @@
 import { createCipheriv } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { STREAM_TEST_MAX_RESPONSE_BYTES } from './constants';
-import { encodeStreamTestRequest } from './streamTest';
+import { encodeStreamTestRequest, streamTestManifestPath } from './streamTest';
 import {
   decodeStreamTestResponse,
   parseStreamTestManifestUrl,
-  readStreamTestResponse,
   rewriteStreamTestManifest,
-  streamTestManifestPath,
+  resolveStreamTestVariant,
 } from './streamTestServer';
 
 const key = '0123456789abcdefghijklmnopqrstuv';
 const playlist = 'https://lb27.strmd.st/secure/test-token/rtmp/stream/test/1/playlist.m3u8';
+const embed = 'https://embed.st/embed/admin/example-stream/1';
 
 function responseFor(url = playlist, corruptTag = false): Uint8Array {
   const nonce = Buffer.alloc(12, 7);
@@ -92,35 +92,46 @@ describe('manifest proxy boundary', () => {
 
   it('proxies relative variants and alternate audio playlists while keeping CDN segments direct', () => {
     const manifest = '#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,URI="audio.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\nvideo.m3u8\nhttps://cdn.example/segment.webp\n';
-    expect(rewriteStreamTestManifest(manifest, playlist)).toBe([
+    expect(rewriteStreamTestManifest(manifest, playlist, playlist, embed)).toBe([
       '#EXTM3U',
-      `#EXT-X-MEDIA:TYPE=AUDIO,URI="${streamTestManifestPath(new URL('audio.m3u8', playlist).href)}"`,
+      `#EXT-X-MEDIA:TYPE=AUDIO,URI="${streamTestManifestPath(embed, 'audio.m3u8')}"`,
       '#EXT-X-STREAM-INF:BANDWIDTH=1000000',
-      streamTestManifestPath(new URL('video.m3u8', playlist).href),
+      streamTestManifestPath(embed, 'video.m3u8'),
       'https://cdn.example/segment.webp',
       '',
     ].join('\n'));
   });
 
-  it('does not treat HTML errors or unsafe resource schemes as playable manifests', () => {
-    expect(() => rewriteStreamTestManifest('<html>Forbidden</html>', playlist)).toThrow();
-    expect(() => rewriteStreamTestManifest('#EXTM3U\nhttp://127.0.0.1/private.ts', playlist)).toThrow();
-    expect(() => rewriteStreamTestManifest('#EXTM3U\nhttps://other.example/master.m3u8', playlist)).toThrow();
+  it('carries a relative variant across renewed signatures instead of reusing the old signed URL', () => {
+    const rewritten = rewriteStreamTestManifest('#EXTM3U\nhigh/mono.m3u8', playlist, playlist, embed);
+    const proxy = new URL(rewritten.split('\n')[1], 'https://app.example');
+    const renewed = 'https://lb99.strmd.st/secure/new-token/rtmp/stream/new-session/1/playlist.m3u8';
+    expect(proxy.searchParams.get('embed')).toBe(embed);
+    expect(resolveStreamTestVariant(renewed, proxy.searchParams.get('variant'))).toBe(
+      'https://lb99.strmd.st/secure/new-token/rtmp/stream/new-session/1/high/mono.m3u8',
+    );
   });
-});
 
-describe('decoder request bound', () => {
-  it('cancels oversized chunked bodies before buffering the rest', async () => {
-    let cancelled = false;
-    const body = new ReadableStream<Uint8Array>({
-      start(controller) {
-        controller.enqueue(new Uint8Array(STREAM_TEST_MAX_RESPONSE_BYTES));
-        controller.enqueue(new Uint8Array([1]));
-      },
-      cancel() { cancelled = true; },
-    });
-    const request = new Request('http://localhost/decode', { method: 'POST', body, duplex: 'half' } as RequestInit);
-    await expect(readStreamTestResponse(request)).rejects.toThrow('too large');
-    expect(cancelled).toBe(true);
+  it('resolves nested playlist references relative to the fetched level but confines them to the stream root', () => {
+    const high = new URL('high/mono.m3u8', playlist).href;
+    expect(rewriteStreamTestManifest('#EXTM3U\n../low/mono.m3u8', high, playlist, embed)).toBe(
+      `#EXTM3U\n${streamTestManifestPath(embed, 'low/mono.m3u8')}`,
+    );
+  });
+
+  it.each([
+    '../../other/playlist.m3u8',
+    '/secure/other/playlist.m3u8',
+    'https://lb99.strmd.st/secure/test-token/rtmp/stream/test/1/high.m3u8',
+    'https://127.0.0.1/secure/private.m3u8',
+    'http://lb27.strmd.st/secure/test-token/rtmp/stream/test/1/high.m3u8',
+  ])('rejects variants outside the newly resolved stream: %s', variant => {
+    expect(() => resolveStreamTestVariant(playlist, variant)).toThrow();
+  });
+
+  it('does not treat HTML errors or unsafe resource schemes as playable manifests', () => {
+    expect(() => rewriteStreamTestManifest('<html>Forbidden</html>', playlist, playlist, embed)).toThrow();
+    expect(() => rewriteStreamTestManifest('#EXTM3U\nhttp://127.0.0.1/private.ts', playlist, playlist, embed)).toThrow();
+    expect(() => rewriteStreamTestManifest('#EXTM3U\nhttps://other.example/master.m3u8', playlist, playlist, embed)).toThrow();
   });
 });

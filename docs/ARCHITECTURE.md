@@ -36,7 +36,7 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 
 ## Upstream access
 
-- Catalog upstream requests go through `lib/httpClient.ts`: optional timeout, retry on 5xx, Zod validation (`lib/schemas.ts`) and logging. It answers `null` on failure. Stream Test's browser-side binary POST and browser-compatible manifest transport are isolated exceptions described below.
+- Catalog upstream requests go through `lib/httpClient.ts`: optional timeout, retry on 5xx, Zod validation (`lib/schemas.ts`) and logging. It answers `null` on failure. Stream Test's same-context resolver and manifest transport are an isolated exception described below.
 - Each source module (`api`, `promiedos`, `angulismo`, `flashscore`) maps `null` to its own failure signal: `[]`, `ok: false`, or the last good snapshot flagged `stale: true`.
 - `lib/logger.ts` is the only code that writes to the console. Lines read `scope: message`.
 - Timeouts, retry counts, cache windows and CDN headers live in `lib/constants.ts`, each with the reason for its value.
@@ -56,9 +56,10 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 
 ## Isolated Stream Test
 
-- `/stream-test` accepts only the supported `https://embed.st/embed/<source>/<id>/<number>` shape. It posts the three protobuf fields directly from the browser to `https://embed.st/fetch`; no provider HTML, iframe or JavaScript is loaded.
-- `/api/stream-test/decode` reads at most 8 KiB and uses the response's exposed `Goat` header as a 32-byte UTF-8 key. `lib/streamTestServer.ts` unwraps protobuf field 1, reverses the printable-ASCII rotation, base64-decodes, then authenticates ChaCha20-Poly1305 (12-byte nonce, trailing 16-byte tag, no AAD). Only an authenticated HTTPS playlist on an explicit `lb<number>.strmd.st/secure/` origin is accepted.
-- `/api/stream-test/manifest` uses `impit` with a Chrome-compatible HTTP/TLS profile, the provider Referer/Origin, a deadline and redirects disabled. Node's built-in `fetch` receives HTTP 403 for the same valid URL and request headers that this transport can fetch. Nested playlists are rewritten back through the allowlisted route; CDN media URLs remain direct browser requests. It cannot fetch arbitrary hosts or relay segments.
-- Decoder and manifest responses are uncacheable. Response keys and signed playlists are not stored by this feature. The diagnostic player stops on a fatal HLS error instead of entering the channel player's recovery loop.
+- `/stream-test` accepts only the supported `https://embed.st/embed/<source>/<id>/<number>` shape. The browser loads our manifest endpoint with this public embed URL; no provider HTML, iframe or JavaScript is loaded.
+- `lib/streamTestServer.ts` validates a binary response of at most 8 KiB and uses its `Goat` header as a 32-byte UTF-8 key. It unwraps protobuf field 1, reverses the printable-ASCII rotation, base64-decodes, then authenticates ChaCha20-Poly1305 (12-byte nonce, trailing 16-byte tag, no AAD). Only an authenticated HTTPS playlist on an explicit `lb<number>.strmd.st/secure/` origin is accepted.
+- `/api/stream-test/manifest` resolves, decodes and fetches the playlist within one invocation using `impit` with a Chrome-compatible HTTP/TLS profile, provider Referer/Origin, a deadline and redirects disabled. Standard Node fetch received HTTP 403; browser-issued tokens also failed from Vercel even with the compatible transport. Resolving and fetching together returned HTTP 200 on Vercel.
+- Nested playlist links contain the embed URL and a stream-relative variant path. Every request resolves a fresh signature before applying that variant, confined to the newly resolved stream's origin and directory. This stateless approach avoids relying on stable serverless egress or reusing client-context tokens. CDN media URLs remain direct browser requests; the endpoint cannot fetch arbitrary hosts or relay segments.
+- Manifest responses are uncacheable. Response keys and signed playlist URLs stay server-side and are not persisted. The diagnostic player stops on fatal HLS errors rather than entering the channel player's recovery loop.
 - Fresh decoding and live 1920px HLS playback were verified locally with the browser-compatible manifest transport and no provider iframe. Keep `impit` external to webpack (`serverComponentsExternalPackages` in `next.config.mjs`) and install optional dependencies so its platform-specific native binary is deployed. This experiment does not replace existing players or guarantee provider availability; it never falls back to an iframe.
 

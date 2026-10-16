@@ -19,8 +19,7 @@ app/
     scores/match/[flashscoreId]/route.ts
                                     Match detail/statistics endpoint
     streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
-    stream-test/decode/route.ts    Bounded, authenticated binary response decoder
-    stream-test/manifest/route.ts  Allowlisted, no-store manifest-only relay
+    stream-test/manifest/route.ts  Same-context resolve/decode and manifest-only relay
     diagnostics/broadcasts/route.ts
                                     Broadcast pipeline health; ?q=<team> traces one match
 
@@ -60,7 +59,7 @@ lib/
   logger.ts                        createLogger(scope): the only console writer
   schemas.ts                       Zod schemas for external API data
   constants.ts                     Cache windows, timeouts and limits, with rationale
-  streamTestServer.ts               Authenticated decoder and manifest rewriting
+  streamTestServer.ts               Authenticated decoder, scoped variants and manifest rewriting
   # Shared / client
   matchUtils.ts                    Match normalization, liveness, and image helpers
   matchFilters.ts, matchListView.ts, matchDetailStreams.ts, multiMatch.ts
@@ -112,7 +111,7 @@ vitest.config.ts                   Vitest configuration
 
 ### Server code
 
-- **Server fetch paths.** Catalog upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). Stream Test resolves with a browser-side binary POST on the viewer's IP and uses `impit` only for its allowlisted manifest relay, where the provider rejects standard Node fetch.
+- **Server fetch paths.** Catalog upstream calls go through `fetchJson` / `fetchText` in `lib/httpClient.ts` (timeout, optional retry on 5xx, Zod validation). They return `null` on failure; each data module decides what failure means for its callers (`[]`, `ok: false`, or a `stale: true` snapshot). Stream Test uses `impit` for its fixed provider resolver and allowlisted manifest relay, resolving and fetching within each server request rather than forwarding browser-context signed URLs.
 - **One logger.** `createLogger('scope')` from `lib/logger.ts` prints `scope: message` plus any error as a trailing argument. Do not call `console.*` in `lib/` or `app/api`.
 - **One route shape.** Wrap handlers with `withErrorResponse(scope, message, handler)` (`lib/httpRoute.ts`): unexpected errors become a logged `502 { error }`. Cacheable routes use `jsonWithCache`; Stream Test explicitly uses `no-store` for keys, signed URLs and live manifests.
 - **Named limits.** Timeouts, cache windows and CDN headers are constants in `lib/constants.ts`, each with a comment explaining the value.
