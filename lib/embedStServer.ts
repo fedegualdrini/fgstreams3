@@ -130,7 +130,7 @@ export async function rewriteEmbedStManifest(
         throw new Error('The media host did not return a supported redirect.');
       }
       const destination = new URL(redirect.location, url);
-      if (!DIRECT_MEDIA_ORIGINS[destination.origin] || destination.username || destination.password) {
+      if (destination.protocol !== 'https:' || !DIRECT_MEDIA_ORIGINS[destination.origin] || destination.username || destination.password) {
         throw new Error('Unsupported direct media destination.');
       }
       return destination.href;

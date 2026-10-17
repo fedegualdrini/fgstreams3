@@ -206,6 +206,7 @@ describe('manifest proxy boundary', () => {
     'https://unverified.example/video.ts',
     'https://p16-common-sign.tiktokcdn.com.evil.example/video.ts',
     'http://p16-common-sign.tiktokcdn.com/video.ts',
+    'blob:https://p16-common-sign.tiktokcdn.com/stream',
     'https://p16-common-sign.tiktokcdn.com:444/video.ts',
     'https://user@p16-common-sign.tiktokcdn.com/video.ts',
     'https://127.0.0.1/video.ts',
