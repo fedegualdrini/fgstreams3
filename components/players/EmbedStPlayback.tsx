@@ -20,9 +20,11 @@ export default function EmbedStPlayback({
   const [mode, setMode] = useState<'direct' | 'embed'>('direct');
   const [phase, setPhase] = useState<'loading' | 'playing' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);
+  const [recoveryAttempt, setRecoveryAttempt] = useState(0);
 
   function selectMode(next: typeof mode) {
     if (next === mode) return;
+    setRecoveryAttempt(0);
     setPhase('loading');
     setMode(next);
   }
@@ -35,6 +37,7 @@ export default function EmbedStPlayback({
             <p>Direct playback failed. Retry, choose another source, or switch to Original embed.</p>
             <div className="player-overlay__actions">
               <button type="button" className="btn btn--primary" onClick={() => {
+                setRecoveryAttempt(0);
                 setPhase('loading');
                 setAttempt(value => value + 1);
               }}>Retry direct playback</button>
@@ -48,9 +51,15 @@ export default function EmbedStPlayback({
                 setPhase('playing');
                 onPlaying?.();
               }}
+              onRecovering={number => {
+                setRecoveryAttempt(number);
+                setPhase('loading');
+              }}
               onError={() => setPhase('error')} />
             {phase === 'loading' && (
-              <p role="status" className="embed-st-playback__status">Loading… Press play if needed.</p>
+              <p role="status" className="embed-st-playback__status">{recoveryAttempt
+                ? `Reconnecting to the same source (attempt ${recoveryAttempt})…`
+                : 'Loading… Press play if needed.'}</p>
             )}
           </>
         )}

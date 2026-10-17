@@ -68,6 +68,135 @@ describe('embed.st playback choice', () => {
     expect(container.querySelector('iframe')).not.toBeInTheDocument();
   });
 
+  function networkFailure(video: HTMLVideoElement) {
+    Object.defineProperty(video, 'error', { configurable: true, value: { code: 2 } });
+    fireEvent.error(video);
+  }
+
+  it('restarts the same source after a network failure without opening an iframe or rotating sources', () => {
+    vi.useFakeTimers();
+    const onError = vi.fn();
+    const { container } = render(<StreamPlayer stream={stream} muted onError={onError} />);
+    const video = container.querySelector('video')!;
+    const initialSource = video.getAttribute('src');
+    fireEvent.playing(video);
+
+    networkFailure(video);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(video).not.toHaveAttribute('src');
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    networkFailure(video);
+    expect(onError).not.toHaveBeenCalled();
+
+    act(() => { vi.advanceTimersByTime(2_000); });
+    expect(video).toHaveAttribute('src', initialSource);
+    expect(video.muted).toBe(true);
+    fireEvent.playing(video);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it('bounds repeated failures even when playback briefly resumes, then allows a fresh manual retry', () => {
+    vi.useFakeTimers();
+    const { container } = render(<StreamPlayer stream={stream} />);
+    const video = container.querySelector('video')!;
+    for (const delay of [2_000, 4_000, 8_000]) {
+      networkFailure(video);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      act(() => { vi.advanceTimersByTime(delay - 1); });
+      expect(video).not.toHaveAttribute('src');
+      act(() => { vi.advanceTimersByTime(1); });
+      expect(video).toHaveAttribute('src');
+      fireEvent.playing(video);
+    }
+
+    networkFailure(video);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    act(() => { vi.advanceTimersByTime(60_000); });
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry direct playback' }));
+    networkFailure(container.querySelector('video')!);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    act(() => { vi.advanceTimersByTime(2_000); });
+    expect(container.querySelector('video')).toHaveAttribute('src');
+  });
+
+  it('renews the recovery budget after sustained playback rather than exhausting it over a long session', () => {
+    vi.useFakeTimers();
+    const { container } = render(<StreamPlayer stream={stream} />);
+    const video = container.querySelector('video')!;
+    Object.defineProperty(video, 'paused', { configurable: true, value: false });
+    Object.defineProperty(video, 'readyState', { configurable: true, value: 3 });
+    for (const delay of [2_000, 4_000, 8_000]) {
+      networkFailure(video);
+      act(() => { vi.advanceTimersByTime(delay); });
+      fireEvent.playing(video);
+    }
+
+    video.currentTime = 60;
+    fireEvent.timeUpdate(video);
+    networkFailure(video);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    act(() => { vi.advanceTimersByTime(2_000); });
+    expect(video).toHaveAttribute('src');
+  });
+
+  it('cancels a pending restart when Original embed is explicitly selected', () => {
+    vi.useFakeTimers();
+    const { container } = render(<StreamPlayer stream={stream} />);
+    const video = container.querySelector('video')!;
+    networkFailure(video);
+    fireEvent.click(screen.getByRole('button', { name: 'Original embed' }));
+    fireEvent.load(container.querySelector('iframe')!);
+    act(() => { vi.advanceTimersByTime(60_000); });
+    expect(video).not.toHaveAttribute('src');
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+    expect(container.querySelector('iframe')).toHaveAttribute('src', embedUrl);
+  });
+
+  it('cancels the old source restart without interrupting a newly selected source', () => {
+    vi.useFakeTimers();
+    const { container, rerender } = render(<StreamPlayer stream={stream} />);
+    const oldVideo = container.querySelector('video')!;
+    networkFailure(oldVideo);
+    rerender(<StreamPlayer stream={{ url: 'https://embed.st/embed/admin/other-match/2' }} />);
+    const newVideo = container.querySelector('video')!;
+    fireEvent.playing(newVideo);
+    newVideo.currentTime = 42;
+
+    act(() => { vi.advanceTimersByTime(60_000); });
+    expect(oldVideo).not.toHaveAttribute('src');
+    expect(container.querySelector('video')).toBe(newVideo);
+    expect(newVideo.currentTime).toBe(42);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('does not treat seeking forward as sustained healthy playback', () => {
+    vi.useFakeTimers();
+    const { container } = render(<StreamPlayer stream={stream} />);
+    const video = container.querySelector('video')!;
+    Object.defineProperty(video, 'paused', { configurable: true, value: false });
+    Object.defineProperty(video, 'readyState', { configurable: true, value: 3 });
+    for (const delay of [2_000, 4_000, 8_000]) {
+      networkFailure(video);
+      act(() => { vi.advanceTimersByTime(delay); });
+      fireEvent.playing(video);
+    }
+
+    fireEvent.seeking(video);
+    video.currentTime = 120;
+    fireEvent.timeUpdate(video);
+    networkFailure(video);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+  });
+
   it('changes native mute state without resetting playback progress', () => {
     const { container, rerender } = render(<StreamPlayer stream={stream} muted />);
     const video = container.querySelector('video')!;

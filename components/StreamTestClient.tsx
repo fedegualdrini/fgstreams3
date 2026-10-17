@@ -44,6 +44,7 @@ export default function StreamTestClient() {
       <div className="stream-test__player">
         {src ? <EmbedStPlayer key={attempt} src={src}
           onPlaying={() => setStatus('Playing decoded HLS stream.')}
+          onRecovering={number => setStatus(`Reconnecting to the same source (attempt ${number})…`)}
           onError={() => {
             setSrc(null);
             setStatus('Stream playback failed.');
