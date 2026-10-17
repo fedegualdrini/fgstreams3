@@ -19,7 +19,7 @@ app/
     scores/match/[flashscoreId]/route.ts
                                     Match detail/statistics endpoint
     streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
-    embed-st/manifest/route.ts     Same-context resolve/decode and manifest-only relay
+    embed-st/manifest/route.ts     Same-context manifest relay and header-only media redirect resolution
     diagnostics/broadcasts/route.ts
                                     Broadcast pipeline health; ?q=<team> traces one match
 
@@ -60,7 +60,7 @@ lib/
   logger.ts                        createLogger(scope): the only console writer
   schemas.ts                       Zod schemas for external API data
   constants.ts                     Cache windows, timeouts and limits, with rationale
-  embedStServer.ts                  Authenticated decoder, scoped variants and manifest rewriting
+  embedStServer.ts                  Authenticated decoder, scoped variants and validated direct-CDN rewriting
   # Shared / client
   matchUtils.ts                    Match normalization, liveness, and image helpers
   matchFilters.ts, matchListView.ts, matchDetailStreams.ts, multiMatch.ts

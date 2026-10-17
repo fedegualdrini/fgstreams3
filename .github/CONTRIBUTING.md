@@ -31,7 +31,7 @@ npm test
 
 ## Conventions
 
-- **Fetching upstreams:** catalog requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. embed.st playback uses `impit` as an explicit exception: resolve and fetch within the same server request, with a deadline and redirects disabled. Keep that native client confined to the fixed resolver and allowlisted manifest relay; do not move resolution back to the browser. Direct mode must not load provider scripts/iframes; Original embed requires explicit selection.
+- **Fetching upstreams:** catalog requests go through `fetchJson` / `fetchText` in `lib/httpClient.ts`. embed.st playback uses `impit` as an explicit exception: resolve and fetch within the same server request, with a deadline and automatic redirects disabled. Keep that native client confined to the fixed resolver, allowlisted manifest relay and header-only `HEAD` lookups on HTTPS `lb<number>.strmd.st/b/` media gateways. Validate gateway redirects against the direct CDN allowlist; never relay their video bodies or follow arbitrary redirect chains. Do not move resolution back to the browser. Direct mode must not load provider scripts/iframes; Original embed requires explicit selection.
 - **Logging:** use `createLogger('scope')` from `lib/logger.ts`; no `console.*` in `lib/` or `app/api`.
 - **API routes:** wrap handlers with `withErrorResponse` (`lib/httpRoute.ts`); use `jsonWithCache` for cacheable data. embed.st response keys, signed URLs and live manifests must remain `no-store`.
 - **Limits:** timeouts, cache windows and retry counts are named constants in `lib/constants.ts`, each with the reason for its value.

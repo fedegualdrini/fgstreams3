@@ -66,6 +66,7 @@ const DIRECT_MEDIA_ORIGINS: Record<string, true> = {
   'https://p16-common-sign.tiktokcdn.com': true,
   'https://p19-common-sign.tiktokcdn.com': true,
 };
+const MEDIA_REDIRECT_STATUSES = [301, 302, 303, 307, 308];
 
 /** Expose one rendition so automatic quality changes cannot enter the restricted low CDN. */
 function highestBandwidthOnly(lines: string[]): string[] {
@@ -106,27 +107,54 @@ function highestBandwidthOnly(lines: string[]): string[] {
   return result;
 }
 
-/** Renew nested playlists in their own server context; media segments stay direct. */
-export function rewriteEmbedStManifest(text: string, baseUrl: string, rootUrl: string, embedUrl: string): string {
+/** Renew playlists and resolve restricted media redirects; video bytes stay direct. */
+export async function rewriteEmbedStManifest(
+  text: string, baseUrl: string, rootUrl: string, embedUrl: string,
+  resolveMediaRedirect: (url: string) => Promise<{ status: number; location: string | null }>,
+): Promise<string> {
   const base = resolveEmbedStVariant(rootUrl, baseUrl);
   const streamDirectory = new URL('.', rootUrl).pathname;
   if (!text.startsWith('#EXTM3U')) throw new Error('Upstream did not return an HLS manifest.');
-  const resolve = (input: string) => {
+  const resolve = async (input: string): Promise<string> => {
     const url = new URL(input, base);
     if (url.protocol !== 'https:' || url.username || url.password) {
       throw new Error('Unsupported manifest resource URL.');
     }
     if (!url.pathname.endsWith('.m3u8')) {
-      if (!DIRECT_MEDIA_ORIGINS[url.origin]) throw new Error('Unsupported direct media origin.');
-      return url.href;
+      if (DIRECT_MEDIA_ORIGINS[url.origin]) return url.href;
+      if (!/^lb\d+\.strmd\.st$/.test(url.hostname) || url.port || !url.pathname.startsWith('/b/')) {
+        throw new Error('Unsupported direct media origin.');
+      }
+      const redirect = await resolveMediaRedirect(url.href);
+      if (!MEDIA_REDIRECT_STATUSES.includes(redirect.status) || !redirect.location) {
+        throw new Error('The media host did not return a supported redirect.');
+      }
+      const destination = new URL(redirect.location, url);
+      if (!DIRECT_MEDIA_ORIGINS[destination.origin] || destination.username || destination.password) {
+        throw new Error('Unsupported direct media destination.');
+      }
+      return destination.href;
     }
     const variant = new URL(resolveEmbedStVariant(rootUrl, url.href));
     return embedStManifestPath(embedUrl, variant.pathname.slice(streamDirectory.length) + variant.search);
   };
-  return highestBandwidthOnly(text.split('\n')).map(line => {
+  const result: string[] = [];
+  // Keep header lookups sequential: a long playlist must not fan out unbounded requests.
+  for (const line of highestBandwidthOnly(text.split('\n'))) {
     const trimmed = line.trim();
-    if (!trimmed) return line;
-    if (trimmed.startsWith('#')) return line.replace(/URI="([^"]+)"/g, (_, uri: string) => `URI="${resolve(uri)}"`);
-    return resolve(trimmed);
-  }).join('\n');
+    if (!trimmed) {
+      result.push(line);
+    } else if (trimmed.startsWith('#')) {
+      let rewritten = '';
+      let offset = 0;
+      for (const match of line.matchAll(/URI="([^"]+)"/g)) {
+        rewritten += line.slice(offset, match.index) + `URI="${await resolve(match[1])}"`;
+        offset = match.index! + match[0].length;
+      }
+      result.push(rewritten + line.slice(offset));
+    } else {
+      result.push(await resolve(trimmed));
+    }
+  }
+  return result.join('\n');
 }

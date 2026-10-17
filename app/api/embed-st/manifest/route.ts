@@ -10,6 +10,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const log = createLogger('embed-st manifest');
 const headers = { 'Cache-Control': 'no-store' };
+const providerHeaders = { Referer: 'https://embed.st/', Origin: 'https://embed.st' };
 // The CDN accepts browser-compatible TLS; Node's built-in fetch receives 403.
 const client = new Impit({ browser: 'chrome', timeout: EMBED_ST_TIMEOUT_MS });
 
@@ -25,7 +26,7 @@ export const GET = withErrorResponse('embed-st manifest', 'Unable to load stream
   // Resolve and read in this invocation: browser-issued tokens fail from Vercel.
   const resolved = await client.fetch(EMBED_ST_FETCH_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/octet-stream', Referer: 'https://embed.st/', Origin: 'https://embed.st' },
+    headers: { ...providerHeaders, 'Content-Type': 'application/octet-stream' },
     body,
     redirect: 'error',
     signal: request.signal,
@@ -47,7 +48,7 @@ export const GET = withErrorResponse('embed-st manifest', 'Unable to load stream
     return NextResponse.json({ error: 'Unsupported stream variant.' }, { status: 400, headers });
   }
   const upstream = await client.fetch(url, {
-    headers: { Referer: 'https://embed.st/', Origin: 'https://embed.st' },
+    headers: providerHeaders,
     redirect: 'error',
     signal: request.signal,
   });
@@ -56,7 +57,21 @@ export const GET = withErrorResponse('embed-st manifest', 'Unable to load stream
     return NextResponse.json({ error: 'The provider rejected or could not serve this stream.' }, { status: 502, headers });
   }
   try {
-    return new NextResponse(rewriteEmbedStManifest(await upstream.text(), url, rootUrl, embedUrl), {
+    const manifest = await rewriteEmbedStManifest(await upstream.text(), url, rootUrl, embedUrl, async mediaUrl => {
+      // Resolve the gateway's Location without downloading or relaying the video.
+      const redirect = await client.fetch(mediaUrl, {
+        method: 'HEAD',
+        headers: providerHeaders,
+        redirect: 'manual',
+        signal: request.signal,
+      });
+      try {
+        return { status: redirect.status, location: redirect.headers.get('location') };
+      } finally {
+        await redirect.body.cancel();
+      }
+    });
+    return new NextResponse(manifest, {
       headers: { ...headers, 'Content-Type': 'application/vnd.apple.mpegurl' },
     });
   } catch {

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { createCipheriv } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { EMBED_ST_MAX_RESPONSE_BYTES } from './constants';
 import { encodeEmbedStRequest, embedStManifestPath } from './embedSt';
 import {
@@ -13,6 +13,8 @@ import {
 const key = '0123456789abcdefghijklmnopqrstuv';
 const playlist = 'https://lb27.strmd.st/secure/test-token/rtmp/stream/test/1/playlist.m3u8';
 const embed = 'https://embed.st/embed/admin/example-stream/1';
+const directMedia = 'https://p16-common-sign.tiktokcdn.com/segment.image?x-signature=abc%2Fdef';
+const noMediaRedirect = async () => ({ status: 403, location: null });
 
 function responseFor(url = playlist, corruptTag = false): Uint8Array {
   const nonce = Buffer.alloc(12, 7);
@@ -90,9 +92,9 @@ describe('manifest proxy boundary', () => {
     expect(() => parseEmbedStManifestUrl(url)).toThrow();
   });
 
-  it('proxies relative variants and alternate audio playlists', () => {
+  it('proxies relative variants and alternate audio playlists', async () => {
     const manifest = '#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,URI="audio.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\nvideo.m3u8\n';
-    expect(rewriteEmbedStManifest(manifest, playlist, playlist, embed)).toBe([
+    expect(await rewriteEmbedStManifest(manifest, playlist, playlist, embed, noMediaRedirect)).toBe([
       '#EXTM3U',
       `#EXT-X-MEDIA:TYPE=AUDIO,URI="${embedStManifestPath(embed, 'audio.m3u8')}"`,
       '#EXT-X-STREAM-INF:BANDWIDTH=1000000',
@@ -101,7 +103,7 @@ describe('manifest proxy boundary', () => {
     ].join('\n'));
   });
 
-  it('advertises only the highest-bandwidth rendition, not the first or last alternative', () => {
+  it('advertises only the highest-bandwidth rendition, not the first or last alternative', async () => {
     const manifest = [
       '#EXTM3U',
       '#EXT-X-INDEPENDENT-SEGMENTS',
@@ -112,7 +114,7 @@ describe('manifest proxy boundary', () => {
       '#EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720',
       'medium/mono.m3u8',
     ].join('\n');
-    const rewritten = rewriteEmbedStManifest(manifest, playlist, playlist, embed);
+    const rewritten = await rewriteEmbedStManifest(manifest, playlist, playlist, embed, noMediaRedirect);
     expect(rewritten.split('\n').filter(line => line.startsWith('#EXT-X-STREAM-INF:'))).toEqual([
       '#EXT-X-STREAM-INF:BANDWIDTH=8000000,RESOLUTION=1920x1080',
     ]);
@@ -122,45 +124,51 @@ describe('manifest proxy boundary', () => {
     expect(rewritten).toContain('#EXT-X-INDEPENDENT-SEGMENTS');
   });
 
-  it('ranks by BANDWIDTH, not AVERAGE-BANDWIDTH or attribute-like text inside a quoted name', () => {
+  it('ranks by BANDWIDTH, not AVERAGE-BANDWIDTH or attribute-like text inside a quoted name', async () => {
     const manifest = '#EXTM3U\n#EXT-X-STREAM-INF:NAME="low,BANDWIDTH=99000000,extra",AVERAGE-BANDWIDTH=90000000,BANDWIDTH=700000\nlow/mono.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\nhigh/mono.m3u8';
-    const rewritten = rewriteEmbedStManifest(manifest, playlist, playlist, embed);
+    const rewritten = await rewriteEmbedStManifest(manifest, playlist, playlist, embed, noMediaRedirect);
     expect(rewritten.split('\n').filter(line => line && !line.startsWith('#'))).toEqual([
       embedStManifestPath(embed, 'high/mono.m3u8'),
     ]);
   });
 
-  it('keeps signed media URLs intact on the verified direct CDNs', () => {
+  it('keeps signed media URLs intact on the verified direct CDNs', async () => {
     const urls = [
       'https://p16-common-sign.tiktokcdn.com/video-a.webp?x-expires=123&x-signature=abc%2Fdef',
       'https://p19-common-sign.tiktokcdn.com/video-b.webp?x-expires=456&x-signature=ghi%2Bjkl',
     ];
     const manifest = `#EXTM3U\n#EXTINF:5,\n${urls[0]}\n#EXTINF:5,\n${urls[1]}\n`;
-    const rewritten = rewriteEmbedStManifest(manifest, playlist, playlist, embed);
+    const rewritten = await rewriteEmbedStManifest(manifest, playlist, playlist, embed, noMediaRedirect);
     expect(rewritten.split('\n').filter(line => line && !line.startsWith('#'))).toEqual(urls);
   });
 
   it.each([
-    'https://lb19.strmd.st/b/stream/m/segment.ts',
+    'https://lb19.strmd.st.evil.example/b/segment.ts',
+    'https://lb19.strmd.st/secure/private.ts',
+    'https://127.0.0.1/b/segment.ts',
+    'https://user@lb19.strmd.st/b/segment.ts',
+    'https://lb19.strmd.st:444/b/segment.ts',
     'https://unverified.example/segment.ts',
     'https://p16-common-sign.tiktokcdn.com.evil.example/segment.webp',
     'https://p16-common-sign.tiktokcdn.com:444/segment.webp',
-  ])('does not expose a media resource on an unsupported origin: %s', url => {
-    expect(() => rewriteEmbedStManifest(`#EXTM3U\n#EXTINF:5,\n${url}`, playlist, playlist, embed)).toThrow();
+  ])('does not resolve or expose media on an unsupported origin or path: %s', async url => {
+    const resolve = vi.fn(async () => ({ status: 302, location: directMedia }));
+    await expect(rewriteEmbedStManifest(`#EXTM3U\n#EXTINF:5,\n${url}`, playlist, playlist, embed, resolve)).rejects.toThrow();
+    expect(resolve).not.toHaveBeenCalled();
   });
 
-  it('also checks indirect media resources in URI attributes', () => {
+  it('also checks indirect media resources in URI attributes', async () => {
     const manifest = '#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="https://lb19.strmd.st/b/stream/key"\n';
-    expect(() => rewriteEmbedStManifest(manifest, playlist, playlist, embed)).toThrow();
+    await expect(rewriteEmbedStManifest(manifest, playlist, playlist, embed, noMediaRedirect)).rejects.toThrow();
   });
 
-  it('rejects an incomplete rendition instead of exposing an unranked or missing playlist', () => {
-    expect(() => rewriteEmbedStManifest('#EXTM3U\n#EXT-X-STREAM-INF:RESOLUTION=1920x1080\nhigh/mono.m3u8', playlist, playlist, embed)).toThrow();
-    expect(() => rewriteEmbedStManifest('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\n', playlist, playlist, embed)).toThrow();
+  it('rejects an incomplete rendition instead of exposing an unranked or missing playlist', async () => {
+    await expect(rewriteEmbedStManifest('#EXTM3U\n#EXT-X-STREAM-INF:RESOLUTION=1920x1080\nhigh/mono.m3u8', playlist, playlist, embed, noMediaRedirect)).rejects.toThrow();
+    await expect(rewriteEmbedStManifest('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\n', playlist, playlist, embed, noMediaRedirect)).rejects.toThrow();
   });
 
-  it('carries a relative variant across renewed signatures instead of reusing the old signed URL', () => {
-    const rewritten = rewriteEmbedStManifest('#EXTM3U\nhigh/mono.m3u8', playlist, playlist, embed);
+  it('carries a relative variant across renewed signatures instead of reusing the old signed URL', async () => {
+    const rewritten = await rewriteEmbedStManifest('#EXTM3U\nhigh/mono.m3u8', playlist, playlist, embed, noMediaRedirect);
     const proxy = new URL(rewritten.split('\n')[1], 'https://app.example');
     const renewed = 'https://lb99.strmd.st/secure/new-token/rtmp/stream/new-session/1/playlist.m3u8';
     expect(proxy.searchParams.get('embed')).toBe(embed);
@@ -169,11 +177,9 @@ describe('manifest proxy boundary', () => {
     );
   });
 
-  it('resolves nested playlist references relative to the fetched level but confines them to the stream root', () => {
+  it('resolves nested playlist references relative to the fetched level but confines them to the stream root', async () => {
     const high = new URL('high/mono.m3u8', playlist).href;
-    expect(rewriteEmbedStManifest('#EXTM3U\n../low/mono.m3u8', high, playlist, embed)).toBe(
-      `#EXTM3U\n${embedStManifestPath(embed, 'low/mono.m3u8')}`,
-    );
+    expect(await rewriteEmbedStManifest('#EXTM3U\n../low/mono.m3u8', high, playlist, embed, noMediaRedirect)).toBe(`#EXTM3U\n${embedStManifestPath(embed, 'low/mono.m3u8')}`);
   });
 
   it.each([
@@ -186,9 +192,50 @@ describe('manifest proxy boundary', () => {
     expect(() => resolveEmbedStVariant(playlist, variant)).toThrow();
   });
 
-  it('does not treat HTML errors or unsafe resource schemes as playable manifests', () => {
-    expect(() => rewriteEmbedStManifest('<html>Forbidden</html>', playlist, playlist, embed)).toThrow();
-    expect(() => rewriteEmbedStManifest('#EXTM3U\nhttp://127.0.0.1/private.ts', playlist, playlist, embed)).toThrow();
-    expect(() => rewriteEmbedStManifest('#EXTM3U\nhttps://other.example/master.m3u8', playlist, playlist, embed)).toThrow();
+  it('replaces restricted media references and URI attributes with validated direct CDN destinations', async () => {
+    const key = 'https://p19-common-sign.tiktokcdn.com/key.image?x-signature=key%2Bvalue';
+    const manifest = '#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="/b/stream/key"\n#EXTINF:6,\nhttps://lb19.strmd.st/b/stream/segment.ts\n';
+    const rewritten = await rewriteEmbedStManifest(manifest, playlist, playlist, embed,
+      async url => ({ status: 302, location: url.endsWith('/key') ? key : directMedia }));
+    expect(rewritten).toContain(`URI="${key}"`);
+    expect(rewritten.split('\n').filter(line => line && !line.startsWith('#'))).toEqual([directMedia]);
+    expect(rewritten).not.toContain('strmd.st');
+  });
+
+  it.each([
+    'https://unverified.example/video.ts',
+    'https://p16-common-sign.tiktokcdn.com.evil.example/video.ts',
+    'http://p16-common-sign.tiktokcdn.com/video.ts',
+    'https://p16-common-sign.tiktokcdn.com:444/video.ts',
+    'https://user@p16-common-sign.tiktokcdn.com/video.ts',
+    'https://127.0.0.1/video.ts',
+    '/b/another-hop/segment.ts',
+  ])('rejects a media redirect outside the verified direct origins: %s', async location => {
+    const manifest = '#EXTM3U\n#EXTINF:6,\nhttps://lb19.strmd.st/b/stream/segment.ts';
+    await expect(rewriteEmbedStManifest(manifest, playlist, playlist, embed,
+      async () => ({ status: 302, location }))).rejects.toThrow();
+  });
+
+  it.each([
+    { status: 302, location: null },
+    { status: 200, location: directMedia },
+    { status: 403, location: directMedia },
+    { status: 304, location: directMedia },
+  ])('does not emit restricted media when redirect resolution fails: $status', async redirect => {
+    const manifest = '#EXTM3U\n#EXTINF:6,\nhttps://lb19.strmd.st/b/stream/segment.ts';
+    await expect(rewriteEmbedStManifest(manifest, playlist, playlist, embed,
+      async () => redirect)).rejects.toThrow();
+  });
+
+  it('does not fall back to a restricted URL when its header request fails', async () => {
+    const manifest = '#EXTM3U\n#EXTINF:6,\nhttps://lb19.strmd.st/b/stream/segment.ts';
+    await expect(rewriteEmbedStManifest(manifest, playlist, playlist, embed,
+      async () => { throw new Error('Connection failed'); })).rejects.toThrow();
+  });
+
+  it('does not treat HTML errors or unsafe resource schemes as playable manifests', async () => {
+    await expect(rewriteEmbedStManifest('<html>Forbidden</html>', playlist, playlist, embed, noMediaRedirect)).rejects.toThrow();
+    await expect(rewriteEmbedStManifest('#EXTM3U\nhttp://127.0.0.1/private.ts', playlist, playlist, embed, noMediaRedirect)).rejects.toThrow();
+    await expect(rewriteEmbedStManifest('#EXTM3U\nhttps://other.example/master.m3u8', playlist, playlist, embed, noMediaRedirect)).rejects.toThrow();
   });
 });
