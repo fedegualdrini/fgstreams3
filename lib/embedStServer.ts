@@ -1,6 +1,6 @@
 import { createDecipheriv } from 'node:crypto';
 import { EMBED_ST_MAX_RESPONSE_BYTES, EMBED_ST_MAX_URL_LENGTH } from './constants';
-import { embedStManifestPath } from './embedSt';
+import { EMBED_ST_DIRECT_MEDIA_ORIGINS, embedStManifestPath } from './embedSt';
 
 /** Only this provider's signed playlists may be fetched by the manifest proxy. */
 export function parseEmbedStManifestUrl(input: string): URL {
@@ -62,10 +62,6 @@ export function resolveEmbedStVariant(rootUrl: string, variant: string | null): 
   return target.href;
 }
 
-const DIRECT_MEDIA_ORIGINS: Record<string, true> = {
-  'https://p16-common-sign.tiktokcdn.com': true,
-  'https://p19-common-sign.tiktokcdn.com': true,
-};
 const MEDIA_REDIRECT_STATUSES = [301, 302, 303, 307, 308];
 
 /** Expose one rendition so automatic quality changes cannot enter the restricted low CDN. */
@@ -121,7 +117,7 @@ export async function rewriteEmbedStManifest(
       throw new Error('Unsupported manifest resource URL.');
     }
     if (!url.pathname.endsWith('.m3u8')) {
-      if (DIRECT_MEDIA_ORIGINS[url.origin]) return url.href;
+      if (EMBED_ST_DIRECT_MEDIA_ORIGINS[url.origin]) return url.href;
       if (!/^lb\d+\.strmd\.st$/.test(url.hostname) || url.port || !url.pathname.startsWith('/b/')) {
         throw new Error('Unsupported direct media origin.');
       }
@@ -130,7 +126,7 @@ export async function rewriteEmbedStManifest(
         throw new Error('The media host did not return a supported redirect.');
       }
       const destination = new URL(redirect.location, url);
-      if (destination.protocol !== 'https:' || !DIRECT_MEDIA_ORIGINS[destination.origin] || destination.username || destination.password) {
+      if (destination.protocol !== 'https:' || !EMBED_ST_DIRECT_MEDIA_ORIGINS[destination.origin] || destination.username || destination.password) {
         throw new Error('Unsupported direct media destination.');
       }
       return destination.href;

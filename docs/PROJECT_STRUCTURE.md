@@ -68,8 +68,9 @@ lib/
   channelOptions.ts                Playable-option filtering for channels
   movieEmbed.ts, movieTmdb.ts      Movie/TV embed URLs and TMDB mapping
   playerHls.ts                     hls.js configuration
+  embedStHls.ts                    Per-engine segment identities for verified Direct CDN rotations
   streamSelector.ts                Preferred stream selection
-  embedSt.ts                        Supported embed URL detection and protobuf request encoding
+  embedSt.ts                        Supported embed URLs, request encoding and direct-CDN origins
   scoreAliases.ts, scoreUtils.ts   Team alias data and score matching
   sportMap.ts                      Sport name mapping
   urlValidation.ts, proxyHosts.ts  Stream URL validation; generated HLS-proxy allowlist

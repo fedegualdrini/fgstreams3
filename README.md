@@ -98,6 +98,8 @@ Non-network fatal errors or exhausted recovery offer **Retry direct playback** a
 
 Direct HQ exposes only the rendition with the highest advertised `BANDWIDTH`; hls.js and native HLS cannot automatically downgrade to a lower rendition. Slow connections may buffer instead. Direct media resources must end on the verified HTTPS origins `p16-common-sign.tiktokcdn.com` and `p19-common-sign.tiktokcdn.com`. Media is not proxied through Vercel.
 
+The hls.js Direct player tolerates approved CDN host/path/signature rotation for the same segment when its media sequence, discontinuity, duration, gap flag and program timestamp still match (up to 50 ms timestamp rounding). Stable playback identities are separate from the latest signed download URLs, so a rotation does not restart the player or re-download buffered segments. This is metadata matching, not a content hash; other playlist, demux and decoder checks remain enabled. Only the current playlist windows are retained, not a media cache or URL history. Untimestamped, encrypted, byte-range and low-latency playlists retain strict URL consistency; native HLS is unchanged.
+
 Some sources, including `hotel`, hide those CDN URLs behind restricted `https://lb<number>.strmd.st/b/` gateways. The server resolves each gateway with a header-only `HEAD` request using the provider's Origin/Referer, validates its redirect destination, and puts the direct CDN URL into the playlist. It does not download the video or follow arbitrary redirect chains. If a gateway does not redirect to a verified CDN, Direct playback fails locally; retry, choose another source or explicitly select **Original embed**.
 
 The browser sends the public embed URL to `/api/embed-st/manifest`. The server requests a fresh binary response, authenticates and decodes it, then fetches the HLS playlist in the same request context. Nested playlists repeat this process using stream-relative paths, not old signed tokens. Media segments stay direct.
@@ -108,7 +110,7 @@ The relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider 
 
 Open `/stream-test` from the main navigation to test a URL manually with the same decoder, relay and HLS engine. Paste a current embed.st URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
 
-Decoder, proxy-boundary and playback-mode checks: `npx vitest run lib/embedSt.test.ts components/players/EmbedStPlayback.test.tsx`.
+Decoder, proxy-boundary, CDN-rotation and playback-mode checks: `npx vitest run lib/embedSt.test.ts lib/embedStHls.test.ts components/players/EmbedStPlayback.test.tsx`.
 
 
 ## How it works

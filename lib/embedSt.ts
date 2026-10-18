@@ -2,6 +2,11 @@ import { EMBED_ST_MAX_URL_LENGTH } from './constants';
 
 export const EMBED_ST_FETCH_URL = 'https://embed.st/fetch';
 
+export const EMBED_ST_DIRECT_MEDIA_ORIGINS: Record<string, true> = {
+  'https://p16-common-sign.tiktokcdn.com': true,
+  'https://p19-common-sign.tiktokcdn.com': true,
+};
+
 /** Only the provider's explicit embed shape supports direct playback. */
 export function parseEmbedStUrl(input: string): URL {
   let url: URL;

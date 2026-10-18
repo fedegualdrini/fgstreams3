@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import { buildHlsConfig } from '@/lib/playerHls';
+import { createEmbedStLoader } from '@/lib/embedStHls';
 import PlayerSurface from './PlayerSurface';
 import { usePlayerCallbacks } from './usePlayerCallbacks';
 
@@ -87,7 +88,7 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
     const start = () => {
       try {
         if (Hls.isSupported()) {
-          const instance = new Hls(buildHlsConfig(src));
+          const instance = new Hls({ ...buildHlsConfig(src), loader: createEmbedStLoader() });
           hls = instance;
           instance.on(Hls.Events.ERROR, (_, error) => {
             if (cancelled || stopped || hls !== instance || !error.fatal) return;
