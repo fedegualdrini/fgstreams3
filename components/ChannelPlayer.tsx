@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
 import { getPlayableOptions } from '@/lib/channelOptions';
 import { isEmbedStUrl } from '@/lib/embedSt';
+import { isStreamTpUrl } from '@/lib/streamTp';
 import ChannelStream from '@/components/channels/ChannelStream';
 import OptionPicker from '@/components/channels/OptionPicker';
 import { LoadingOverlay, TimeoutOverlay } from '@/components/channels/PlayerOverlays';
@@ -35,8 +36,10 @@ export default function ChannelPlayer({
 
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
   const hasAlternatives = validOptions.length > 1;
-  // embed.st owns loading/error UI so autoplay blocking never hides its play or mode controls.
-  const ownsPlaybackState = currentOption ? isEmbedStUrl(currentOption.iframe) : false;
+  // Direct playback owns its loading/error UI so autoplay never hides its controls.
+  const ownsPlaybackState = currentOption
+    ? isEmbedStUrl(currentOption.iframe) || isStreamTpUrl(currentOption.iframe)
+    : false;
 
   if (validOptions.length === 0) {
     return (

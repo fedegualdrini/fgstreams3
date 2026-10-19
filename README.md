@@ -90,7 +90,7 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 
 ### Direct playback (embed.st)
 
-Supported `https://embed.st/embed/<source>/<id>/<stream-number>` sources start in **Direct player (HQ)** mode on match pages, multi-match cards and channel options. Use the buttons below the video to switch to **Original embed**. Eligibility follows the actual URL, not the source label: a Streamed.pk source qualifies when it returns a supported embed.st URL. Other providers, ordinary HLS/DASH channels and movies retain their existing players.
+Supported `https://embed.st/embed/<source>/<id>/<stream-number>` sources start in **Direct player (HQ)** mode on match pages, multi-match cards and channel options. Use the buttons below the video to switch to **Original embed**. Eligibility follows the actual URL, not the source label: a Streamed.pk source qualifies when it returns a supported embed.st URL. The separate StreamTP trial is described below; other providers, ordinary HLS/DASH channels and movies retain their existing players.
 
 Direct mode never loads the provider iframe or its ad/popup scripts. After hls.js exhausts its request-level retries, a fatal network failure triggers up to three full restarts of the **same source**, delayed by 2, 4 and 8 seconds. Each restart loads a fresh master playlist and returns to the live edge; it does not preserve DVR position. Native HLS network failures use the same recovery policy. The restart budget renews only after 60 seconds of uninterrupted playback progress, not a brief `playing` event. A reconnecting status appears while recovery is pending.
 
@@ -106,11 +106,19 @@ The browser sends the public embed URL to `/api/embed-st/manifest`. The server r
 
 The relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider rejects Node's built-in `fetch` with HTTP 403 even for working signed URLs. Browser-resolved tokens also failed when fetched from Vercel, so resolution stays inside each server request. Keep optional native dependencies enabled when installing (`npm install` / `npm ci`); the matching Windows or Linux binary is required. A listed source may still be offline or rejected by the provider.
 
+### Direct playback (StreamTP/la18hd trial)
+
+The verified ESPN Premium source `https://la18hd.su/vivo/canales.php?stream=espnpremium` also starts in **Direct player** mode. Its observed aliases, `https://streamtp-golden1.click/global1.php?stream=espnpremium` and `https://streamtp99a.sbs/global-1.php?stream=espnpremium`, resolve through that same page. This applies to qualifying channel and match options, not every StreamTP channel or the unrelated Sensa source.
+
+`/api/streamtp/resolve` fetches only that fixed provider HTML document, using `impit`, a 15-second deadline and a 256 KiB limit. It parses the standalone `window.CDNPEER` JSON assignment without executing provider scripts and returns a validated HTTPS ESPN Premium playlist on a `*.fubo18.com` CDN. All HLS playlists, audio and video then load directly from the CDN in the browser: no media or manifest relay, P2P trackers, service worker, provider iframe or ad scripts in Direct mode.
+
+The shared player offers the same explicit **Original embed** choice and bounded same-source recovery. A network restart resolves a fresh URL before reconnecting. Metadata failures remain local; signed URLs are not cached, persisted or logged. Provider availability and browser/CDN restrictions can still prevent playback; there is no media-proxy fallback.
+
 ### Stream Test (experimental)
 
-Open `/stream-test` from the main navigation to test a URL manually with the same decoder, relay and HLS engine. Paste a current embed.st URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
+Open `/stream-test` from the main navigation to test either supported provider with the shared HLS engine. Paste a current embed.st URL or the StreamTP/la18hd ESPN Premium URL above and click **Resolve & play**. For embed.st, find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`. Arbitrary HLS URLs and other StreamTP channels are intentionally unsupported.
 
-Decoder, proxy-boundary, CDN-rotation and playback-mode checks: `npx vitest run lib/embedSt.test.ts lib/embedStHls.test.ts components/players/EmbedStPlayback.test.tsx`.
+Decoder, resolver-boundary, CDN-rotation and playback-mode checks: `npx vitest run lib/embedSt.test.ts lib/embedStHls.test.ts lib/streamTp.test.ts components/players/DirectPlayback.test.tsx`.
 
 
 ## How it works

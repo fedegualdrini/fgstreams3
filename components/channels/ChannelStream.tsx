@@ -3,7 +3,8 @@ import { isDashUrl, isHlsUrl } from '@/lib/urlValidation';
 import DashVideoPlayer from '@/components/DashVideoPlayer';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
 import { isEmbedStUrl } from '@/lib/embedSt';
-import EmbedStPlayback from '@/components/players/EmbedStPlayback';
+import { isStreamTpUrl } from '@/lib/streamTp';
+import DirectPlayback from '@/components/players/DirectPlayback';
 
 const IFRAME_PERMISSIONS =
   'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
@@ -15,7 +16,7 @@ interface ChannelStreamProps {
   onError: () => void;
 }
 
-/** Renders DASH/HLS engines, supported embed.st playback, or the original provider embed. */
+/** Renders DASH/HLS engines, supported direct playback, or the original provider embed. */
 export default function ChannelStream({ channelName, option, onPlaying, onError }: ChannelStreamProps) {
   if (isDashUrl(option.iframe)) {
     return <DashVideoPlayer src={option.iframe} clearKeys={option.clearKeys} onPlaying={onPlaying} onError={onError} />;
@@ -36,7 +37,9 @@ export default function ChannelStream({ channelName, option, onPlaying, onError 
     />
   );
 
-  return isEmbedStUrl(option.iframe)
-    ? <EmbedStPlayback key={option.iframe} embedUrl={option.iframe} fillParent onPlaying={onPlaying}>{iframe}</EmbedStPlayback>
+  const provider = isEmbedStUrl(option.iframe) ? 'embed-st'
+    : isStreamTpUrl(option.iframe) ? 'streamtp' : null;
+  return provider
+    ? <DirectPlayback key={option.iframe} provider={provider} sourceUrl={option.iframe} fillParent onPlaying={onPlaying}>{iframe}</DirectPlayback>
     : iframe;
 }

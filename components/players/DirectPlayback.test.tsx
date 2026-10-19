@@ -230,3 +230,114 @@ describe('embed.st playback choice', () => {
     expect(container.querySelector('iframe')).toHaveAttribute('src', embedUrl);
   });
 });
+
+describe('StreamTP direct-only playback', () => {
+  const source = 'https://la18hd.su/vivo/canales.php?stream=espnpremium';
+  const first = 'https://a2lja3m.fubo18.com/espnpremium/mono.m3u8?token=initial-test-signature';
+  const fresh = 'https://a2lja3m.fubo18.com/espnpremium/mono.m3u8?token=renewed-test-signature';
+  const metadata = (url: string) => new Response(JSON.stringify({ url }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.spyOn(Hls, 'isSupported').mockReturnValue(false);
+    vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('probably');
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+    vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('cancels pending resolution when Original embed is selected and ignores its late result', async () => {
+    let settle!: (response: Response) => void;
+    const pending = new Promise<Response>(resolve => { settle = resolve; });
+    const request = vi.fn((_url: RequestInfo | URL, _options?: RequestInit) => pending);
+    vi.stubGlobal('fetch', request);
+    const { container } = render(<StreamPlayer stream={{ url: source }} />);
+    const video = container.querySelector('video')!;
+    const signal = request.mock.calls[0][1]?.signal;
+    fireEvent.click(screen.getByRole('button', { name: 'Original embed' }));
+    expect(signal?.aborted).toBe(true);
+    await act(async () => { settle(metadata(first)); await pending; });
+    expect(video).not.toHaveAttribute('src');
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+    expect(container.querySelector('iframe')).toHaveAttribute('src', source);
+  });
+
+  it('obtains a fresh CDN URL on same-source recovery instead of reusing the failed token', async () => {
+    const request = vi.fn().mockResolvedValueOnce(metadata(first)).mockResolvedValueOnce(metadata(fresh));
+    vi.stubGlobal('fetch', request);
+    const onNext = vi.fn();
+    const { container } = render(<StreamPlayer stream={{ url: source }} onError={onNext} />);
+    await act(async () => {});
+    const video = container.querySelector('video')!;
+    expect(video).toHaveAttribute('src', first);
+    Object.defineProperty(video, 'error', { configurable: true, value: { code: 2 } });
+    fireEvent.error(video);
+    expect(video).not.toHaveAttribute('src');
+    await act(async () => { await vi.advanceTimersByTimeAsync(2_000); });
+    expect(video).toHaveAttribute('src', fresh);
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
+  it('rejects a metadata response pointing at a media proxy rather than falling back to it', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(metadata(
+      'https://fgstreams3.vercel.app/api/hls-proxy?url=https%3A%2F%2Fexample.com%2Fvideo.m3u8',
+    )));
+    const onNext = vi.fn();
+    const { container } = render(<StreamPlayer stream={{ url: source }} onError={onNext} />);
+    await act(async () => {});
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
+  it('does not let late resolution replace a newly selected embed.st source', async () => {
+    let settle!: (response: Response) => void;
+    const pending = new Promise<Response>(resolve => { settle = resolve; });
+    vi.stubGlobal('fetch', vi.fn(() => pending));
+    const { container, rerender } = render(<StreamPlayer stream={{ url: source }} />);
+    const oldVideo = container.querySelector('video')!;
+    rerender(<StreamPlayer stream={stream} />);
+    const currentVideo = container.querySelector('video')!;
+    const currentSource = currentVideo.getAttribute('src');
+    await act(async () => { settle(metadata(first)); await pending; });
+    expect(oldVideo).not.toHaveAttribute('src');
+    expect(container.querySelector('video')).toBe(currentVideo);
+    expect(currentVideo).toHaveAttribute('src', currentSource);
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+  });
+
+  it('keeps channel mode controls accessible while metadata resolution is pending beyond the outer deadline', () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => {})));
+    const { container } = render(<ChannelPlayer channel={{
+      name: 'ESPN Premium', logo: '', show: true, options: [{ name: 'Direct trial', iframe: source }],
+    }} fillContainer />);
+    act(() => { vi.advanceTimersByTime(CHANNEL_LOAD_TIMEOUT_MS); });
+    expect(screen.queryByText('Stream not responding')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Original embed' }));
+    expect(container.querySelector('iframe')).toHaveAttribute('src', source);
+  });
+
+  it('stops locally if the metadata request never completes instead of opening an embed or proxy', async () => {
+    vi.stubGlobal('fetch', vi.fn((_url: RequestInfo | URL, options?: RequestInit) =>
+      new Promise<Response>((_resolve, reject) => {
+        options?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
+      })));
+    const { container } = render(<StreamPlayer stream={{ url: source }} />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(20_000); });
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(container.querySelector('video')).not.toBeInTheDocument();
+    expect(container.querySelector('iframe')).not.toBeInTheDocument();
+  });
+});

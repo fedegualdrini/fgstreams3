@@ -2,10 +2,11 @@
 
 import { useState, type ReactNode } from 'react';
 import { embedStManifestPath } from '@/lib/embedSt';
-import EmbedStPlayer from './EmbedStPlayer';
+import DirectHlsPlayer from './DirectHlsPlayer';
 
-interface EmbedStPlaybackProps {
-  embedUrl: string;
+interface DirectPlaybackProps {
+  provider: 'embed-st' | 'streamtp';
+  sourceUrl: string;
   muted?: boolean;
   fillParent?: boolean;
   onPlaying?: () => void;
@@ -14,9 +15,9 @@ interface EmbedStPlaybackProps {
 }
 
 /** Mount only the chosen engine; never load the provider iframe as an automatic fallback. */
-export default function EmbedStPlayback({
-  embedUrl, muted = false, fillParent = false, onPlaying, onNextStream, children,
-}: EmbedStPlaybackProps) {
+export default function DirectPlayback({
+  provider, sourceUrl, muted = false, fillParent = false, onPlaying, onNextStream, children,
+}: DirectPlaybackProps) {
   const [mode, setMode] = useState<'direct' | 'embed'>('direct');
   const [phase, setPhase] = useState<'loading' | 'playing' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);
@@ -46,7 +47,8 @@ export default function EmbedStPlayback({
           </div>
         ) : (
           <>
-            <EmbedStPlayer key={attempt} src={embedStManifestPath(embedUrl)} muted={muted}
+            <DirectHlsPlayer key={attempt} provider={provider}
+              src={provider === 'embed-st' ? embedStManifestPath(sourceUrl) : sourceUrl} muted={muted}
               onPlaying={() => {
                 setPhase('playing');
                 onPlaying?.();
@@ -66,7 +68,10 @@ export default function EmbedStPlayback({
       </div>
       <div role="group" aria-label="Playback mode" className="embed-st-playback__controls">
         <button type="button" className="btn" aria-pressed={mode === 'direct'} onClick={() => selectMode('direct')}
-          title="High quality only on supported CDNs; slow connections may buffer. No provider iframe, ads or popups.">Direct player (HQ)</button>
+          title={provider === 'embed-st'
+            ? 'High quality only on supported CDNs; slow connections may buffer. No provider iframe, ads or popups.'
+            : 'Video loads directly from the provider CDN. No provider iframe, ads, P2P or media proxy.'}>
+          {provider === 'embed-st' ? 'Direct player (HQ)' : 'Direct player'}</button>
         <button type="button" className="btn" aria-pressed={mode === 'embed'} onClick={() => selectMode('embed')}
           title="The provider’s original player may show ads or popups">Original embed</button>
       </div>

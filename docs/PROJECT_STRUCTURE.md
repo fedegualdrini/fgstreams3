@@ -20,6 +20,7 @@ app/
                                     Match detail/statistics endpoint
     streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
     embed-st/manifest/route.ts     Same-context manifest relay and header-only media redirect resolution
+    streamtp/resolve/route.ts      Fixed-source metadata-only StreamTP/la18hd resolver; never relays HLS
     diagnostics/broadcasts/route.ts
                                     Broadcast pipeline health; ?q=<team> traces one match
 
@@ -31,9 +32,9 @@ components/                        Shared and page-level components
   MultiMatchView.tsx               Up-to-four match viewing mode
   ChannelsPageClient.tsx           Channels page entry
   MoviesPageClient.tsx             Movies page entry
-  StreamTestClient.tsx             Minimal embed URL form and diagnostic playback state
-  players/EmbedStPlayer.tsx        Shared embed.st HLS engine; stops on fatal errors
-  players/EmbedStPlayback.tsx      Direct/original engine switch and local failure state
+  StreamTestClient.tsx             Supported provider URL form and diagnostic playback state
+  players/DirectHlsPlayer.tsx      Shared direct HLS engine and bounded same-source recovery
+  players/DirectPlayback.tsx       Direct/original engine switch and local failure state
   channels/ match-detail/ match-list/ movies/ multi-match/ players/
                                    Feature folders: the sub-components and hooks each
                                    page-level component above is assembled from
@@ -61,6 +62,7 @@ lib/
   schemas.ts                       Zod schemas for external API data
   constants.ts                     Cache windows, timeouts and limits, with rationale
   embedStServer.ts                  Authenticated decoder, scoped variants and validated direct-CDN rewriting
+  streamTpServer.ts                Bounded provider-document reader and literal JSON configuration parser
   # Shared / client
   matchUtils.ts                    Match normalization, liveness, and image helpers
   matchFilters.ts, matchListView.ts, matchDetailStreams.ts, multiMatch.ts
@@ -71,6 +73,7 @@ lib/
   embedStHls.ts                    Per-engine segment identities for verified Direct CDN rotations
   streamSelector.ts                Preferred stream selection
   embedSt.ts                        Supported embed URLs, request encoding and direct-CDN origins
+  streamTp.ts                      Verified StreamTP aliases, metadata request and direct CDN validation
   scoreAliases.ts, scoreUtils.ts   Team alias data and score matching
   sportMap.ts                      Sport name mapping
   urlValidation.ts, proxyHosts.ts  Stream URL validation; generated HLS-proxy allowlist

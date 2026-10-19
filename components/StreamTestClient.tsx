@@ -2,57 +2,66 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import EmbedStPlayer from './players/EmbedStPlayer';
+import DirectHlsPlayer from './players/DirectHlsPlayer';
 import { EMBED_ST_MAX_URL_LENGTH } from '@/lib/constants';
-import { embedStManifestPath } from '@/lib/embedSt';
+import { embedStManifestPath, isEmbedStUrl } from '@/lib/embedSt';
+import { isStreamTpUrl } from '@/lib/streamTp';
+
+type TestSource = { provider: 'embed-st' | 'streamtp'; src: string };
 
 export default function StreamTestClient() {
   const [input, setInput] = useState('');
-  const [src, setSrc] = useState<string | null>(null);
+  const [source, setSource] = useState<TestSource | null>(null);
   const [attempt, setAttempt] = useState(0);
-  const [status, setStatus] = useState('Paste a current embed URL to begin.');
+  const [status, setStatus] = useState('Paste a supported source URL to begin.');
   const [error, setError] = useState<string | null>(null);
 
   function resolve(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setSrc(null);
+    setSource(null);
     try {
-      setSrc(embedStManifestPath(input));
+      if (isEmbedStUrl(input)) {
+        setSource({ provider: 'embed-st', src: embedStManifestPath(input) });
+      } else if (isStreamTpUrl(input)) {
+        setSource({ provider: 'streamtp', src: input.trim() });
+      } else {
+        throw new Error('Use a current embed.st source URL or a supported StreamTP/la18hd ESPN Premium source URL.');
+      }
       setAttempt(value => value + 1);
       setStatus('Resolving and loading HLS… Press play if autoplay is blocked.');
     } catch (failure) {
       setStatus('Stream test stopped.');
-      setError(failure instanceof Error ? failure.message : 'Invalid embed URL.');
+      setError(failure instanceof Error ? failure.message : 'Invalid source URL.');
     }
   }
 
   return (
     <>
       <form className="stream-test__form" onSubmit={resolve}>
-        <label htmlFor="stream-test-url" className="label">Embed URL</label>
+        <label htmlFor="stream-test-url" className="label">Source URL</label>
         <div className="stream-test__controls">
           <input id="stream-test-url" type="url" required maxLength={EMBED_ST_MAX_URL_LENGTH} className="search-field__input stream-test__input"
-            placeholder="https://embed.st/embed/admin/stream-id/1" value={input} onChange={event => setInput(event.target.value)}
+            placeholder="https://la18hd.su/vivo/canales.php?stream=espnpremium" value={input} onChange={event => setInput(event.target.value)}
             aria-describedby="stream-test-help" autoComplete="off" spellCheck={false} />
           <button type="submit" className="btn btn--primary">Resolve &amp; play</button>
         </div>
-        <p id="stream-test-help" className="stream-test__hint">Use a current embed.st source URL, not a match page or an old signed playlist. Resolving again requests a fresh URL.</p>
+        <p id="stream-test-help" className="stream-test__hint">Use a current embed.st source URL or the verified StreamTP/la18hd ESPN Premium page, such as https://la18hd.su/vivo/canales.php?stream=espnpremium. Other StreamTP channels, arbitrary HLS URLs and extension sources are not supported here. Resolving again requests a fresh URL.</p>
       </form>
       <p role="status" className="stream-test__status">{status}</p>
       {error && <p role="alert" className="stream-test__error">{error}</p>}
       <div className="stream-test__player">
-        {src ? <EmbedStPlayer key={attempt} src={src}
+        {source ? <DirectHlsPlayer key={attempt} provider={source.provider} src={source.src}
           onPlaying={() => setStatus('Playing decoded HLS stream.')}
           onRecovering={number => setStatus(`Reconnecting to the same source (attempt ${number})…`)}
           onError={() => {
-            setSrc(null);
+            setSource(null);
             setStatus('Stream playback failed.');
             setError('Playback failed. The stream may be offline, expired or rejected by the provider. Resolve again for a fresh URL.');
           }} />
           : <p className="stream-test__placeholder">Resolve a stream to test playback.</p>}
       </div>
-      <p className="stream-test__hint">Experimental: highest-quality rendition only, using supported CDN hosts. Slow connections may buffer instead of switching to low quality. Manifests pass through our server; media segments load directly from the CDN. Provider restrictions can still prevent playback.</p>
+      <p className="stream-test__hint">Experimental: embed.st relays manifests only; its media loads directly from supported CDN hosts, with highest-quality rendition only. StreamTP resolves metadata only; all its manifests and audio/video load directly from the provider CDN with no media fallback. Neither source loads a provider iframe here. Provider restrictions can still prevent playback.</p>
     </>
   );
 }
