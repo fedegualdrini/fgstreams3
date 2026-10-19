@@ -62,6 +62,7 @@ export default function StreamTestClient() {
           : <p className="stream-test__placeholder">Resolve a stream to test playback.</p>}
       </div>
       <p className="stream-test__hint">Experimental: embed.st relays manifests only; its media loads directly from supported CDN hosts, with highest-quality rendition only. StreamTP resolves metadata only; all its manifests and audio/video load directly from the provider CDN with no media fallback. Neither source loads a provider iframe here. Provider restrictions can still prevent playback.</p>
+      <p className="stream-test__hint">StreamTP deployment finding: locally resolved URLs played successfully, but Vercel-resolved URLs returned CDN 403 during testing. The provider document cannot be read directly across browser origins. This trial has no media-relay fallback and is not ready for normal Vercel playback.</p>
     </>
   );
 }
