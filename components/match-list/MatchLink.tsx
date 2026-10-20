@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import Link from 'next/link';
 import type { ListedMatch } from '@/types/api';
 import MatchCard from '@/components/MatchCard';
@@ -17,7 +18,7 @@ interface MatchLinkProps {
 }
 
 /** A match card that navigates to its detail page. */
-export default function MatchLink({ match, onOpen, live = false, score, scoreMinute, priorityPoster = false }: MatchLinkProps) {
+function MatchLink({ match, onOpen, live = false, score, scoreMinute, priorityPoster = false }: MatchLinkProps) {
   return (
     <Link
       href={`/match/${match.id}`}
@@ -34,3 +35,6 @@ export default function MatchLink({ match, onOpen, live = false, score, scoreMin
     </Link>
   );
 }
+
+// Only score/minute primitives cross this boundary, not the polling response entry.
+export default memo(MatchLink);

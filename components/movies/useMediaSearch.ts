@@ -4,8 +4,8 @@ import { hasSearchableQuery } from '@/lib/movieEmbed';
 
 const SEARCH_DEBOUNCE_MS = 350;
 
-async function fetchResults(query: string, type: 'movie' | 'tv'): Promise<MediaResult[]> {
-  const res = await fetch(`/api/media/search?q=${encodeURIComponent(query.trim())}&type=${type}`);
+async function fetchResults(query: string, type: 'movie' | 'tv', signal: AbortSignal): Promise<MediaResult[]> {
+  const res = await fetch(`/api/media/search?q=${encodeURIComponent(query.trim())}&type=${type}`, { signal });
   if (!res.ok) throw new SearchRejectedError();
   return res.json();
 }
@@ -25,21 +25,31 @@ export function useMediaSearch(
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!hasSearchableQuery(query)) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
-      if (!hasSearchableQuery(query)) { setResults([]); return; }
       setLoading(true);
       try {
-        setResults(await fetchResults(query, mediaType));
+        const nextResults = await fetchResults(query, mediaType, controller.signal);
+        if (!controller.signal.aborted) setResults(nextResults);
       } catch (error) {
+        if (controller.signal.aborted) return;
         onError(error instanceof SearchRejectedError
           ? 'Search failed. Please try again.'
           : 'Search failed. Check your connection.');
         setResults([]);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }, SEARCH_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [query, mediaType, onError]);
 
   const reset = () => { setResults([]); setQuery(''); };

@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 const SPORT_ICONS: Record<string, string> = {
   all: '🏆',
   football: '⚽',
@@ -15,7 +17,7 @@ interface MatchToolbarProps {
   onSportChange: (sport: string) => void;
 }
 
-export default function MatchToolbar({ query, onQueryChange, sports, sport, onSportChange }: MatchToolbarProps) {
+function MatchToolbar({ query, onQueryChange, sports, sport, onSportChange }: MatchToolbarProps) {
   return (
     <div className="match-toolbar">
       <div className="search-field">
@@ -51,3 +53,5 @@ export default function MatchToolbar({ query, onQueryChange, sports, sport, onSp
     </div>
   );
 }
+
+export default memo(MatchToolbar);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { RawMatch } from '@/types/api';
+import type { AngulismoSnapshot, RawMatch } from '@/types/api';
 
 // unstable_cache is the thing under test's context, not its behaviour: the
 // point is what buildCatalog hands it, so it is reduced to a pass-through.
@@ -9,6 +9,7 @@ const fetchAllMatches = vi.fn<() => Promise<RawMatch[]>>();
 const fetchLiveMatchIds = vi.fn(async () => new Set<string>());
 const stream = { url: 'https://a.example/s', embedUrl: 'https://a.example/s' };
 const fetchStreamLookup = vi.fn(async () => ({ streams: [stream], ok: true }));
+const fetchAngulismoData = vi.fn<() => Promise<AngulismoSnapshot>>();
 
 vi.mock('./api', () => ({
   fetchAllMatches: () => fetchAllMatches(),
@@ -19,13 +20,14 @@ vi.mock('./promiedos', () => ({
   fetchPromiedosGames: async () => ({ games: [], ok: true, stale: false }),
 }));
 vi.mock('./angulismo', () => ({
-  fetchAngulismoData: async () => ({ events: [], channels: [], ok: true, stale: false }),
+  fetchAngulismoData: () => fetchAngulismoData(),
 }));
-vi.mock('./channelCatalog', () => ({
-  getChannelCatalog: async () => [
+vi.mock('fs/promises', () => {
+  const readFile = async () => JSON.stringify([
     { name: 'ESPN Premium', logo: '', show: true, options: [{ name: 'o', iframe: 'https://a.example/e' }] },
-  ],
-}));
+  ]);
+  return { readFile, default: { readFile } };
+});
 
 const { getCatalog } = await import('./catalog');
 
@@ -42,6 +44,8 @@ describe('getCatalog', () => {
     fetchAllMatches.mockReset();
     fetchStreamLookup.mockClear();
     fetchStreamLookup.mockResolvedValue({ streams: [stream], ok: true });
+    fetchAngulismoData.mockReset();
+    fetchAngulismoData.mockResolvedValue({ events: [], channels: [], ok: true, stale: false });
   });
 
   it('returns the listable matches when the feed is healthy', async () => {
@@ -95,5 +99,44 @@ describe('getCatalog', () => {
     // judging the match unwatchable on it would remove a live event.
     fetchStreamLookup.mockResolvedValue({ streams: [], ok: false });
     expect((await getCatalog()).map(m => m.id)).toEqual(['a']);
+  });
+
+  it('uses one fresh feed snapshot for fixture and channel viewing options', async () => {
+    const fixture = match('broadcast');
+    const liveChannel = {
+      name: 'ESPN Premium',
+      logo: '',
+      show: true,
+      options: [{ name: 'live', iframe: 'https://live.example/channel' }],
+    };
+    fetchAllMatches.mockResolvedValue([fixture]);
+    fetchStreamLookup.mockResolvedValue({ streams: [], ok: true });
+    fetchAngulismoData.mockResolvedValueOnce({
+      channels: [liveChannel],
+      events: [{
+        id: 'fixture',
+        title: fixture.title!,
+        competition: '',
+        homeTeam: 'Home Team',
+        awayTeam: 'Away Team',
+        startTimeMs: fixture.date as number,
+        channels: [{
+          ...liveChannel,
+          options: [{ name: 'event', iframe: 'https://live.example/event' }],
+        }],
+      }],
+      ok: true,
+      stale: false,
+    });
+
+    const catalog = await getCatalog();
+
+    expect(catalog.map(item => item.id)).toEqual(['broadcast']);
+    expect(catalog[0].broadcasts[0].options.map(option => option.iframe)).toEqual([
+      'https://live.example/event',
+      'https://live.example/channel',
+      'https://a.example/e',
+    ]);
+    expect(fetchAngulismoData).toHaveBeenCalledTimes(1);
   });
 });

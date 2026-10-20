@@ -28,7 +28,7 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 
 ## The catalog (`lib/catalog.ts`)
 
-- Built from five sources in parallel: streamed.pk matches, streamed.pk's live flags, Promiedos, the angulismo feed and the channel catalog. Only the match feed is mandatory; the other three degrade to "no extra data".
+- Streamed.pk matches/live flags, Promiedos and angulismo are requested in parallel. The channel catalog merges shipped channels with that same angulismo snapshot instead of reading and parsing the feed again. Only the match feed is mandatory; optional-feed failures retain the shipped-channel fallback.
 - `resolveStreams` looks up every (match, source) pair with a concurrency cap and a time budget. A source that failed or timed out is *unresolved*, which is different from *empty*, and an unresolved match is never dropped.
 - Broadcasters come from two feeds with different clocks. Promiedos localises kickoff to the caller's IP, so `estimateFeedOffsetMs` (`lib/teamMatch.ts`) measures the offset from unambiguous name matches; angulismo times are fixed Argentina-local.
 - `lib/broadcasters.ts` turns a feed entry into catalog channels (angulismo first, Promiedos fills the rest).
@@ -51,7 +51,10 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 ## Client side
 
 - Server pages pass `CatalogMatch` data down as props, so streams and broadcasters are present on first paint.
-- `lib/useLiveScores.ts` and `lib/useMatchStats.ts` poll the score routes on the intervals in `lib/constants.ts`; score matching helpers are in `lib/scoreUtils.ts`.
+- `lib/useLiveScores.ts` and `lib/useMatchStats.ts` poll on the existing intervals in `lib/constants.ts`, skip hidden or overlapping polls, and abort obsolete requests. Detail polling stops even when the first response is already finished. Client HTTP/network failures retain stale scores for the affected sport without blocking successful sports; a successful empty response still clears them. The score API's existing upstream-failure response is also an empty list, so clients cannot distinguish that case.
+- Identical score entries retain their references and do not publish a new score map. Listing filters and available sports are memoized independently of polling; unchanged upcoming grids, history, toolbars and match links skip rendering. Search/sport changes still reset upcoming pagination.
+- Movie search retains its debounce, aborts requests when the query/type changes or the component unmounts, and ignores obsolete responses and errors so they cannot replace current results or clear the current loading state.
+- HLS and DASH SDKs load only when their engines mount. Direct playback also imports its HLS loader adapter lazily, keeping hls.js out of idle channel browsing and the empty Stream Test form. Source changes, mode switches and teardown invalidate pending Direct engine setup before it can attach to a video.
 - Playback fallback (rotating to the next stream) uses `lib/streamSelector.ts` for the initial choice.
 
 ## Shared embed.st direct playback

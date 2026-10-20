@@ -9,6 +9,17 @@ import { CHANNEL_LOAD_TIMEOUT_MS } from '@/lib/constants';
 const embedUrl = 'https://embed.st/embed/admin/example-match/1';
 const stream = { url: embedUrl, source: 'admin' };
 
+async function settlePlayerSetup() {
+  await act(async () => { await vi.dynamicImportSettled(); });
+}
+
+async function advancePlayback(milliseconds: number) {
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(milliseconds);
+    await vi.dynamicImportSettled();
+  });
+}
+
 describe('embed.st playback choice', () => {
   beforeEach(() => {
     // Exercise the real player through its native-HLS branch without fetching media in jsdom.
@@ -24,16 +35,20 @@ describe('embed.st playback choice', () => {
     vi.useRealTimers();
   });
 
-  it('loads the provider iframe only by explicit choice and removes it when returning to direct playback', () => {
+  it('loads the provider iframe only by explicit choice and removes it when returning to direct playback', async () => {
     const { container } = render(<StreamPlayer stream={stream} />);
-    expect(container.querySelector('video')).toBeInTheDocument();
+    const firstVideo = container.querySelector('video')!;
+    expect(firstVideo).toBeInTheDocument();
     expect(container.querySelector('iframe')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Original embed' }));
+    await settlePlayerSetup();
+    expect(firstVideo).not.toHaveAttribute('src');
     expect(container.querySelector('video')).not.toBeInTheDocument();
     expect(container.querySelector('iframe')).toHaveAttribute('src', embedUrl);
 
     fireEvent.click(screen.getByRole('button', { name: /^Direct player/ }));
+    await settlePlayerSetup();
     expect(container.querySelector('iframe')).not.toBeInTheDocument();
     expect(container.querySelector('video')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Direct player/ })).toHaveAttribute('aria-pressed', 'true');
@@ -73,10 +88,11 @@ describe('embed.st playback choice', () => {
     fireEvent.error(video);
   }
 
-  it('restarts the same source after a network failure without opening an iframe or rotating sources', () => {
+  it('restarts the same source after a network failure without opening an iframe or rotating sources', async () => {
     vi.useFakeTimers();
     const onError = vi.fn();
     const { container } = render(<StreamPlayer stream={stream} muted onError={onError} />);
+    await settlePlayerSetup();
     const video = container.querySelector('video')!;
     const initialSource = video.getAttribute('src');
     fireEvent.playing(video);
@@ -89,7 +105,7 @@ describe('embed.st playback choice', () => {
     networkFailure(video);
     expect(onError).not.toHaveBeenCalled();
 
-    act(() => { vi.advanceTimersByTime(2_000); });
+    await advancePlayback(2_000);
     expect(video).toHaveAttribute('src', initialSource);
     expect(video.muted).toBe(true);
     fireEvent.playing(video);
@@ -98,16 +114,17 @@ describe('embed.st playback choice', () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
-  it('bounds repeated failures even when playback briefly resumes, then allows a fresh manual retry', () => {
+  it('bounds repeated failures even when playback briefly resumes, then allows a fresh manual retry', async () => {
     vi.useFakeTimers();
     const { container } = render(<StreamPlayer stream={stream} />);
+    await settlePlayerSetup();
     const video = container.querySelector('video')!;
     for (const delay of [2_000, 4_000, 8_000]) {
       networkFailure(video);
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
       act(() => { vi.advanceTimersByTime(delay - 1); });
       expect(video).not.toHaveAttribute('src');
-      act(() => { vi.advanceTimersByTime(1); });
+      await advancePlayback(1);
       expect(video).toHaveAttribute('src');
       fireEvent.playing(video);
     }
@@ -121,19 +138,20 @@ describe('embed.st playback choice', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Retry direct playback' }));
     networkFailure(container.querySelector('video')!);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    act(() => { vi.advanceTimersByTime(2_000); });
+    await advancePlayback(2_000);
     expect(container.querySelector('video')).toHaveAttribute('src');
   });
 
-  it('renews the recovery budget after sustained playback rather than exhausting it over a long session', () => {
+  it('renews the recovery budget after sustained playback rather than exhausting it over a long session', async () => {
     vi.useFakeTimers();
     const { container } = render(<StreamPlayer stream={stream} />);
+    await settlePlayerSetup();
     const video = container.querySelector('video')!;
     Object.defineProperty(video, 'paused', { configurable: true, value: false });
     Object.defineProperty(video, 'readyState', { configurable: true, value: 3 });
     for (const delay of [2_000, 4_000, 8_000]) {
       networkFailure(video);
-      act(() => { vi.advanceTimersByTime(delay); });
+      await advancePlayback(delay);
       fireEvent.playing(video);
     }
 
@@ -142,7 +160,7 @@ describe('embed.st playback choice', () => {
     networkFailure(video);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toBeInTheDocument();
-    act(() => { vi.advanceTimersByTime(2_000); });
+    await advancePlayback(2_000);
     expect(video).toHaveAttribute('src');
   });
 
@@ -159,12 +177,14 @@ describe('embed.st playback choice', () => {
     expect(container.querySelector('iframe')).toHaveAttribute('src', embedUrl);
   });
 
-  it('cancels the old source restart without interrupting a newly selected source', () => {
+  it('cancels the old source restart without interrupting a newly selected source', async () => {
     vi.useFakeTimers();
     const { container, rerender } = render(<StreamPlayer stream={stream} />);
+    await settlePlayerSetup();
     const oldVideo = container.querySelector('video')!;
     networkFailure(oldVideo);
     rerender(<StreamPlayer stream={{ url: 'https://embed.st/embed/admin/other-match/2' }} />);
+    await settlePlayerSetup();
     const newVideo = container.querySelector('video')!;
     fireEvent.playing(newVideo);
     newVideo.currentTime = 42;
@@ -177,15 +197,16 @@ describe('embed.st playback choice', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('does not treat seeking forward as sustained healthy playback', () => {
+  it('does not treat seeking forward as sustained healthy playback', async () => {
     vi.useFakeTimers();
     const { container } = render(<StreamPlayer stream={stream} />);
+    await settlePlayerSetup();
     const video = container.querySelector('video')!;
     Object.defineProperty(video, 'paused', { configurable: true, value: false });
     Object.defineProperty(video, 'readyState', { configurable: true, value: 3 });
     for (const delay of [2_000, 4_000, 8_000]) {
       networkFailure(video);
-      act(() => { vi.advanceTimersByTime(delay); });
+      await advancePlayback(delay);
       fireEvent.playing(video);
     }
 
@@ -197,8 +218,9 @@ describe('embed.st playback choice', () => {
     expect(container.querySelector('video')).not.toBeInTheDocument();
   });
 
-  it('changes native mute state without resetting playback progress', () => {
+  it('changes native mute state without resetting playback progress', async () => {
     const { container, rerender } = render(<StreamPlayer stream={stream} muted />);
+    await settlePlayerSetup();
     const video = container.querySelector('video')!;
     video.currentTime = 42;
     expect(video.muted).toBe(true);

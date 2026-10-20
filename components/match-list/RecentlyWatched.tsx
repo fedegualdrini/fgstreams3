@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import Link from 'next/link';
 import { getPosterUrl } from '@/lib/api';
 import type { HistoryEntry } from '@/lib/watchHistory';
@@ -8,7 +9,7 @@ interface RecentlyWatchedProps {
   onOpen: (entry: HistoryEntry) => void;
 }
 
-export default function RecentlyWatched({ entries, onOpen }: RecentlyWatchedProps) {
+function RecentlyWatched({ entries, onOpen }: RecentlyWatchedProps) {
   return (
     <section className="match-section match-section--history">
       <div className="section-header">
@@ -46,3 +47,5 @@ function HistoryCard({ entry, onOpen }: { entry: HistoryEntry; onOpen: (entry: H
     </Link>
   );
 }
+
+export default memo(RecentlyWatched);

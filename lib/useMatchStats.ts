@@ -19,49 +19,60 @@ export function useMatchStats(match: Match): FlashscoreDetail | null {
   matchRef.current = match;
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
     let flashscoreId: string | null = null;
-    let pollTimer: ReturnType<typeof setInterval> | undefined;
+    let pollTimer: number | undefined;
+    let inFlight = false;
+    let finished = false;
 
     async function resolveFlashscoreId(): Promise<string | null> {
       try {
         const { sport, team1, team2 } = matchRef.current;
-        const res = await fetch(`/api/scores/${encodeURIComponent(sport.toLowerCase())}`);
-        if (!res.ok || cancelled) return null;
+        const res = await fetch(`/api/scores/${encodeURIComponent(sport.toLowerCase())}`, {
+          signal: controller.signal,
+        });
+        if (!res.ok || controller.signal.aborted) return null;
         const entries: FlashscoreEntry[] = await res.json();
-        return findMatchingEntry(team1, team2, entries)?.flashscoreId ?? null;
+        return controller.signal.aborted ? null : findMatchingEntry(team1, team2, entries)?.flashscoreId ?? null;
       } catch {
         return null;
       }
     }
 
     async function fetchDetail() {
-      if (!flashscoreId || cancelled) return;
+      if (!flashscoreId || controller.signal.aborted || finished || inFlight
+        || document.visibilityState !== 'visible') return;
+      inFlight = true;
       try {
-        const res = await fetch(`/api/scores/match/${flashscoreId}`);
-        if (!res.ok || cancelled) return;
+        const res = await fetch(`/api/scores/match/${flashscoreId}`, { signal: controller.signal });
+        if (!res.ok || controller.signal.aborted) return;
         const data: FlashscoreDetail | null = await res.json();
-        if (cancelled) return;
+        if (controller.signal.aborted) return;
         setDetail(data);
 
-        if (data?.status === 'fin') clearInterval(pollTimer);
+        if (data?.status === 'fin') {
+          finished = true;
+          clearInterval(pollTimer);
+        }
       } catch {
         // Keep stale data on error.
+      } finally {
+        inFlight = false;
       }
     }
 
     async function start() {
       flashscoreId = await resolveFlashscoreId();
-      if (!flashscoreId || cancelled) return;
+      if (!flashscoreId || controller.signal.aborted) return;
       await fetchDetail();
-      if (cancelled) return;
-      pollTimer = setInterval(fetchDetail, FIXTURE_POLL_INTERVAL_MS);
+      if (controller.signal.aborted || finished) return;
+      pollTimer = window.setInterval(fetchDetail, FIXTURE_POLL_INTERVAL_MS);
     }
 
     start();
 
     return () => {
-      cancelled = true;
+      controller.abort();
       clearInterval(pollTimer);
     };
   }, [match.id]);

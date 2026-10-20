@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Hls from 'hls.js';
+import type Hls from 'hls.js';
 import { buildHlsConfig } from '@/lib/playerHls';
-import { createEmbedStLoader } from '@/lib/embedStHls';
 import PlayerSurface from './PlayerSurface';
 import { usePlayerCallbacks } from './usePlayerCallbacks';
 
@@ -33,9 +32,12 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
     let hls: Hls | null = null;
     let retryTimer: number | undefined;
     let restarts = 0;
+    let startId = 0;
+    const sdk = Promise.all([import('hls.js'), import('@/lib/embedStHls')]);
     let stableSince: number | null = null;
 
     const destroyEngine = () => {
+      startId++;
       const previous = hls;
       hls = null;
       previous?.destroy();
@@ -85,17 +87,20 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
       if (video.error?.code === 2) reconnect();
       else failed();
     };
-    const start = () => {
+    const start = async () => {
+      const id = ++startId;
       try {
-        if (Hls.isSupported()) {
-          const instance = new Hls({ ...buildHlsConfig(src), loader: createEmbedStLoader() });
+        const [{ default: HlsEngine }, { createEmbedStLoader }] = await sdk;
+        if (cancelled || stopped || retryTimer !== undefined || id !== startId) return;
+        if (HlsEngine.isSupported()) {
+          const instance = new HlsEngine({ ...buildHlsConfig(src), loader: createEmbedStLoader() });
           hls = instance;
-          instance.on(Hls.Events.ERROR, (_, error) => {
+          instance.on(HlsEngine.Events.ERROR, (_, error) => {
             if (cancelled || stopped || hls !== instance || !error.fatal) return;
-            if (error.type === Hls.ErrorTypes.NETWORK_ERROR) reconnect();
+            if (error.type === HlsEngine.ErrorTypes.NETWORK_ERROR) reconnect();
             else failed();
           });
-          instance.on(Hls.Events.MANIFEST_PARSED, () => {
+          instance.on(HlsEngine.Events.MANIFEST_PARSED, () => {
             if (!cancelled && !stopped && hls === instance) void video.play().catch(() => {});
           });
           instance.loadSource(src);
@@ -116,7 +121,7 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
     video.addEventListener('pause', interrupted);
     video.addEventListener('seeking', interrupted);
     video.addEventListener('error', videoFailed);
-    start();
+    void start();
     return () => {
       cancelled = true;
       window.clearTimeout(retryTimer);

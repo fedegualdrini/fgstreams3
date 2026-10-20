@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ListedMatch } from '@/types/api';
 import { useLiveScores } from '@/lib/useLiveScores';
 import { ALL_SPORT_FILTER, getAvailableSportFilters } from '@/lib/matchFilters';
@@ -24,8 +24,15 @@ export default function MatchListWithSearch({ liveMatches, upcomingMatches }: Ma
   const { history, recordEntry, recordMatch } = useWatchHistory();
 
   const filters = { query, sport };
-  const filtered = filterMatchLists(liveMatches, upcomingMatches, filters);
-  const sports = getAvailableSportFilters([...liveMatches, ...upcomingMatches]);
+  // Score polling and history updates do not change the catalog or its filters.
+  const filtered = useMemo(
+    () => filterMatchLists(liveMatches, upcomingMatches, { query, sport }),
+    [liveMatches, upcomingMatches, query, sport],
+  );
+  const sports = useMemo(
+    () => getAvailableSportFilters([...liveMatches, ...upcomingMatches]),
+    [liveMatches, upcomingMatches],
+  );
 
   return (
     <>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import type { ListedMatch } from '@/types/api';
 import SectionHeader from './SectionHeader';
 import MatchLink, { PRIORITY_POSTER_COUNT } from './MatchLink';
@@ -20,7 +20,7 @@ interface UpcomingMatchGridProps {
   onOpen: (match: ListedMatch) => void;
 }
 
-export default function UpcomingMatchGrid({ matches, hasLiveSection, onOpen }: UpcomingMatchGridProps) {
+function UpcomingMatchGrid({ matches, hasLiveSection, onOpen }: UpcomingMatchGridProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const remaining = matches.length - visibleCount;
 
@@ -48,3 +48,5 @@ export default function UpcomingMatchGrid({ matches, hasLiveSection, onOpen }: U
     </section>
   );
 }
+
+export default memo(UpcomingMatchGrid);

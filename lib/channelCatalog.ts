@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
+import type { AngulismoSnapshot } from '@/types/api';
 import type { Channel } from '@/types/channels';
 import { isValidStreamUrl } from './urlValidation';
 import { normalizeText } from './teamMatch';
@@ -66,12 +67,13 @@ export function mergeChannelCatalogs(base: Channel[], live: Channel[]): Channel[
 /**
  * Visible channels with at least one playable option: the shipped catalog,
  * refreshed from the live feed so it does not rot between deploys. A failed
- * lookup falls back to the shipped catalog alone.
+ * lookup falls back to the shipped catalog alone. Callers that already read
+ * the feed can supply that snapshot instead of fetching and parsing it again.
  */
-export async function getChannelCatalog(): Promise<Channel[]> {
+export async function getChannelCatalog(snapshot?: AngulismoSnapshot): Promise<Channel[]> {
   const base = await getStaticChannelCatalog();
   try {
-    const { channels, ok } = await fetchAngulismoData();
+    const { channels, ok } = snapshot ?? await fetchAngulismoData();
     return ok && channels.length > 0 ? mergeChannelCatalogs(base, channels) : base;
   } catch (error) {
     log.error('live refresh failed, serving the shipped catalog', error);

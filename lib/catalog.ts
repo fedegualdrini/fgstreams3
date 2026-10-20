@@ -56,13 +56,14 @@ const NO_ANGULISMO: AngulismoSnapshot = { events: [], channels: [], ok: false, s
 async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
   const deadline = now + CATALOG_TIME_BUDGET_MS;
+  const angulismoRequest = fetchAngulismoData().catch(() => NO_ANGULISMO);
 
   const [rawMatches, liveIds, promiedos, angulismo, channels] = await Promise.all([
     fetchAllMatches(),
     fetchLiveMatchIds(),
     fetchPromiedosGames().catch(() => NO_PROMIEDOS),
-    fetchAngulismoData().catch(() => NO_ANGULISMO),
-    getChannelCatalog().catch(() => [] as Channel[]),
+    angulismoRequest,
+    angulismoRequest.then(snapshot => getChannelCatalog(snapshot)).catch(() => [] as Channel[]),
   ]);
 
   // An empty feed is a failed fetch, not a quiet day: streamed.pk lists a few
