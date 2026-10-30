@@ -120,14 +120,14 @@ describe('StreamFree metadata routing', () => {
 });
 
 describe('StreamFree playlist boundary and renewal', () => {
-  it('retains the HLS timeline and leaves verified media browser-direct', () => {
-    expect(rewriteStreamFreeManifest(manifest, root(), root(), embed)).toBe(manifest);
+  it('retains the HLS timeline and leaves verified media browser-direct', async () => {
+    expect(await rewriteStreamFreeManifest(manifest, root(), root(), embed)).toBe(manifest);
   });
 
-  it('renews nested playlists relative to each fetched level while preserving nonauth query fields', () => {
+  it('renews nested playlists relative to each fetched level while preserving nonauth query fields', async () => {
     const text = '#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,NAME="audio,URI=not-a-target",URI="../audio/main.m3u8?_t=old&_e=1&_n=old&lang=en"\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\nvideo.m3u8?_t=old&_e=1&_n=old\n';
     const base = resolveStreamFreeVariant(root(), 'high/master.m3u8');
-    const result = rewriteStreamFreeManifest(text, base, root(), embed);
+    const result = await rewriteStreamFreeManifest(text, base, root(), embed);
     expect(result).toContain(`URI="${streamFreeManifestPath(embed, 'audio/main.m3u8?lang=en')}"`);
     const nested = new URL(result.split('\n')[3], 'https://app.example');
     expect(nested.pathname).toBe('/api/streamfree/manifest');
@@ -169,9 +169,9 @@ describe('StreamFree playlist boundary and renewal', () => {
     'https://cdn1.strmfree.st/live/example-game1080p2/segment.ts',
     'http://p16-oec-general-useast5.ttcdn-us.com/obj/bucket/abc',
     'data:application/octet-stream;base64,AA==', 'file:///private', 'segment.ts',
-  ])('rejects unverified manifest resources in lines and URI attributes: %s', resource => {
-    expect(() => rewriteStreamFreeManifest(`#EXTM3U\n${resource}`, root(), root(), embed)).toThrow();
-    expect(() => rewriteStreamFreeManifest(`#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="${resource}"`, root(), root(), embed)).toThrow();
+  ])('rejects unverified manifest resources in lines and URI attributes: %s', async resource => {
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n${resource}`, root(), root(), embed)).rejects.toThrow();
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="${resource}"`, root(), root(), embed)).rejects.toThrow();
   });
 
   it.each([
@@ -181,13 +181,96 @@ describe('StreamFree playlist boundary and renewal', () => {
     '#EXT-X-DEFINE:NAME="target",VALUE="https://127.0.0.1/stream"',
     '#EXT-X-DATERANGE:ID="ad",X-ASSET-URI="https://127.0.0.1/ad.m3u8"',
     '#EXT-X-DATERANGE:ID="ad",X-ASSET-LIST="https://127.0.0.1/list"',
-  ])('fails closed for indirect or unsupported HLS resource targets', tag => {
-    expect(() => rewriteStreamFreeManifest(`#EXTM3U\n${tag}`, root(), root(), embed)).toThrow();
+  ])('fails closed for indirect or unsupported HLS resource targets', async tag => {
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n${tag}`, root(), root(), embed)).rejects.toThrow();
   });
 
-  it('rejects non-HLS and oversized playlist responses', () => {
-    expect(() => rewriteStreamFreeManifest('<html>Forbidden</html>', root(), root(), embed)).toThrow();
-    expect(() => rewriteStreamFreeManifest(`#EXTM3U\n${'#'.repeat(256 * 1024)}`, root(), root(), embed)).toThrow();
+  it('rejects non-HLS and oversized playlist responses', async () => {
+    await expect(rewriteStreamFreeManifest('<html>Forbidden</html>', root(), root(), embed)).rejects.toThrow();
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n${'#'.repeat(256 * 1024)}`, root(), root(), embed)).rejects.toThrow();
+  });
+});
+
+describe('StreamFree public media destinations', () => {
+  const restricted = 'https://cdn1.strmfree.st/live/example-game1080p2/42.js';
+  const published = 'https://strmfree.st/live/example-game1080p2/42.js';
+  const goodHeaders = { status: 200, contentType: 'application/javascript', contentLength: '660256', location: null };
+
+  it('replaces protected media with a verified same-source public path, including URI attributes', async () => {
+    const probe = vi.fn(async () => goodHeaders);
+    const text = `#EXTM3U\n#EXT-X-MAP:URI="${restricted}"\n#EXTINF:4.004,\n${restricted}\n`;
+    const result = await rewriteStreamFreeManifest(text, root(), root(), embed, probe);
+    expect(result).toBe(text.replaceAll(restricted, published));
+    expect(probe).toHaveBeenCalledTimes(1);
+  });
+
+  it('checks media already published on the provider site without exposing it unchecked', async () => {
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n${published}`, root(), root(), embed)).rejects.toThrow();
+    expect(await rewriteStreamFreeManifest(`#EXTM3U\n${published}`, root(), root(), embed, async () => goodHeaders))
+      .toBe(`#EXTM3U\n${published}`);
+  });
+
+  it.each([
+    'https://cdn1.strmfree.st/live/example-game1080p/42.js',
+    'https://cdn1.strmfree.st/live/example-game720p2/42.js',
+    'https://cdn1.strmfree.st/live/other-game1080p2/42.js',
+    'https://cdn1.strmfree.st/live/example-game1080p2/segment.ts',
+    'https://cdn1.strmfree.st/live/example-game1080p2/42.js?redirect=https://127.0.0.1/',
+    'https://cdn1.strmfree.st.evil.example/live/example-game1080p2/42.js',
+    'https://cdn1.strmfree.st:444/live/example-game1080p2/42.js',
+    'https://streamfree.top/live/example-game1080p2/42.js',
+    'https://strmfree.st/live/example-game1080p2/%2fprivate.js',
+  ])('rejects cross-source, cross-quality and unverified public paths before probing: %s', async resource => {
+    const probe = vi.fn(async () => goodHeaders);
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n${resource}`, root(), root(), embed, probe)).rejects.toThrow();
+    expect(probe).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { ...goodHeaders, status: 403 },
+    { ...goodHeaders, status: 302, location: 'https://127.0.0.1/private' },
+    { ...goodHeaders, location: 'https://evil.example/segment' },
+    { ...goodHeaders, contentType: 'text/html' },
+    { ...goodHeaders, contentLength: '0' },
+    { ...goodHeaders, contentLength: null },
+  ])('fails locally when headers do not verify a public media response: %j', async headers => {
+    await expect(rewriteStreamFreeManifest(`#EXTM3U\n${restricted}`, root(), root(), embed, async () => headers))
+      .rejects.toThrow('no verified public destination');
+  });
+
+  it('bounds unique media probes instead of fanning out an oversized live window', async () => {
+    const probe = vi.fn(async () => goodHeaders);
+    const text = '#EXTM3U\n' + Array.from({ length: 33 }, (_, index) => restricted.replace('42.js', `${index}.js`)).join('\n');
+    await expect(rewriteStreamFreeManifest(text, root(), root(), embed, probe)).rejects.toThrow('Too many');
+    expect(probe).toHaveBeenCalledTimes(32);
+  });
+
+  it('relays no media bytes while resolving public destinations through the route', async () => {
+    const pull = vi.fn();
+    const cancel = vi.fn();
+    const body = new ReadableStream<Uint8Array>({ pull, cancel }, { highWaterMark: 0 });
+    const source = `#EXTM3U\n#EXT-X-MEDIA-SEQUENCE:42\n#EXTINF:4.004,\n${restricted}\n`;
+    const fetcher = upstreamResponses(...resolvedResponses(source), new Response(body, {
+      headers: { 'Content-Type': goodHeaders.contentType, 'Content-Length': goodHeaders.contentLength },
+    }));
+    const response = await GET(request());
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe(source.replace(restricted, published));
+    const calls = fetcher.mock.calls as unknown[][];
+    expect(calls[3][0]).toBe(published);
+    expect(calls[3][1]).toMatchObject({ method: 'HEAD', redirect: 'manual', credentials: 'omit' });
+    expect(pull).not.toHaveBeenCalled();
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it('does not follow a public media redirect or expose its private destination', async () => {
+    const fetcher = upstreamResponses(...resolvedResponses(`#EXTM3U\n${restricted}`), new Response(null, {
+      status: 302, headers: { Location: 'https://127.0.0.1/private', 'Content-Type': 'text/html' },
+    }));
+    const response = await GET(request());
+    expect(response.status).toBe(502);
+    expect(await response.text()).not.toContain('private');
+    expect(fetcher).toHaveBeenCalledTimes(4);
   });
 });
 
@@ -204,7 +287,6 @@ describe('StreamFree manifest route', () => {
     ]);
     for (const call of fetcher.mock.calls) {
       expect((call as unknown[])[1]).toMatchObject({ method: 'GET', redirect: 'error', cache: 'no-store', credentials: 'omit', signal: expect.any(AbortSignal) });
-      expect((call as unknown[])[1]).not.toHaveProperty('headers');
     }
   });
 

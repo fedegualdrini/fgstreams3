@@ -5,12 +5,21 @@ const MAX_METADATA_BYTES = 16 * 1024;
 const MAX_MANIFEST_BYTES = 256 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 const MAX_URL_LENGTH = 2048;
+// Observed live windows contain up to 15 segments; bound header lookups as well as bytes.
+const MAX_MEDIA_PROBES = 32;
 const AUTH_FIELDS = ['_t', '_e', '_n'] as const;
 const PROVIDER_ORIGINS: Record<string, true> = { 'https://strmfree.st': true, 'https://streamfree.top': true };
 const MEDIA_ORIGIN = 'https://p16-oec-general-useast5.ttcdn-us.com';
 
 type Signature = { _t: string; _e: number; _n: string };
 export type StreamFreeEmbedData = { key: string; quality: string; suffix: string; variant: string; signature: Signature };
+
+export interface StreamFreeMediaHeaders {
+  status: number;
+  contentType: string | null;
+  contentLength: string | null;
+  location: string | null;
+}
 
 function record(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -139,18 +148,23 @@ function safeResource(input: string, base: URL): URL {
   return url;
 }
 
-/** Rewrite playlists only. Vetted media URLs remain browser-direct; no media is fetched. */
-export function rewriteStreamFreeManifest(text: string, baseUrl: string, rootUrl: string, embedUrl: string): string {
+/** Relay playlists and inspect headers only; media bodies remain browser-direct. */
+export async function rewriteStreamFreeManifest(
+  text: string, baseUrl: string, rootUrl: string, embedUrl: string,
+  probePublicMedia?: (url: string) => Promise<StreamFreeMediaHeaders>,
+): Promise<string> {
   if (text.length > MAX_MANIFEST_BYTES || !/^#EXTM3U(?:\r?\n|$)/.test(text)) {
     throw new Error('The provider did not return a supported HLS manifest.');
   }
   const root = parseRoot(rootUrl);
   const directory = new URL('.', root).pathname;
+  const mediaDirectory = `/live/${root.pathname.split('/')[2]}/`;
   const base = safeResource(baseUrl, root);
   if (base.origin !== root.origin || !base.pathname.startsWith(directory)) {
     throw new Error('StreamFree playlist is outside the resolved stream.');
   }
-  const resolve = (input: string): string => {
+  const checkedMedia = new Set<string>();
+  const resolve = async (input: string): Promise<string> => {
     const url = safeResource(input, base);
     if (url.pathname.endsWith('.m3u8')) {
       if (url.origin !== root.origin || !url.pathname.startsWith(directory) || /%/.test(url.pathname)) {
@@ -159,22 +173,52 @@ export function rewriteStreamFreeManifest(text: string, baseUrl: string, rootUrl
       const relative = validateStreamFreeVariant(url.pathname.slice(directory.length) + url.search)!;
       return streamFreeManifestPath(embedUrl, relative);
     }
-    if (url.origin !== MEDIA_ORIGIN || !/^\/obj\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)+$/.test(url.pathname) ||
-        url.pathname.split('/').some(part => part === '.' || part === '..')) {
+    if (url.origin === MEDIA_ORIGIN && /^\/obj\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)+$/.test(url.pathname) &&
+        !url.pathname.split('/').some(part => part === '.' || part === '..')) {
+      return url.href;
+    }
+    // The provider's /live-externalcdn playlist publishes these same media paths.
+    // CDN1 requires provider headers; the matching public-site path does not.
+    if ((url.origin !== 'https://cdn1.strmfree.st' && url.origin !== root.origin) ||
+        !url.pathname.startsWith(mediaDirectory) || url.search ||
+        !/^\d+\.js$/.test(url.pathname.slice(mediaDirectory.length)) || !probePublicMedia) {
       throw new Error('Unsupported StreamFree direct media URL.');
     }
-    return url.href;
+    const publicUrl = new URL(url.pathname, root.origin).href;
+    if (!checkedMedia.has(publicUrl)) {
+      if (checkedMedia.size >= MAX_MEDIA_PROBES) throw new Error('Too many StreamFree media header lookups.');
+      const result = await probePublicMedia(publicUrl);
+      const type = result.contentType?.split(';')[0].trim().toLowerCase();
+      const length = Number(result.contentLength);
+      if (result.status !== 200 || result.location || !Number.isSafeInteger(length) || length <= 0 ||
+          (type !== 'application/javascript' && type !== 'video/mp2t')) {
+        throw new Error('StreamFree media has no verified public destination.');
+      }
+      checkedMedia.add(publicUrl);
+    }
+    return publicUrl;
   };
-  return text.split('\n').map(line => {
+  const rewritten: string[] = [];
+  // Header lookups stay sequential and share the request's total deadline.
+  for (const line of text.split('\n')) {
     const trimmed = line.trim();
-    if (!trimmed) return line;
-    if (!trimmed.startsWith('#')) return resolve(trimmed);
+    if (!trimmed) {
+      rewritten.push(line);
+      continue;
+    }
+    if (!trimmed.startsWith('#')) {
+      rewritten.push(await resolve(trimmed));
+      continue;
+    }
     // Steering and variable substitution introduce fetch targets outside this vetted protocol.
     if (/^#EXT-X-(?:CONTENT-STEERING|DEFINE):/.test(trimmed)) {
       throw new Error('Unsupported StreamFree HLS extension.');
     }
     const colon = line.indexOf(':');
-    if (colon === -1) return line;
+    if (colon === -1) {
+      rewritten.push(line);
+      continue;
+    }
     const attributes = line.slice(colon + 1);
     let result = '';
     let offset = 0;
@@ -188,11 +232,12 @@ export function rewriteStreamFreeManifest(text: string, baseUrl: string, rootUrl
         throw new Error('Unsupported StreamFree HLS resource attribute.');
       }
       const valueStart = colon + 1 + match.index! + match[0].length - match[2].length;
-      result += line.slice(offset, valueStart) + `"${resolve(match[2].slice(1, -1))}"`;
+      result += line.slice(offset, valueStart) + `"${await resolve(match[2].slice(1, -1))}"`;
       offset = valueStart + match[2].length;
     }
-    return result + line.slice(offset);
-  }).join('\n');
+    rewritten.push(result + line.slice(offset));
+  }
+  return rewritten.join('\n');
 }
 
 async function readBounded(response: Response, maxBytes: number, signal: AbortSignal): Promise<string> {
@@ -229,10 +274,11 @@ export async function loadStreamFreeManifest(embedUrl: string, variant: string |
   const embed = parseStreamFreeEmbedUrl(embedUrl);
   validateStreamFreeVariant(variant);
   const deadline = AbortSignal.any([signal, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]);
-  const fetchText = async (url: string, maxBytes: number): Promise<string> => {
+  const fetchText = async (url: string, maxBytes: number, referer?: string): Promise<string> => {
     deadline.throwIfAborted();
     const response = await fetch(url, {
       method: 'GET', redirect: 'error', cache: 'no-store', credentials: 'omit', signal: deadline,
+      headers: referer ? { Referer: referer } : undefined,
     });
     if (!response.ok || response.redirected || (response.url && response.url !== url)) {
       await response.body?.cancel();
@@ -244,5 +290,23 @@ export async function loadStreamFreeManifest(embedUrl: string, variant: string |
   const metadata: unknown = JSON.parse(await fetchText(new URL(`/get-stream-key/${data.key}`, embed).href, MAX_METADATA_BYTES));
   const root = streamFreeRootManifest(embed.href, data, metadata);
   const target = resolveStreamFreeVariant(root, variant);
-  return rewriteStreamFreeManifest(await fetchText(target, MAX_MANIFEST_BYTES), target, root, embed.href);
+  return rewriteStreamFreeManifest(await fetchText(target, MAX_MANIFEST_BYTES, embed.href), target, root, embed.href, async mediaUrl => {
+    deadline.throwIfAborted();
+    const response = await fetch(mediaUrl, {
+      method: 'HEAD', redirect: 'manual', cache: 'no-store', credentials: 'omit', signal: deadline,
+    });
+    try {
+      if (response.redirected || (response.url && response.url !== mediaUrl)) {
+        throw new Error('Unexpected StreamFree media redirect.');
+      }
+      return {
+        status: response.status,
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length'),
+        location: response.headers.get('location'),
+      };
+    } finally {
+      await response.body?.cancel();
+    }
+  });
 }
