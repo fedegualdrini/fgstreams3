@@ -37,7 +37,7 @@ npm test
 - **Limits:** timeouts, cache windows and retry counts are named constants in `lib/constants.ts`, each with the reason for its value.
 - **Styling:** use the shared classes in `app/styles/primitives.css` (`.btn`, `.kbd`, `.status-panel`, ...) and the tokens in `app/globals.css` instead of inline styles and JS hover handlers. Keep inline `style` for truly dynamic values.
 - **Components:** keep them small. Put stateful logic in a hook and pure logic in a plain function under `lib/` so it can be unit-tested.
-- **Tests:** cover behavior and edge cases of pure logic (`lib/*.test.ts`). Do not test wiring or copy.
+- **Tests:** cover consumer-visible behavior and edge cases, not wiring or copy. Player reload tests should verify error recovery and selected-source preservation rather than React mount counts; asynchronous source resolution can cause unrelated mounts.
 
 ## Pull requests
 

@@ -1,6 +1,7 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import Hls from 'hls.js';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import MatchDetailClient from './MatchDetailClient';
 import type { Match } from '@/types/api';
 
@@ -13,17 +14,6 @@ vi.mock('next/link', () => ({
 vi.mock('next/image', () => ({
   default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => React.createElement('img', { alt: '', ...props }),
 }));
-
-// Counts mounts, so a remount of the player is observable from the tests.
-const playerMounts = vi.hoisted(() => ({ count: 0 }));
-
-vi.mock('./StreamPlayer', () => {
-  function MockStreamPlayer({ stream }: { stream: { source?: string; url?: string } | null }) {
-    React.useEffect(() => { playerMounts.count += 1; }, []);
-    return React.createElement('div', { 'data-testid': 'stream-player' }, stream ? `${stream.source}:${stream.url}` : 'none');
-  }
-  return { default: MockStreamPlayer };
-});
 
 vi.mock('./MultiMatchView', () => ({
   default: () => React.createElement('div', { 'data-testid': 'multi-match-view' }),
@@ -66,11 +56,13 @@ const match: Match = {
   ],
 };
 
-describe('MatchDetailClient stream attribution', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
+describe('MatchDetailClient stream attribution', () => {
   it('preserves each response array source when the first source returns multiple streams', async () => {
     const fetchMock = vi.fn(async (url: string) => {
       if (url.includes('/alpha/')) {
@@ -108,38 +100,56 @@ describe('MatchDetailClient stream attribution', () => {
     expect(secondAlphaStream).toBeInTheDocument();
 
     await waitFor(() => expect(betaStream).toHaveAttribute('aria-pressed', 'true'));
-    expect(within(betaStream).getByText(/Playing/)).toBeInTheDocument();
-    expect(within(secondAlphaStream).queryByText(/Playing/)).not.toBeInTheDocument();
-    expect(screen.getByTestId('stream-player')).toHaveTextContent('beta:https://dup.example/stream');
+    expect(await screen.findByTitle('Stream')).toHaveAttribute('src', 'https://dup.example/stream');
   });
 });
 
 describe('MatchDetailClient player reload', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+  beforeEach(() => {
+    // Exercise the real Direct player; jsdom has no media playback engine.
+    vi.spyOn(Hls, 'isSupported').mockReturnValue(false);
+    vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('probably');
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+    vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {});
   });
 
-  it('remounts the player from the Reload button and the R key', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => ({
-      ok: true,
-      json: async () => [{ url: 'https://alpha.example/one', language: 'en', quality: 'HD' }],
-    })));
+  it('recovers a failed Direct player from Reload and R without changing the selected source', async () => {
+    const streams = [
+      { url: 'https://strmfree.st/embed/soccer/test-match1080p', source: 'strmfree', quality: '1080p' },
+      { url: 'https://strmfree.st/embed/soccer/test-match720p2', source: 'strmfree', quality: '720p' },
+    ];
+    const { container } = render(React.createElement(MatchDetailClient, {
+      match, initialStreams: streams, streamsResolved: true,
+    }));
+    const chosenSource = screen.getByRole('button', { name: 'Select stream 1080p from strmfree' });
+    fireEvent.click(chosenSource);
+    await act(async () => { await vi.dynamicImportSettled(); });
+    const selectedUrl = container.querySelector('video')!.getAttribute('src');
 
-    render(React.createElement(MatchDetailClient, { match }));
-    await screen.findByTestId('stream-player');
-    const mountedBefore = playerMounts.count;
+    for (const reload of [
+      () => fireEvent.click(screen.getByRole('button', { name: 'Reload player' })),
+      () => fireEvent.keyDown(document, { key: 'r' }),
+    ]) {
+      fireEvent.error(container.querySelector('video')!);
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+      expect(container.querySelector('iframe')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Reload player' }));
-    await waitFor(() => expect(playerMounts.count).toBe(mountedBefore + 1));
-
-    fireEvent.keyDown(document, { key: 'r' });
-    await waitFor(() => expect(playerMounts.count).toBe(mountedBefore + 2));
+      reload();
+      await act(async () => { await vi.dynamicImportSettled(); });
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      const recoveredVideo = container.querySelector('video')!;
+      expect(recoveredVideo).toHaveAttribute('src', selectedUrl);
+      expect(chosenSource).toHaveAttribute('aria-pressed', 'true');
+      expect(container.querySelector('iframe')).not.toBeInTheDocument();
+      fireEvent.playing(recoveredVideo);
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    }
   });
 
   it('offers no reload when there is no player to reload', () => {
-    render(React.createElement(MatchDetailClient, { match, initialStreams: [], streamsResolved: true }));
+    const { container } = render(React.createElement(MatchDetailClient, { match, initialStreams: [], streamsResolved: true }));
 
-    expect(screen.queryByTestId('stream-player')).not.toBeInTheDocument();
+    expect(container.querySelector('video, iframe')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Reload player' })).not.toBeInTheDocument();
   });
 });
