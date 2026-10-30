@@ -13,13 +13,15 @@ app/
   match/[id]/                      Match detail page, metadata and error boundary
   api/
     hls-proxy/route.ts             HTTP HLS proxy for selected channel streams
+    channels/lpf/route.ts          Current numbered LPF destinations and broadcast availability
     media/search/route.ts          TMDB movie/TV search endpoint
     media/tv/[id]/route.ts         TMDB TV season metadata endpoint
     scores/[sport]/route.ts        Live score endpoint
     scores/match/[flashscoreId]/route.ts
                                     Match detail/statistics endpoint
-    streams/[source]/[id]/route.ts Stream endpoint for Streamed sources
+    streams/[source]/[id]/route.ts StreamFree variant refresh (source: strmfree)
     embed-st/manifest/route.ts     Same-context manifest relay and header-only media redirect resolution
+    streamfree/manifest/route.ts   Bounded fresh-signature StreamFree manifest-only relay
     diagnostics/broadcasts/route.ts
                                     Broadcast pipeline health; ?q=<team> traces one match
 
@@ -32,8 +34,8 @@ components/                        Shared and page-level components
   ChannelsPageClient.tsx           Channels page entry
   MoviesPageClient.tsx             Movies page entry
   StreamTestClient.tsx             Minimal embed URL form and diagnostic playback state
-  players/EmbedStPlayer.tsx        Shared embed.st HLS engine; stops on fatal errors
-  players/EmbedStPlayback.tsx      Direct/original engine switch and local failure state
+  players/DirectHlsPlayer.tsx      Shared direct HLS engine with bounded same-source recovery
+  players/DirectPlayback.tsx       Provider-aware Direct/Original switch and local failure state
   channels/ match-detail/ match-list/ movies/ multi-match/ players/
                                    Feature folders: the sub-components and hooks each
                                    page-level component above is assembled from
@@ -42,16 +44,23 @@ components/                        Shared and page-level components
 
 lib/
   # Data layer (server)
-  api.ts                           Streamed API: matches, live ids, streams, sports
+  api.ts                           StreamFree API: stream catalog, sources, categories, images
+  streamfree.ts                    Live-first variant normalization and quality metadata
+  streamfreeDirect.ts              Strict public embed URL boundary and local manifest path
+  streamfreeServer.ts              Literal signing parser, bounded resolver and manifest rewriting
+  directPlayback.ts                Supported-provider dispatch for the shared direct player
   promiedos.ts                     Promiedos fixtures + TV networks (__NEXT_DATA__)
   angulismo.ts                     angulismotv feed: live channels and fixture broadcasters
   flashscore.ts                    Flashscore HTTP client (live scores, match detail)
   flashscoreParse.ts               Flashscore HTML -> typed data (pure, unit-tested)
   catalog.ts                       Cached match catalog (build, fallback, sort)
   catalogWindow.ts                 Listing window and live-state rules
-  catalogStreams.ts                Bounded-concurrency stream resolution
   catalogBroadcasts.ts             Feed offsets and fixture -> channel matching
   channelCatalog.ts                Shipped channels.json merged with the live catalog
+  lpf.ts                           One-minute LPF redirect resolution and snapshot sharing
+  lpfRelay.ts                      Authenticated PC snapshot transport and trusted-option validation
+  lpfPlaylist.ts                   Master traversal and media-timeline freshness classification
+  lpfUrls.ts                       Stable numbered sources and trusted encoder-CDN URL boundary
   broadcasters.ts                  Broadcaster name -> local channel resolution
   teamMatch.ts                     Fuzzy fixture matching and feed clock alignment
   diagnosticsBroadcasts.ts         Report builders for the diagnostics route
@@ -91,6 +100,7 @@ scripts/
   import-playlist.mjs              CLI: arguments, files, console output
   playlistImport.mjs               Pure rules: flatten, classify, merge, proxy hosts
   libProbe.mjs                     Network probing of candidate streams
+  lpf-relay.mjs                    Authenticated loopback-only LPF snapshot relay for the free PC tunnel
 
 public/
   channels.json                    Channel catalog
@@ -135,7 +145,7 @@ Rules that keep the Core Web Vitals where they are (measured with Lighthouse; Ve
 
 - **No layout shifts after hydration.** Anything that appears late (banners, badges) is rendered in the server HTML and hidden with CSS, or reserves its space. The ad-block banner works this way (`lib/adBlockBanner.ts`).
 - **Images are sized and lazy.** Give every `<img>` a width and height and `loading="lazy"` unless it is above the fold; above-the-fold posters use `priority`. Channel logos are shrunk once into `public/logos/` by `npm run optimize:logos` rather than loaded from third-party hosts.
-- **No Vercel image optimization.** `images.unoptimized` is on in `next.config.mjs`: the posters and badges come from streamed.pk as small WebP files already, and the optimizer bills a transformation per image, width and device, which exhausted the Hobby plan's 5,000 a month (new images then fail). Keep new images small at the source rather than turning the optimizer back on.
-- **Third-party embeds wait for the page.** Unsupported stream iframes, and supported streams explicitly switched to Original embed, mount after the window `load` event (`lib/useAfterPageLoad.ts`). Supported embed.st sources start directly without fetching provider HTML, scripts or iframes.
+- **No Vercel image optimization.** `images.unoptimized` is on in `next.config.mjs`: the changing catalog exhausted the Hobby plan's image-transformation allowance. StreamFree thumbnails, team logos and channel images are served directly. Keep new images small at the source rather than turning the optimizer back on.
+- **Third-party embeds wait for the page.** Unsupported stream iframes, and supported streams explicitly switched to Original embed, mount after the window `load` event (`lib/useAfterPageLoad.ts`). Direct StreamFree and embed.st sources do not fetch provider HTML, scripts or iframes in the browser; their server resolvers read provider metadata without executing it.
 - **Send the list only what it renders.** The home page maps catalog matches to `ListedMatch` (`toListedMatch`) so stream URLs and broadcast options stay on the server, and the upcoming grid renders 24 cards at a time.
 - **Cache what can be cached.** `/channels` is ISR (10 minutes, matching its upstream feed). The home and match pages stay dynamic on purpose, but send `no-cache` rather than `no-store` so browsers can restore them on Back.

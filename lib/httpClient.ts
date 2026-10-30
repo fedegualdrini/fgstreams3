@@ -3,7 +3,7 @@ import type { Logger } from './logger';
 import { RETRY_BACKOFF_MS } from './constants';
 
 /**
- * Fetch plumbing shared by every upstream we read (streamed.pk, Promiedos,
+ * Fetch plumbing shared by every upstream we read (StreamFree, Promiedos,
  * angulismo): optional deadline, optional retry on 5xx, and uniform logging.
  *
  * Every helper here answers `null` for "the request failed" — after logging why

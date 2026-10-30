@@ -1,9 +1,9 @@
-// Maps Streamed.pk sport names → flashscore.mobi URL slugs.
-// Football uses empty string (root URL: https://www.flashscore.mobi/).
+// Maps sports to flashscore.mobi URL slugs.
+// StreamFree uses soccer for association football and football for the NFL.
 // All other sports use https://www.flashscore.mobi/{slug}/.
 
 export const SPORT_TO_FLASHSCORE_SLUG: Record<string, string> = {
-  football: '',
+  football: 'american-football',
   soccer: '',
   basketball: 'basketball',
   cricket: 'cricket',

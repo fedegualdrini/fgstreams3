@@ -3,11 +3,13 @@
 import { useEffect, useRef } from 'react';
 import type Hls from 'hls.js';
 import { buildHlsConfig } from '@/lib/playerHls';
+import type { DirectProvider } from '@/lib/directPlayback';
 import PlayerSurface from './PlayerSurface';
 import { usePlayerCallbacks } from './usePlayerCallbacks';
 
-interface EmbedStPlayerProps {
+interface DirectHlsPlayerProps {
   src: string;
+  provider: DirectProvider;
   muted?: boolean;
   onPlaying: () => void;
   onRecovering: (attempt: number) => void;
@@ -19,7 +21,7 @@ const RESTART_DELAY_MS = 2_000;
 const STABLE_PLAYBACK_SECONDS = 60;
 
 /** Restart the same source on network failure; iframe/source changes remain explicit. */
-export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecovering, onError }: EmbedStPlayerProps) {
+export default function DirectHlsPlayer({ src, provider, muted = false, onPlaying, onRecovering, onError }: DirectHlsPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { onPlayingRef, onErrorRef } = usePlayerCallbacks(onPlaying, onError);
   const onRecoveringRef = useRef(onRecovering);
@@ -33,7 +35,8 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
     let retryTimer: number | undefined;
     let restarts = 0;
     let startId = 0;
-    const sdk = Promise.all([import('hls.js'), import('@/lib/embedStHls')]);
+    // Load the browser SDK only after this direct player mounts, not during SSR.
+    const sdk = import('hls.js');
     let stableSince: number | null = null;
 
     const destroyEngine = () => {
@@ -90,10 +93,16 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
     const start = async () => {
       const id = ++startId;
       try {
-        const [{ default: HlsEngine }, { createEmbedStLoader }] = await sdk;
+        const { default: HlsEngine } = await sdk;
         if (cancelled || stopped || retryTimer !== undefined || id !== startId) return;
         if (HlsEngine.isSupported()) {
-          const instance = new HlsEngine({ ...buildHlsConfig(src), loader: createEmbedStLoader() });
+          const config = buildHlsConfig(src);
+          // Embed-st alone needs its browser segment normalizer; keep it out of StreamFree.
+          const embedStLoader = provider === 'embed-st' ? await import('@/lib/embedStHls') : null;
+          if (cancelled || stopped || retryTimer !== undefined || id !== startId) return;
+          const instance = new HlsEngine(embedStLoader
+            ? { ...config, loader: embedStLoader.createEmbedStLoader() }
+            : config);
           hls = instance;
           instance.on(HlsEngine.Events.ERROR, (_, error) => {
             if (cancelled || stopped || hls !== instance || !error.fatal) return;
@@ -112,7 +121,7 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
           failed();
         }
       } catch {
-        failed();
+        if (id === startId && retryTimer === undefined) failed();
       }
     };
     video.addEventListener('playing', playing);
@@ -133,6 +142,6 @@ export default function EmbedStPlayer({ src, muted = false, onPlaying, onRecover
       video.removeEventListener('error', videoFailed);
       destroyEngine();
     };
-  }, [src, onPlayingRef, onErrorRef, onRecoveringRef]);
+  }, [src, provider, onPlayingRef, onErrorRef, onRecoveringRef]);
   return <PlayerSurface videoRef={videoRef} muted={muted} />;
 }

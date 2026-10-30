@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { generateMatchId, normalizeMatches } from './matchUtils';
+import { generateMatchId, matchStartMs, normalizeMatches } from './matchUtils';
+import { currentLiveState, isListable } from './catalogWindow';
+import { STREAMFREE_SOURCE, toStreamFreeSources } from './streamfree';
 import type { RawMatch } from '@/types/api';
 
 describe('generateMatchId', () => {
@@ -26,54 +28,131 @@ describe('generateMatchId', () => {
 });
 
 describe('normalizeMatches', () => {
+  const now = Date.parse('2026-10-29T18:00:00Z');
+  const liveUrl = 'https://strmfree.st/embed/soccer/arsenal-chelsea1080p';
   const base: RawMatch = {
-    id: '1',
-    sport: 'football',
+    id: 'unrelated-api-uuid',
+    stream_key: 'arsenal-chelsea',
+    name: 'Arsenal vs Chelsea',
+    category: 'soccer',
     league: 'Premier League',
-    team1: 'Arsenal',
-    team2: 'Chelsea',
-    sources: [{ source: 'streamed', id: 'abc' }],
+    sources: [liveUrl],
+    live_sources: [],
   };
 
-  it('normalizes a basic match', () => {
-    const [m] = normalizeMatches([base]);
-    expect(m.id).toBe('1');
-    expect(m.sport).toBe('football');
-    expect(m.team1).toBe('Arsenal');
-    expect(m.team2).toBe('Chelsea');
-    expect(m.sources).toHaveLength(1);
+  it('uses the stream key as its stable ID and carries inline source variants', () => {
+    const raw = { ...base, live_sources: [liveUrl] };
+    const [match] = normalizeMatches([raw]);
+    expect(match.id).toBe(base.stream_key);
+    expect(match.sport).toBe('soccer');
+    expect(match.league).toBe('Premier League');
+    expect(match.sources).toEqual([{
+      source: STREAMFREE_SOURCE,
+      id: base.stream_key,
+      streams: toStreamFreeSources(raw),
+    }]);
+    expect(match.isLive).toBe(true);
   });
 
-  it('parses team names from title field', () => {
-    const [m] = normalizeMatches([{ ...base, id: undefined, title: 'Liverpool - Everton', team1: undefined, team2: undefined }]);
-    expect(m.team1).toBe('Liverpool');
-    expect(m.team2).toBe('Everton');
+  it('prefers structured team names and preserves exact image URLs', () => {
+    const raw: RawMatch = {
+      ...base,
+      team1: { name: 'Arsenal FC', logo: 'https://images.example/home.png?size=80' },
+      team2: { name: 'Chelsea FC', logo: 'https://images.example/away.svg' },
+      thumbnail_url: 'https://streamfree.top/thumbnails/match.jpg',
+    };
+    const [match] = normalizeMatches([raw]);
+    expect(match.team1).toBe('Arsenal FC');
+    expect(match.team2).toBe('Chelsea FC');
+    expect(match.image1).toBe(raw.team1?.logo);
+    expect(match.image2).toBe(raw.team2?.logo);
+    expect(match.poster).toBe(raw.thumbnail_url);
   });
 
-  it('parses title with vs separator', () => {
-    const [m] = normalizeMatches([{ ...base, id: undefined, title: 'Man City vs Man Utd', team1: undefined, team2: undefined }]);
-    expect(m.team1).toBe('Man City');
-    expect(m.team2).toBe('Man Utd');
+  it.each(['Liverpool - Everton', 'Liverpool vs Everton', 'Liverpool vs. Everton'])(
+    'parses absent structured names from %s',
+    name => {
+      const [match] = normalizeMatches([{ ...base, name }]);
+      expect(match.team1).toBe('Liverpool');
+      expect(match.team2).toBe('Everton');
+    },
+  );
+
+  it('falls back independently for missing structured names', () => {
+    const [match] = normalizeMatches([{
+      ...base,
+      team1: { name: 'Arsenal FC' },
+      team2: { name: '' },
+    }]);
+    expect(match.team1).toBe('Arsenal FC');
+    expect(match.team2).toBe('Chelsea');
   });
 
-  it('infers isLive from numeric date within last 3 hours', () => {
-    const recentDate = Date.now() - 30 * 60 * 1000; // 30 minutes ago
-    const [m] = normalizeMatches([{ ...base, date: recentDate }]);
-    expect(m.isLive).toBe(true);
+  it('keeps a channel name as team1 without inventing an opponent or images', () => {
+    const [match] = normalizeMatches([{
+      ...base, name: 'Sky Sports F1', team1: null, team2: null, thumbnail_url: null,
+    }]);
+    expect(match.team1).toBe('Sky Sports F1');
+    expect(match.team2).toBe('');
+    expect(match.image1).toBeUndefined();
+    expect(match.image2).toBeUndefined();
+    expect(match.poster).toBeUndefined();
   });
 
-  it('infers isLive=false for date more than 3 hours ago', () => {
-    const oldDate = Date.now() - 5 * 60 * 60 * 1000; // 5 hours ago
-    const [m] = normalizeMatches([{ ...base, date: oldDate }]);
-    expect(m.isLive).toBe(false);
+  it('converts Unix seconds to an ISO kickoff', () => {
+    const [match] = normalizeMatches([{ ...base, match_timestamp: now / 1000 }]);
+    expect(match.startTime).toBe('2026-10-29T18:00:00.000Z');
+    expect(matchStartMs(match, now)).toBe(now);
   });
 
-  it('returns empty array for empty input', () => {
+  it.each([undefined, null, 0, NaN, Infinity, 1e20])(
+    'leaves absent or invalid kickoff %s undefined without throwing',
+    match_timestamp => {
+      const [match] = normalizeMatches([{ ...base, match_timestamp }]);
+      expect(match.startTime).toBeUndefined();
+    },
+  );
+
+  it.each([-120, -0.5, 24])(
+    'does not infer liveness from a kickoff offset of %s hours',
+    offsetHours => {
+      const [match] = normalizeMatches([{
+        ...base, match_timestamp: now / 1000 + offsetHours * 3600,
+      }]);
+      expect(match.isLive).toBe(false);
+      expect(currentLiveState(match)).toBe(false);
+    },
+  );
+
+  it.each([-120 * 24, 120 * 24])(
+    'keeps live streams listed with kickoff offset of %s hours',
+    offsetHours => {
+      const [match] = normalizeMatches([{
+        ...base,
+        name: 'Sky Sports F1',
+        match_timestamp: now / 1000 + offsetHours * 3600,
+        live_sources: [liveUrl],
+      }]);
+      expect(currentLiveState(match)).toBe(true);
+      expect(isListable(match, now)).toBe(true);
+    },
+  );
+
+  it('preserves kickoff windows and required names for listing', () => {
+    const [old, future, recent, unnamed] = normalizeMatches([
+      { ...base, match_timestamp: now / 1000 - 120 * 3600 },
+      { ...base, match_timestamp: now / 1000 + 120 * 3600 },
+      { ...base, match_timestamp: now / 1000 - 1800 },
+      { ...base, name: '', live_sources: [liveUrl] },
+    ]);
+    expect(isListable(old, now)).toBe(false);
+    expect(isListable(future, now)).toBe(false);
+    expect(isListable(recent, now)).toBe(true);
+    expect(isListable(unnamed, now)).toBe(false);
+  });
+
+  it('defaults an absent league to empty and returns empty input unchanged', () => {
+    expect(normalizeMatches([{ ...base, league: null }])[0].league).toBe('');
     expect(normalizeMatches([])).toEqual([]);
-  });
-
-  it('uses league from tournament field as fallback', () => {
-    const [m] = normalizeMatches([{ ...base, league: undefined, tournament: 'Champions League' }]);
-    expect(m.league).toBe('Champions League');
   });
 });

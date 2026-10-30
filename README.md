@@ -88,15 +88,37 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 | `npm run import:playlist -- <playlist.json>` | Merge an external channel playlist ([guide](docs/CHANNEL_IMPORT.md)) |
 | `npm run optimize:logos` | Download and shrink channel logos into `public/logos/` ([guide](docs/CHANNEL_IMPORT.md)) |
 
-### Direct playback (embed.st)
+### StreamFree sports API
 
-Supported `https://embed.st/embed/<source>/<id>/<stream-number>` sources start in **Direct player (HQ)** mode on match pages, multi-match cards and channel options. Use the buttons below the video to switch to **Original embed**. Eligibility follows the actual URL, not the source label: a Streamed.pk source qualifies when it returns a supported embed.st URL. Other providers, ordinary HLS/DASH channels and movies retain their existing players.
+Sports use `https://strmfree.st/api/v1` without an account or API key:
 
-The HLS SDK and Direct loader adapter load only when the player mounts, not while browsing channels or filling in Stream Test. Leaving the player or switching modes cancels pending engine setup as well as active playback.
+- `/streams` lists events and channel-like streams, with inline `sources` and `live_sources`. The app uses `stream_key` as the match ID and converts `match_timestamp` from Unix seconds.
+- `/categories` lists sports. `soccer` is association football; `football` is American football.
+- `/sources/{stream_key}` refreshes variants through the app's `/api/streams/strmfree/{stream_key}` route when playback is retried.
 
-Direct mode never loads the provider iframe or its ad/popup scripts. After hls.js exhausts its request-level retries, a fatal network failure triggers up to three full restarts of the **same source**, delayed by 2, 4 and 8 seconds. Each restart loads a fresh master playlist and returns to the live edge; it does not preserve DVR position. Native HLS network failures use the same recovery policy. The restart budget renews only after 60 seconds of uninterrupted playback progress, not a brief `playing` event. A reconnecting status appears while recovery is pending.
+Live status comes from `live_sources`, not kickoff time. Live variants are preferred over standby sources; the existing language/quality preference then applies. Standby variants remain selectable because the provider starts them when an event goes live. The catalog is cached for 60 seconds and API responses for 30–60 seconds rather than fetched for every visitor.
+
+Supported StreamFree embeds now start in **Direct player** mode without loading the provider iframe or its scripts. **Original embed** remains an explicit alternative; its unsandboxed iframe follows the [provider documentation](https://strmfree.st/api) and may display ads/popups. A source marked live can still fail to play.
+
+### Direct playback
+
+StreamFree `/embed/{category}/{stream_key}` URLs on `strmfree.st` or `streamfree.top`, and supported `https://embed.st/embed/<source>/<id>/<stream-number>` URLs, start directly on match pages, multi-match cards and channel options. Use **Original embed** to switch to the provider player. Eligibility follows the actual URL, not its source label; ordinary HLS/DASH channels and movies retain their existing players.
+
+The HLS SDK loads only when the player mounts, not while browsing channels or filling in Stream Test. The embed.st segment adapter loads only for that provider; StreamFree uses ordinary hls.js. Leaving the player or switching modes cancels pending engine setup as well as active playback.
+
+Direct mode never loads the provider iframe or its ad/popup scripts. After hls.js exhausts its request-level retries, a fatal network failure triggers up to three full restarts of the **same source**, delayed by 2, 4 and 8 seconds. Each restart reloads the root playlist with fresh provider resolution and returns to the live edge; it does not preserve DVR position. Native HLS network failures use the same recovery policy. The restart budget renews only after 60 seconds of uninterrupted playback progress, not a brief `playing` event. A reconnecting status appears while recovery is pending.
 
 Non-network fatal errors or exhausted recovery offer **Retry direct playback** and, on match pages, **Try next stream**. Manual retry starts a fresh budget. Changing source, selecting **Original embed**, reloading or leaving the player cancels pending restarts. Direct mode never automatically opens the original embed or discards the selected source. **Original embed** is explicit opt-in and may show provider ads or popups. A different source or player reload starts with Direct mode again.
+
+#### StreamFree
+
+`/api/streamfree/manifest` reads the selected embed's literal signing metadata and `/get-stream-key/{stream_key}` routing metadata, then fetches the signed HLS playlist. It does not execute provider JavaScript. Each manifest request resolves a fresh signature; nested playlists stay confined to that source's directory. Signed playlist URLs remain server-side, and responses are uncached with bounded reads and a 15-second total deadline.
+
+StreamFree plays the selected source/quality variant rather than forcing the highest rendition. Media loads directly from the verified `p16-oec-general-useast5.ttcdn-us.com/obj/` CDN. Its PNG-prefixed MPEG-TS segments work with standard hls.js; no custom decoder or P2P SDK is installed. Other CDN origins, external streams and provider-rejected sources fail locally for manual Retry, another source, or Original embed—not video proxying or automatic iframe fallback. Some origin and `cdn1` sources returned HTTP 403 during verification.
+
+Browser smoke verification covered 1080p playback on a match page, two simultaneous Direct streams, explicit Original/Direct switching and Stream Test. Native Safari playback and long-duration token expiry have not been runtime-verified; signature renewal and recovery boundaries have regression coverage.
+
+#### embed.st Direct HQ
 
 Direct HQ exposes only the rendition with the highest advertised `BANDWIDTH`; hls.js and native HLS cannot automatically downgrade to a lower rendition. Slow connections may buffer instead. Direct media resources must end on the verified HTTPS origins `p16-common-sign.tiktokcdn.com` and `p19-common-sign.tiktokcdn.com`. Media is not proxied through Vercel.
 
@@ -110,16 +132,16 @@ The relay uses `impit` with a browser-compatible HTTP/TLS profile: the provider 
 
 ### Stream Test (experimental)
 
-Open `/stream-test` from the main navigation to test a URL manually with the same decoder, relay and HLS engine. Paste a current embed.st URL and click **Resolve & play**. Find current source IDs in `https://streamed.pk/api/matches/live`, then copy an `embedUrl` (or matching `url`) from `/api/streams/<source>/<id>`.
+Open `/stream-test` from the main navigation, paste a current StreamFree or embed.st embed URL and click **Resolve & play**. StreamFree source URLs come from [`/api/v1/streams`](https://strmfree.st/api/v1/streams). Use the public embed URL, not an expiring signed playlist; resolving again starts a fresh Direct connection.
 
-Decoder, proxy-boundary, CDN-rotation and playback-mode checks: `npx vitest run lib/embedSt.test.ts lib/embedStHls.test.ts components/players/EmbedStPlayback.test.tsx`.
+Provider-boundary, signature-renewal, CDN-rotation, playback-mode and recovery checks: `npx vitest run lib components`.
 
 
 ## How it works
 
 ```mermaid
 flowchart LR
-  A[streamed.pk<br/>matches and streams] --> C
+  A[strmfree.st<br/>streams and live sources] --> C
   B[Promiedos and angulismo<br/>TV broadcasters] --> C
   D[channels.json<br/>channel catalog] --> C
   C[Catalog<br/>normalize, resolve streams,<br/>match fixtures to channels] --> P[Server pages<br/>and API routes]
@@ -127,7 +149,7 @@ flowchart LR
   F[Flashscore<br/>live scores and detail] --> U
 ```
 
-streamed.pk, Promiedos and the angulismo feed are combined into one cached catalog (`lib/catalog.ts`), then served to the pages and API routes. Only the match feed is mandatory: the other sources degrade to "no extra data", and an empty upstream response is never cached. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full walkthrough.
+StreamFree, Promiedos and the angulismo feed are combined into one cached catalog (`lib/catalog.ts`), then served to the pages and API routes. Only the stream feed is mandatory: optional sources degrade to "no extra data". Failed stream requests retain the last good catalog; a successful empty feed clears it. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full walkthrough.
 
 ## Tech stack
 
@@ -141,7 +163,7 @@ streamed.pk, Promiedos and the angulismo feed are combined into one cached catal
 
 | Source | Used for |
 |---|---|
-| [streamed.pk](https://streamed.pk) | Matches, live flags, per-match streams, images |
+| [StreamFree API](https://strmfree.st/api) | Stream catalog, live variants, categories, thumbnails and team logos |
 | [Promiedos](https://www.promiedos.com.ar) | Fixture broadcasters, read from the page's `__NEXT_DATA__` |
 | angulismotv feed | Channel catalog and fixture-to-channel mapping with playable URLs |
 | Flashscore (mobile pages) | Live scores and match detail, through local API routes |

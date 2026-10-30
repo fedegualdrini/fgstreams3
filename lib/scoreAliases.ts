@@ -1,4 +1,4 @@
-// Maps common Streamed.pk team name variants → canonical search tokens.
+// Maps common provider team name variants → canonical search tokens.
 // All keys and values should be lowercase.
 export const TEAM_ALIASES: Record<string, string> = {
   // Football

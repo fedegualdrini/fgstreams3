@@ -7,11 +7,9 @@ const nextConfig = {
     serverComponentsExternalPackages: ['impit'],
   },
   images: {
-    // Every image on the site comes from streamed.pk and is already a small WebP
-    // (posters 444x250, about 15 KB; badges 200x200, about 8 KB), so Vercel's optimizer
-    // saves almost nothing. It does bill one transformation per image, per width, per
-    // device: the daily-changing match list blew through the Hobby plan's 5,000 a month,
-    // after which new images fail to load. Serve them directly instead.
+    // Serve provider thumbnails, team logos and channel artwork directly.
+    // A changing catalog exhausted the Hobby image-transformation allowance;
+    // keep new images small at the source rather than optimizing on Vercel.
     unoptimized: true,
   },
   async headers() {

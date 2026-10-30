@@ -5,12 +5,12 @@ How a match gets from the upstream feeds to the screen. File names are relative 
 ## Data flow
 
 ```text
-streamed.pk ──────► lib/api.ts ───────────────┐
-  /matches/all-today, /matches/live, /stream/…│
+strmfree.st ──────► lib/api.ts ───────────────┐
+  /api/v1/streams, /categories, /sources/…   │
                                               ▼
 promiedos.com.ar ─► lib/promiedos.ts ──┐   lib/catalog.ts  (unstable_cache, 60 s)
 angulismo feed ───► lib/angulismo.ts ──┼──►   1. normalize + keep the listing window   (catalogWindow.ts)
-channels.json ────► lib/channelCatalog ┘      2. resolve playable streams per source   (catalogStreams.ts)
+channels.json ────► lib/channelCatalog ┘      2. reuse inline live/standby source URLs
                                               3. match fixtures → TV channels          (catalogBroadcasts.ts)
                                               4. drop matches nobody can watch
                                                   │
@@ -28,18 +28,19 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 
 ## The catalog (`lib/catalog.ts`)
 
-- Streamed.pk matches/live flags, Promiedos and angulismo are requested in parallel. The channel catalog merges shipped channels with that same angulismo snapshot instead of reading and parsing the feed again. Only the match feed is mandatory; optional-feed failures retain the shipped-channel fallback.
-- `resolveStreams` looks up every (match, source) pair with a concurrency cap and a time budget. A source that failed or timed out is *unresolved*, which is different from *empty*, and an unresolved match is never dropped.
+- StreamFree's stream listing, Promiedos and angulismo are requested in parallel. The channel catalog merges shipped channels with that same angulismo snapshot instead of reading and parsing the feed again. Only the stream feed is mandatory; optional-feed failures retain the shipped-channel fallback.
+- `normalizeMatches` uses `stream_key` as the stable ID, converts Unix seconds to ISO time, and retains team logos and thumbnails. `live_sources` is authoritative even for delayed events or long-running channels with old timestamps; non-live fixtures retain the listing window.
+- `lib/streamfree.ts` deduplicates URLs, places live variants before standby ones, and infers quality from variant suffixes. The catalog and multi-match view reuse inline variants without per-match lookups. Playback retry uses `/sources/{stream_key}` through the local stream route.
 - Broadcasters come from two feeds with different clocks. Promiedos localises kickoff to the caller's IP, so `estimateFeedOffsetMs` (`lib/teamMatch.ts`) measures the offset from unambiguous name matches; angulismo times are fixed Argentina-local.
 - `lib/broadcasters.ts` turns a feed entry into catalog channels (angulismo first, Promiedos fills the rest).
-- An empty upstream feed throws `EmptyUpstreamError` so it is never cached. `getCatalog` then serves the last good catalog held in module memory, re-filtered against the current clock.
+- A failed upstream stream fetch returns `null` and throws `UpstreamError` inside the catalog cache callback. `getCatalog` then serves the last good catalog held in module memory. A successful `{ count: 0, streams: [] }` is valid and replaces the old catalog.
 
 ## Upstream access
 
-- Catalog upstream requests go through `lib/httpClient.ts`: optional timeout, retry on 5xx, Zod validation (`lib/schemas.ts`) and logging. It answers `null` on failure. The embed.st same-context resolver and manifest transport are a provider-specific exception described below.
+- Catalog upstream requests go through `lib/httpClient.ts`: optional timeout, retry on 5xx, Zod validation (`lib/schemas.ts`) and logging. It answers `null` on failure. Direct-playback resolvers use their provider-specific manifest transports described below.
 - Each source module (`api`, `promiedos`, `angulismo`, `flashscore`) maps `null` to its own failure signal: `[]`, `ok: false`, or the last good snapshot flagged `stale: true`.
 - `lib/logger.ts` is the only code that writes to the console. Lines read `scope: message`.
-- Timeouts, retry counts, cache windows and CDN headers live in `lib/constants.ts`, each with the reason for its value.
+- Shared timeouts, retry counts, cache windows and CDN headers live in `lib/constants.ts`; provider-specific response bounds and transport deadlines live beside their resolver.
 
 ## API routes (`app/api`)
 
@@ -54,14 +55,24 @@ channels.json ────► lib/channelCatalog ┘      2. resolve playable st
 - `lib/useLiveScores.ts` and `lib/useMatchStats.ts` poll on the existing intervals in `lib/constants.ts`, skip hidden or overlapping polls, and abort obsolete requests. Detail polling stops even when the first response is already finished. Client HTTP/network failures retain stale scores for the affected sport without blocking successful sports; a successful empty response still clears them. The score API's existing upstream-failure response is also an empty list, so clients cannot distinguish that case.
 - Identical score entries retain their references and do not publish a new score map. Listing filters and available sports are memoized independently of polling; unchanged upcoming grids, history, toolbars and match links skip rendering. Search/sport changes still reset upcoming pagination.
 - Movie search retains its debounce, aborts requests when the query/type changes or the component unmounts, and ignores obsolete responses and errors so they cannot replace current results or clear the current loading state.
-- HLS and DASH SDKs load only when their engines mount. Direct playback also imports its HLS loader adapter lazily, keeping hls.js out of idle channel browsing and the empty Stream Test form. Source changes, mode switches and teardown invalidate pending Direct engine setup before it can attach to a video.
-- Playback fallback (rotating to the next stream) uses `lib/streamSelector.ts` for the initial choice.
+- HLS and DASH SDKs load only when their engines mount. Direct playback imports the embed.st loader adapter only for that provider; StreamFree uses the ordinary HLS loader. Source changes, mode switches and teardown invalidate pending engine setup before it can attach to a video.
+- Initial selection and explicit next-stream actions use `lib/streamSelector.ts`: live first, then the existing language/quality preference and stable source order. Direct failures stay local rather than automatically rotating sources or opening an iframe.
 
-## Shared embed.st direct playback
+## Shared direct playback
 
-- `lib/embedSt.ts` recognizes only `https://embed.st/embed/<source>/<id>/<number>` URLs. `StreamPlayer` enables direct playback for qualifying sources in single-match and multi-match views; `ChannelStream` does the same for qualifying channel options. Source labels or Streamed.pk provenance alone do not grant eligibility. Other providers and HLS/DASH engines are unchanged.
-- `players/EmbedStPlayback` mounts only the selected engine, with Direct mode as the default. **Original embed** is explicit opt-in and may load the provider's ads/popups. A direct failure stays local, with retry and optional manual next-source controls; it never automatically loads an iframe or rotates the match's source. Changing source or reloading resets to Direct mode.
-- The wrapper owns loading/reconnecting/error presentation so channel connection overlays cannot block autoplay controls or the engine switch. `players/EmbedStPlayer` uses hls.js or native HLS and updates mute state without restarting the connection. Fatal network errors restart the entire engine from the same public embed's master playlist, returning to the live edge rather than retrying an old variant or retaining DVR position. Recovery is bounded to three restarts with 2/4/8-second backoff; 60 seconds of continuous playback progress renews the budget. Pause, waiting and seeking interrupt that stability window. Other fatal errors or exhausted recovery stop locally for manual action. Source changes, mode switches and unmounts cancel timers and destroy the old engine; retired hls.js callbacks cannot affect a replacement. `/stream-test` shares this engine, recovery policy and relay.
+- `lib/directPlayback.ts` dispatches by the actual embed URL using `lib/embedSt.ts` and `lib/streamfreeDirect.ts`. `StreamPlayer` enables Direct in single-match and multi-match views; `ChannelStream` does the same for supported channel options. Source labels alone do not grant eligibility. Ordinary HLS/DASH engines remain independent.
+- `players/DirectPlayback` mounts only the selected engine, with Direct mode as the default. **Original embed** is explicit opt-in and may load the provider's ads/popups. A direct failure stays local, with retry and optional manual next-source controls. Changing source or reloading resets to Direct mode.
+- The wrapper owns loading/reconnecting/error presentation so channel overlays cannot block autoplay controls or the mode switch. `players/DirectHlsPlayer` shares hls.js/native-HLS ownership and updates mute state without restarting. Fatal network errors restart the same source from its root playlist, with three restarts at 2/4/8-second backoff. Sixty seconds of uninterrupted playback progress renews the budget; pause, waiting and seeking interrupt that window. Other fatal errors or exhausted recovery stop for manual action. Source changes, mode switches and unmounts cancel timers and retire old engine callbacks. `/stream-test` uses the same engine.
+
+### StreamFree
+
+- `lib/streamfreeServer.ts` parses bounded HTML literal constants and signing JSON without executing scripts. Explicit variants must match the requested stream key, quality and source suffix; bare embeds select that key's default source.
+- `/api/streamfree/manifest` fetches embed metadata, provider-local `/get-stream-key/{key}` and the freshly signed playlist. It uses native fetch with no cookies or invented provider headers, redirects disabled, caller cancellation and a 15-second total deadline. Success and errors are uncached; upstream exceptions are not exposed or logged because they can contain signed URLs.
+- Nested playlist links return through the local route, constrained to the resolved stream directory. Expired authentication fields are replaced with newly resolved values. Media URIs remain browser-direct only on the verified HTTPS `p16-oec-general-useast5.ttcdn-us.com/obj/` origin/path boundary. Unsupported media, external streams and provider rejections fail locally; the route never fetches or proxies video.
+- Plain hls.js handles the observed PNG-prefixed MPEG-TS segments. No StreamFree iframe, ad script, JWPlayer or P2P SDK loads in Direct mode. Original embed remains explicit. Some origin/CDN1 sources returned HTTP 403 during probes and are not bypassed. Native Safari and long-duration expiry remain runtime-unverified.
+
+### embed.st
+
 - `lib/embedStServer.ts` validates a binary response of at most 8 KiB and uses its `Goat` header as a 32-byte UTF-8 key. It unwraps protobuf field 1, reverses the printable-ASCII rotation, base64-decodes, then authenticates ChaCha20-Poly1305 (12-byte nonce, trailing 16-byte tag, no AAD). Only an authenticated HTTPS playlist on an explicit `lb<number>.strmd.st/secure/` origin is accepted.
 - `/api/embed-st/manifest` resolves, decodes and fetches the playlist within one invocation using `impit` with a Chrome-compatible HTTP/TLS profile, provider Referer/Origin, a deadline and redirects disabled. Standard Node fetch received HTTP 403; browser-issued tokens also failed from Vercel even with the compatible transport. Resolving and fetching together returned HTTP 200 on Vercel.
 - Nested playlist links contain the embed URL and a stream-relative variant path. Every request resolves a fresh signature before applying that variant, confined to the newly resolved stream's origin and directory. This stateless approach avoids relying on stable serverless egress or reusing client-context tokens. CDN media URLs remain direct browser requests; the endpoint cannot fetch arbitrary hosts or relay segments.

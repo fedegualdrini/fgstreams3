@@ -1,11 +1,9 @@
 import type { Match, RawMatch } from '@/types/api';
-import { LIVE_WINDOW_HOURS } from './constants';
+import { STREAMFREE_SOURCE, toStreamFreeSources } from './streamfree';
 
 const HOUR_MS = 60 * 60 * 1000;
 
-// streamed.pk occasionally emits nonsense epochs (values decades away from now).
-// Anything outside this band is treated as "no kickoff time" instead of being
-// sorted to one end of the listing.
+// Treat kickoff times far outside the catalog's useful horizon as missing.
 const MAX_PLAUSIBLE_OFFSET_MS = 400 * 24 * HOUR_MS;
 
 export function generateMatchId(match: Partial<Match>): string {
@@ -60,86 +58,44 @@ export function matchStartMs(match: Pick<Match, 'startTime'>, now = Date.now()):
   return parsed;
 }
 
-/**
- * Whether a match should be presented as live right now.
- *
- * `liveIds` comes from the upstream live feed and is authoritative. The kickoff
- * window is only a fallback for matches that feed has not caught up with — it is
- * recomputed on every render, so a cached page can never freeze the live badge.
- */
-export function deriveIsLive(
-  match: Match,
-  liveIds?: ReadonlySet<string>,
-  now = Date.now(),
-): boolean {
-  if (liveIds?.has(match.id)) return true;
-
-  const start = matchStartMs(match, now);
-  if (start === undefined) return match.isLive ?? false;
-
-  const elapsedHours = (now - start) / HOUR_MS;
-  return elapsedHours >= 0 && elapsedHours <= LIVE_WINDOW_HOURS;
-}
-
-/** streamed.pk serves team crests from an opaque badge token. */
-function badgePath(badge: string | undefined | null): string | undefined {
-  return badge ? `/api/images/badge/${badge}.webp` : undefined;
-}
-
-/**
- * Fewer than half the matches on the all-today feed carry a `poster`, but most
- * carry both team badges — and streamed.pk composes a poster from the pair.
- */
-function derivedPosterPath(match: RawMatch): string | undefined {
-  const home = match.teams?.home?.badge;
-  const away = match.teams?.away?.badge;
-  return home && away ? `/api/images/poster/${home}/${away}.webp` : undefined;
-}
-
-/**
- * `teams` is the structured form on the all-today feed; the title only has to
- * be split when the feed omits it.
- */
+/** Prefer structured team names, falling back to the stream's display name. */
 function resolveTeams(raw: RawMatch): { team1: string; team2: string } {
-  const fromTitle = raw.title
-    ? parseTeamsFromTitle(raw.title)
-    : { team1: raw.team1 || '', team2: raw.team2 || '' };
+  const fromTitle = parseTeamsFromTitle(raw.name);
   return {
-    team1: raw.teams?.home?.name || raw.team1 || fromTitle.team1,
-    team2: raw.teams?.away?.name || raw.team2 || fromTitle.team2,
+    team1: raw.team1?.name || fromTitle.team1,
+    team2: raw.team2?.name || fromTitle.team2,
   };
 }
 
-/** `date` (epoch ms or string) wins; the other time fields are only read when it is absent. */
+/** StreamFree timestamps are Unix seconds; absent or invalid times stay absent. */
 function resolveStartTime(raw: RawMatch): string | undefined {
-  if (!raw.date) return raw.startTime || raw.start_time || raw.time;
-  if (typeof raw.date === 'number') return new Date(raw.date).toISOString();
-  return raw.date;
+  if (!raw.match_timestamp) return undefined;
+  const date = new Date(raw.match_timestamp * 1000);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : undefined;
 }
 
-function normalizeMatch(raw: RawMatch, now: number): Match {
+function normalizeMatch(raw: RawMatch): Match {
   const { team1, team2 } = resolveTeams(raw);
 
-  const normalized: Match = {
-    id: raw.id ? String(raw.id) : generateMatchId(raw),
-    sport: raw.sport || raw.category || '',
-    league: raw.league || raw.tournament || raw.competition || '',
+  return {
+    id: raw.stream_key,
+    sport: raw.category,
+    league: raw.league || '',
     team1,
     team2,
     startTime: resolveStartTime(raw),
-    isLive: raw.isLive !== undefined ? raw.isLive : (raw.is_live || raw.live || false),
-    sources: raw.sources || [],
-    image1: raw.image1 || raw.homeImage || raw.team1Image || badgePath(raw.teams?.home?.badge),
-    image2: raw.image2 || raw.awayImage || raw.team2Image || badgePath(raw.teams?.away?.badge),
-    poster: raw.poster || raw.posterImage || raw.posterUrl || derivedPosterPath(raw),
+    isLive: raw.live_sources.length > 0,
+    sources: [{
+      source: STREAMFREE_SOURCE,
+      id: raw.stream_key,
+      streams: toStreamFreeSources(raw),
+    }],
+    image1: raw.team1?.logo || undefined,
+    image2: raw.team2?.logo || undefined,
+    poster: raw.thumbnail_url || undefined,
   };
-
-  // Streamed has no explicit live flag on the per-sport feeds, so seed it from
-  // the kickoff window; callers with the live feed refine it via deriveIsLive.
-  normalized.isLive = deriveIsLive(normalized, undefined, now);
-  return normalized;
 }
 
-export function normalizeMatches(matches: RawMatch[], now = Date.now()): Match[] {
-  return matches.map((raw) => normalizeMatch(raw, now));
+export function normalizeMatches(matches: RawMatch[]): Match[] {
+  return matches.map(normalizeMatch);
 }

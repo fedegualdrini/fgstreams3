@@ -17,7 +17,9 @@ async function loadActiveMatch(match: Match, muted: boolean): Promise<ActiveMatc
   try {
     const sources = match.sources ?? [];
     const streamsPerSource = await Promise.all(
-      sources.map((source) => fetchStreams(source.source, source.id).catch((): Stream[] => [])),
+      sources.map((source) => source.streams !== undefined
+        ? Promise.resolve(source.streams)
+        : fetchStreams(source.source, source.id).catch((): Stream[] => [])),
     );
     const streams = streamsPerSource.flat();
     return { match, streams, selectedStream: selectBestStream(streams), muted };

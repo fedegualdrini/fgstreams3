@@ -148,7 +148,9 @@ export function summarizeInputs(inputs: BroadcastInputs) {
 /** One match walked through every stage: streams, feed fixtures, resolved channels. */
 async function traceMatch(match: Match, now: number, sources: BroadcastSources, channels: Channel[]) {
   const lookups = await Promise.all(
-    (match.sources ?? []).map(source => fetchStreamLookup(source.source, source.id)),
+    (match.sources ?? []).map(source => source.streams !== undefined
+      ? Promise.resolve({ streams: source.streams, ok: true })
+      : fetchStreamLookup(source.source, source.id)),
   );
   const feeds = findFeedFixtures(match, now, sources);
   const { event, fixture } = feeds;
@@ -179,7 +181,7 @@ export async function traceQuery(query: string, inputs: BroadcastInputs) {
   const now = Date.now();
 
   const rawMatches = await fetchAllMatches();
-  const normalized = normalizeMatches(rawMatches, now);
+  const normalized = normalizeMatches(rawMatches ?? []);
   const hits = normalized.filter(match => matchesQuery(query, match.team1, match.team2));
 
   // Promiedos localises kickoff to the requesting IP, so the feeds' clocks are
@@ -194,9 +196,7 @@ export async function traceQuery(query: string, inputs: BroadcastInputs) {
 
   return {
     query,
-    // An empty feed here is what empties the site, so it is worth reporting on
-    // its own rather than inferring it from a zero-length catalog.
-    upstreamFeed: { matches: rawMatches.length, listable: normalized.length },
+    upstreamFeed: { ok: rawMatches !== null, matches: rawMatches?.length ?? 0, listable: normalized.length },
     feedOffset: {
       promiedosMs: promiedosOffsetMs,
       promiedosHours: promiedosOffsetMs === null ? null : promiedosOffsetMs / HOUR_MS,

@@ -5,16 +5,12 @@ import type { AngulismoSnapshot, RawMatch } from '@/types/api';
 // point is what buildCatalog hands it, so it is reduced to a pass-through.
 vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
 
-const fetchAllMatches = vi.fn<() => Promise<RawMatch[]>>();
-const fetchLiveMatchIds = vi.fn(async () => new Set<string>());
-const stream = { url: 'https://a.example/s', embedUrl: 'https://a.example/s' };
-const fetchStreamLookup = vi.fn(async () => ({ streams: [stream], ok: true }));
+const fetchAllMatches = vi.fn<() => Promise<RawMatch[] | null>>();
 const fetchAngulismoData = vi.fn<() => Promise<AngulismoSnapshot>>();
 
 vi.mock('./api', () => ({
   fetchAllMatches: () => fetchAllMatches(),
-  fetchLiveMatchIds: () => fetchLiveMatchIds(),
-  fetchStreamLookup: () => fetchStreamLookup(),
+  fetchStreamLookup: vi.fn(),
 }));
 vi.mock('./promiedos', () => ({
   fetchPromiedosGames: async () => ({ games: [], ok: true, stale: false }),
@@ -32,18 +28,17 @@ vi.mock('fs/promises', () => {
 const { getCatalog } = await import('./catalog');
 
 const match = (id: string): RawMatch => ({
-  id,
-  title: 'Home Team vs Away Team',
-  category: 'football',
-  date: Date.now() + 30 * 60 * 1000,
-  sources: [{ source: 'alpha', id }],
+  stream_key: id,
+  name: 'Home Team vs Away Team',
+  category: 'soccer',
+  match_timestamp: Math.floor((Date.now() + 30 * 60 * 1000) / 1000),
+  sources: [`https://strmfree.st/embed/soccer/${id}1080p`],
+  live_sources: [],
 });
 
 describe('getCatalog', () => {
   beforeEach(() => {
     fetchAllMatches.mockReset();
-    fetchStreamLookup.mockClear();
-    fetchStreamLookup.mockResolvedValue({ streams: [stream], ok: true });
     fetchAngulismoData.mockReset();
     fetchAngulismoData.mockResolvedValue({ events: [], channels: [], ok: true, stale: false });
   });
@@ -54,13 +49,11 @@ describe('getCatalog', () => {
     expect(catalog.map(m => m.id)).toEqual(['a', 'b']);
   });
 
-  it('serves the last good catalog when the feed comes back empty', async () => {
+  it('serves the last good catalog when the feed fails', async () => {
     fetchAllMatches.mockResolvedValue([match('a')]);
     expect(await getCatalog()).toHaveLength(1);
 
-    // An empty feed is a failed fetch. Returning [] here would be cached and
-    // would empty the site for a full revalidation window.
-    fetchAllMatches.mockResolvedValue([]);
+    fetchAllMatches.mockResolvedValue(null);
     const catalog = await getCatalog();
     expect(catalog.map(m => m.id)).toEqual(['a']);
   });
@@ -77,32 +70,43 @@ describe('getCatalog', () => {
     fetchAllMatches.mockResolvedValue([
       { ...match('recent') },
       // Kicked off well outside the listing window.
-      { ...match('ancient'), date: Date.now() - 48 * 60 * 60 * 1000 },
+      { ...match('ancient'), match_timestamp: Math.floor(Date.now() / 1000) - 48 * 60 * 60 },
     ]);
     const first = await getCatalog();
     expect(first.map(m => m.id)).toEqual(['recent']);
 
-    fetchAllMatches.mockResolvedValue([]);
+    fetchAllMatches.mockResolvedValue(null);
     const fallback = await getCatalog();
     expect(fallback.map(m => m.id)).toEqual(['recent']);
   });
 
   it('drops a match whose sources genuinely carry nothing', async () => {
-    fetchAllMatches.mockResolvedValue([match('a')]);
-    fetchStreamLookup.mockResolvedValue({ streams: [], ok: true });
+    fetchAllMatches.mockResolvedValue([{ ...match('a'), sources: [] }]);
     expect(await getCatalog()).toEqual([]);
   });
 
-  it('keeps a match whose stream lookup failed', async () => {
+  it('clears the previous catalog on a successful empty response', async () => {
     fetchAllMatches.mockResolvedValue([match('a')]);
-    // A failed request carries no information about what the source holds, so
-    // judging the match unwatchable on it would remove a live event.
-    fetchStreamLookup.mockResolvedValue({ streams: [], ok: false });
     expect((await getCatalog()).map(m => m.id)).toEqual(['a']);
+    fetchAllMatches.mockResolvedValue([]);
+    expect(await getCatalog()).toEqual([]);
+  });
+
+  it('keeps live channels with old kickoff times and uses their inline variants', async () => {
+    const channel = {
+      ...match('redzone'),
+      name: 'RedZone',
+      match_timestamp: Math.floor(Date.now() / 1000) - 60 * 24 * 60 * 60,
+      live_sources: ['https://strmfree.st/embed/football/redzone1080p'],
+    };
+    fetchAllMatches.mockResolvedValue([channel]);
+    const catalog = await getCatalog();
+    expect(catalog.map(m => [m.id, m.isLive])).toEqual([['redzone', true]]);
+    expect(catalog[0].streams.map(s => s.url)).toContain(channel.live_sources[0]);
   });
 
   it('uses one fresh feed snapshot for fixture and channel viewing options', async () => {
-    const fixture = match('broadcast');
+    const fixture = { ...match('broadcast'), sources: [] };
     const liveChannel = {
       name: 'ESPN Premium',
       logo: '',
@@ -110,16 +114,15 @@ describe('getCatalog', () => {
       options: [{ name: 'live', iframe: 'https://live.example/channel' }],
     };
     fetchAllMatches.mockResolvedValue([fixture]);
-    fetchStreamLookup.mockResolvedValue({ streams: [], ok: true });
     fetchAngulismoData.mockResolvedValueOnce({
       channels: [liveChannel],
       events: [{
         id: 'fixture',
-        title: fixture.title!,
+        title: fixture.name,
         competition: '',
         homeTeam: 'Home Team',
         awayTeam: 'Away Team',
-        startTimeMs: fixture.date as number,
+        startTimeMs: fixture.match_timestamp! * 1000,
         channels: [{
           ...liveChannel,
           options: [{ name: 'event', iframe: 'https://live.example/event' }],

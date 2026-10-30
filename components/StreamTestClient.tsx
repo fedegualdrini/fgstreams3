@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import EmbedStPlayer from './players/EmbedStPlayer';
-import { EMBED_ST_MAX_URL_LENGTH } from '@/lib/constants';
-import { embedStManifestPath } from '@/lib/embedSt';
+import DirectHlsPlayer from './players/DirectHlsPlayer';
+import { getDirectPlayback, type DirectPlaybackSource } from '@/lib/directPlayback';
 
 export default function StreamTestClient() {
   const [input, setInput] = useState('');
-  const [src, setSrc] = useState<string | null>(null);
+  const [playback, setPlayback] = useState<DirectPlaybackSource | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState('Paste a current embed URL to begin.');
   const [error, setError] = useState<string | null>(null);
@@ -16,9 +15,11 @@ export default function StreamTestClient() {
   function resolve(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setSrc(null);
+    setPlayback(null);
     try {
-      setSrc(embedStManifestPath(input));
+      const resolved = getDirectPlayback(input);
+      if (!resolved) throw new Error('Use a supported StreamFree or embed.st embed URL, not a match page or signed playlist.');
+      setPlayback(resolved);
       setAttempt(value => value + 1);
       setStatus('Resolving and loading HLS… Press play if autoplay is blocked.');
     } catch (failure) {
@@ -32,27 +33,27 @@ export default function StreamTestClient() {
       <form className="stream-test__form" onSubmit={resolve}>
         <label htmlFor="stream-test-url" className="label">Embed URL</label>
         <div className="stream-test__controls">
-          <input id="stream-test-url" type="url" required maxLength={EMBED_ST_MAX_URL_LENGTH} className="search-field__input stream-test__input"
-            placeholder="https://embed.st/embed/admin/stream-id/1" value={input} onChange={event => setInput(event.target.value)}
+          <input id="stream-test-url" type="url" required maxLength={2048} className="search-field__input stream-test__input"
+            placeholder="https://strmfree.st/embed/basketball/stream-key1080p" value={input} onChange={event => setInput(event.target.value)}
             aria-describedby="stream-test-help" autoComplete="off" spellCheck={false} />
           <button type="submit" className="btn btn--primary">Resolve &amp; play</button>
         </div>
-        <p id="stream-test-help" className="stream-test__hint">Use a current embed.st source URL, not a match page or an old signed playlist. Resolving again requests a fresh URL.</p>
+        <p id="stream-test-help" className="stream-test__hint">Use a current StreamFree or embed.st embed URL. Resolving again refreshes the playlist signature without loading the provider iframe.</p>
       </form>
       <p role="status" className="stream-test__status">{status}</p>
       {error && <p role="alert" className="stream-test__error">{error}</p>}
       <div className="stream-test__player">
-        {src ? <EmbedStPlayer key={attempt} src={src}
-          onPlaying={() => setStatus('Playing decoded HLS stream.')}
+        {playback ? <DirectHlsPlayer key={attempt} src={playback.src} provider={playback.provider}
+          onPlaying={() => setStatus('Playing direct HLS stream.')}
           onRecovering={number => setStatus(`Reconnecting to the same source (attempt ${number})…`)}
           onError={() => {
-            setSrc(null);
+            setPlayback(null);
             setStatus('Stream playback failed.');
             setError('Playback failed. The stream may be offline, expired or rejected by the provider. Resolve again for a fresh URL.');
           }} />
           : <p className="stream-test__placeholder">Resolve a stream to test playback.</p>}
       </div>
-      <p className="stream-test__hint">Experimental: highest-quality rendition only, using supported CDN hosts. Slow connections may buffer instead of switching to low quality. Manifests pass through our server; media segments load directly from the CDN. Provider restrictions can still prevent playback.</p>
+      <p className="stream-test__hint">Experimental: StreamFree plays the selected source variant; embed.st exposes only its highest-quality rendition. Manifests pass through our server; media segments load directly from verified CDN hosts. Provider restrictions can still prevent playback.</p>
     </>
   );
 }

@@ -15,8 +15,8 @@ const log = createLogger('promiedos');
 
 export const PROMIEDOS_BASE = 'https://www.promiedos.com.ar';
 
-// Yesterday / today / tomorrow. Streamed lists fixtures a day or two out and
-// timezone skew can push an Argentine evening game onto the next UTC day.
+// Yesterday / today / tomorrow cover upcoming fixtures and timezone skew around
+// Argentine evening games that land on the next UTC day.
 export const PROMIEDOS_PAGES = ['/ayer', '/', '/man'];
 
 export const PROMIEDOS_HEADERS = {

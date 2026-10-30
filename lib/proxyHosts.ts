@@ -49,6 +49,7 @@ export const GENERATED_PROXY_HOSTS: readonly string[] = [
   'dh732bpen9wqx.cloudfront.net',
   'dt1s4l2cmiyit.cloudfront.net',
   'dvnftgdlbnemm.cloudfront.net',
+  'emitiendoenvivo.com',
   'hls1.sua.tv',
   'jmp2.uk',
   'ogc-nsprt-tcl-roku-syndication.otteravision.com',

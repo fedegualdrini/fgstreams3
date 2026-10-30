@@ -1,51 +1,36 @@
 import { unstable_cache } from 'next/cache';
 import type { AngulismoSnapshot, CatalogMatch } from '@/types/api';
 import type { Channel } from '@/types/channels';
-import { fetchAllMatches, fetchLiveMatchIds } from './api';
+import { fetchAllMatches } from './api';
 import { normalizeMatches } from './matchUtils';
 import { fetchPromiedosGames, type PromiedosSnapshot } from './promiedos';
 import { fetchAngulismoData } from './angulismo';
 import { getChannelCatalog } from './channelCatalog';
 import { buildBroadcastSources, findFeedFixtures, resolveFeedBroadcasts } from './catalogBroadcasts';
-import { resolveStreams } from './catalogStreams';
 import { currentLiveState, isListable } from './catalogWindow';
-import { CATALOG_TIME_BUDGET_MS, REVALIDATE_CATALOG } from './constants';
+import { REVALIDATE_CATALOG } from './constants';
 import { createLogger } from './logger';
 
 /**
  * The match catalog: every listable match together with the streams that
  * actually play it.
  *
- * A match's `sources` only say which providers *might* carry it — for well over
- * half of them `/stream/{source}/{id}` answers with an empty array. Resolving
- * that up front is what lets the site (a) never advertise a match nobody can
- * watch and (b) render a match page with its sources already in hand instead of
- * flashing "no streams" while the browser fetches them.
+ * StreamFree includes source URLs and live flags in its stream listing. Keep
+ * those variants alongside optional TV broadcasts so the match page can render
+ * immediately, without issuing another lookup for every match.
  *
- * Resolution is expensive (~470 upstream calls) so it happens inside a cached
- * function: after the first build, renders read the cache and Next refreshes it
- * in the background.
- *
- * The pieces live next to this file: catalogWindow (what is listed / live),
- * catalogStreams (stream resolution), catalogBroadcasts (TV channel matching).
+ * catalogWindow owns listing rules; catalogBroadcasts matches TV fixtures.
  */
 
 const log = createLogger('catalog');
 
 export type { CatalogMatch };
 
-/**
- * Thrown when the upstream match feed gave us nothing at all.
- *
- * It exists to keep that result *out* of the cache. `unstable_cache` stores
- * whatever its callback returns, so returning an empty list would pin "no
- * matches available" across every visitor for a full revalidation window on the
- * strength of one failed request.
- */
-class EmptyUpstreamError extends Error {
+/** Failed fetches must not replace a healthy cached catalog with an empty one. */
+class UpstreamError extends Error {
   constructor() {
-    super('upstream match feed returned no matches');
-    this.name = 'EmptyUpstreamError';
+    super('upstream stream feed unavailable');
+    this.name = 'UpstreamError';
   }
 }
 
@@ -55,55 +40,44 @@ const NO_ANGULISMO: AngulismoSnapshot = { events: [], channels: [], ok: false, s
 
 async function buildCatalog(): Promise<CatalogMatch[]> {
   const now = Date.now();
-  const deadline = now + CATALOG_TIME_BUDGET_MS;
   const angulismoRequest = fetchAngulismoData().catch(() => NO_ANGULISMO);
 
-  const [rawMatches, liveIds, promiedos, angulismo, channels] = await Promise.all([
+  const [rawMatches, promiedos, angulismo, channels] = await Promise.all([
     fetchAllMatches(),
-    fetchLiveMatchIds(),
     fetchPromiedosGames().catch(() => NO_PROMIEDOS),
     angulismoRequest,
     angulismoRequest.then(snapshot => getChannelCatalog(snapshot)).catch(() => [] as Channel[]),
   ]);
 
-  // An empty feed is a failed fetch, not a quiet day: streamed.pk lists a few
-  // hundred fixtures around the clock. A day with nothing *listable* is
-  // plausible and cacheable; a day with nothing at all is not.
-  if (rawMatches.length === 0) throw new EmptyUpstreamError();
+  // A successful empty response is a quiet feed; null means the fetch failed.
+  if (rawMatches === null) throw new UpstreamError();
 
   // Only with a working lookup and a channel catalog can we say a match has no
   // broadcaster. Without them we know nothing, which is a different thing.
   const broadcastsKnown = (promiedos.ok || angulismo.ok) && channels.length > 0;
 
-  const matches = normalizeMatches(rawMatches, now)
-    .filter(match => isListable(match, now))
-    .map(match => ({ ...match, liveHint: liveIds.has(match.id) }));
+  const matches = normalizeMatches(rawMatches)
+    .filter(match => isListable(match, now));
 
-  const { streamsByMatch, unresolvedMatches } = await resolveStreams(matches, deadline);
   const broadcastSources = buildBroadcastSources(matches, promiedos.games, angulismo.events, now);
 
   const catalog: CatalogMatch[] = [];
 
-  matches.forEach((match, matchIndex) => {
-    const streams = streamsByMatch.get(matchIndex) ?? [];
+  matches.forEach(match => {
+    const streams = match.sources.flatMap(source => source.streams ?? []);
     const broadcasts = resolveFeedBroadcasts(findFeedFixtures(match, now, broadcastSources), channels);
 
-    // Drop matches nobody can watch: no working Streamed source and no channel
-    // carrying it. Two cases are deliberately kept instead:
-    //   - sources we ran out of time to resolve (re-checked next rebuild);
-    //   - every match, when the broadcast lookup itself failed. A live fixture
-    //     whose only route is a TV channel would otherwise vanish from the site
-    //     because an optional enrichment was unavailable.
+    // Without broadcast data, a missing TV option is unknown rather than absent.
     const playable = streams.length > 0 || broadcasts.length > 0;
-    if (!playable && !unresolvedMatches.has(matchIndex) && broadcastsKnown) return;
+    if (!playable && broadcastsKnown) return;
 
-    catalog.push({ ...match, streams, broadcasts, isLive: currentLiveState(match, now) });
+    catalog.push({ ...match, streams, broadcasts, isLive: currentLiveState(match) });
   });
 
   return catalog;
 }
 
-const getCachedCatalog = unstable_cache(buildCatalog, ['match-catalog'], {
+const getCachedCatalog = unstable_cache(buildCatalog, ['strmfree-match-catalog'], {
   revalidate: REVALIDATE_CATALOG,
   tags: ['match-catalog'],
 });
@@ -113,8 +87,8 @@ const getCachedCatalog = unstable_cache(buildCatalog, ['match-catalog'], {
 let lastGoodCatalog: CatalogMatch[] | null = null;
 
 /**
- * The catalog, with liveness recomputed against the current clock so a cached
- * entry never shows a stale live badge.
+ * The current provider catalog. Live status comes from the cached source list;
+ * only listing windows are recomputed against the current clock.
  *
  * When the upstream feed is unreachable this serves the last good catalog
  * rather than nothing: stale fixtures are a smaller failure than an empty site,
@@ -138,7 +112,7 @@ export async function getCatalog(): Promise<CatalogMatch[]> {
 
   return catalog
     .filter(match => isListable(match, now))
-    .map(match => ({ ...match, isLive: currentLiveState(match, now) }));
+    .map(match => ({ ...match, isLive: currentLiveState(match) }));
 }
 
 export async function getCatalogMatch(id: string): Promise<CatalogMatch | null> {

@@ -1,52 +1,25 @@
 import type { Channel } from './channels';
 
-// Raw shape returned by the streamed.pk API (validated by lib/schemas.ts) — normalized before use
-export interface RawStream {
-  url?: string;
-  embedUrl?: string;
-  language?: string;
-  hd?: boolean;
-  quality?: string;
-  source?: string;
-}
-
+// Raw StreamFree stream (validated by lib/schemas.ts), normalized before use.
 export interface RawMatch {
   id?: string;
-  title?: string;
-  category?: string;
-  date?: number | string;
-  time?: string;
-  // null for non-team events (races, fight cards).
-  teams?: {
-    home?: { name?: string; badge?: string } | null;
-    away?: { name?: string; badge?: string } | null;
-  } | null;
-  sources?: Array<{ source: string; id: string }>;
-  poster?: string;
-  sport?: string;
-  league?: string;
-  tournament?: string;
-  competition?: string;
-  team1?: string;
-  team2?: string;
-  startTime?: string;
-  start_time?: string;
-  isLive?: boolean;
-  is_live?: boolean;
-  live?: boolean;
-  image1?: string;
-  image2?: string;
-  homeImage?: string;
-  awayImage?: string;
-  team1Image?: string;
-  team2Image?: string;
-  posterImage?: string;
-  posterUrl?: string;
+  name: string;
+  category: string;
+  league?: string | null;
+  stream_key: string;
+  /** Unix seconds, not milliseconds. */
+  match_timestamp?: number | null;
+  sources: string[];
+  live_sources: string[];
+  thumbnail_url?: string | null;
+  team1?: { name?: string; logo?: string | null } | null;
+  team2?: { name?: string; logo?: string | null } | null;
 }
 
 export interface MatchSource {
   source: string;
   id: string;
+  streams?: Stream[];
 }
 
 export interface Match {
@@ -69,6 +42,7 @@ export interface Stream {
   quality?: string;
   source?: string;
   embedUrl?: string;
+  isLive?: boolean;
 }
 
 export interface Sport {
@@ -136,7 +110,7 @@ export interface FlashscoreDetail {
 // ─── Broadcast (Promiedos → local channel catalog) ───────────────────────────
 
 // A fixture as published by promiedos.com.ar, reduced to what we need to match
-// it against a Streamed match and resolve its broadcaster.
+// it against a catalog match and resolve its broadcaster.
 export interface PromiedosGame {
   id: string;
   league: string;
@@ -167,8 +141,6 @@ export interface BroadcastChannel {
 export interface CatalogMatch extends Match {
   streams: Stream[];
   broadcasts: BroadcastChannel[];
-  // Whether the upstream live feed listed this match when the catalog was built.
-  liveHint: boolean;
 }
 
 // A broadcaster as a match card shows it. The playable options only matter on

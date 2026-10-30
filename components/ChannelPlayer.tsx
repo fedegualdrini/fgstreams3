@@ -3,7 +3,8 @@
 import { useMemo } from 'react';
 import type { Channel, ChannelOption } from '@/types/channels';
 import { getPlayableOptions } from '@/lib/channelOptions';
-import { isEmbedStUrl } from '@/lib/embedSt';
+import { getDirectPlayback } from '@/lib/directPlayback';
+import { isLpfCdnUrl } from '@/lib/lpfUrls';
 import ChannelStream from '@/components/channels/ChannelStream';
 import OptionPicker from '@/components/channels/OptionPicker';
 import { LoadingOverlay, TimeoutOverlay } from '@/components/channels/PlayerOverlays';
@@ -16,6 +17,8 @@ interface ChannelPlayerProps {
   onOptionChange?: (index: number) => void;
   fillContainer?: boolean;
   hideTabs?: boolean;
+  lpfRefreshing?: boolean;
+  onPlaybackChange?: (index: number, option: ChannelOption, playing: boolean) => void;
 }
 
 export default function ChannelPlayer({
@@ -24,19 +27,33 @@ export default function ChannelPlayer({
   onOptionChange,
   fillContainer = false,
   hideTabs = false,
+  lpfRefreshing = false,
+  onPlaybackChange,
 }: ChannelPlayerProps) {
-  const validOptions = useMemo(() => getPlayableOptions(channel), [channel]);
+  const isLpf = channel.source === 'lpf';
+  const validOptions = useMemo(
+    () => channel.source === 'lpf' ? channel.options : getPlayableOptions(channel),
+    [channel],
+  );
   const { selectedIndex, selectOption, tryNextOption } = useOptionSelection(
     validOptions.length,
     initialOptionIndex,
     onOptionChange,
   );
-  const load = useChannelLoadState(selectedIndex);
-
   const currentOption: ChannelOption | undefined = validOptions[selectedIndex];
+  const lpfBlocked = isLpf && (!currentOption || currentOption.status === 'ended'
+    || currentOption.status === 'unavailable' || !isLpfCdnUrl(currentOption.iframe));
+  const load = useChannelLoadState(`${channel.name}-${selectedIndex}-${currentOption?.iframe}-${lpfBlocked}`);
+  const lpfMessage = currentOption?.status === 'ended'
+    ? { title: 'Broadcast finished', detail: 'This broadcast has ended. Refresh links to check for a new game, or select another source.' }
+    : currentOption?.status === 'unavailable'
+      ? { title: 'Source unavailable', detail: 'No current broadcast is available for this source. Refresh links or select another source.' }
+      : lpfRefreshing
+        ? { title: 'Checking broadcast…', detail: 'Looking up the current stream for this numbered source.' }
+        : { title: 'Broadcast status unknown', detail: 'The current stream could not be confirmed. Refresh links or select another source.' };
   const hasAlternatives = validOptions.length > 1;
-  // embed.st owns loading/error UI so autoplay blocking never hides its play or mode controls.
-  const ownsPlaybackState = currentOption ? isEmbedStUrl(currentOption.iframe) : false;
+  // Direct playback owns loading/error UI so outer overlays cannot hide its controls.
+  const ownsPlaybackState = currentOption ? getDirectPlayback(currentOption.iframe) !== null : false;
 
   if (validOptions.length === 0) {
     return (
@@ -65,8 +82,14 @@ export default function ChannelPlayer({
       )}
 
       <div className={fillContainer ? 'channel-player__stage channel-player__stage--fill' : 'channel-player__stage video-container'}>
-        {!ownsPlaybackState && load.isLoading && !load.timedOut && <LoadingOverlay seconds={load.loadingSeconds} />}
-        {!ownsPlaybackState && load.timedOut && (
+        {lpfBlocked && (
+          <div className="channel-player__empty channel-player__empty--fill channel-player__notice" role="status">
+            <strong>{lpfMessage.title}</strong>
+            <p>{lpfMessage.detail}</p>
+          </div>
+        )}
+        {!lpfBlocked && !ownsPlaybackState && load.isLoading && !load.timedOut && <LoadingOverlay seconds={load.loadingSeconds} />}
+        {!lpfBlocked && !ownsPlaybackState && load.timedOut && (
           <TimeoutOverlay canTryNext={hasAlternatives} onTryNext={tryNextOption} onRetry={load.reload} />
         )}
         {fillContainer && !hideTabs && hasAlternatives && (
@@ -77,20 +100,26 @@ export default function ChannelPlayer({
             onSelect={selectOption}
           />
         )}
-        {currentOption && (
+        {!lpfBlocked && currentOption && (
           <ChannelStream
-            key={`${channel.name}-${selectedIndex}-${load.reloadKey}`}
+            key={`${channel.name}-${selectedIndex}-${currentOption.iframe}-${load.reloadKey}`}
             channelName={channel.name}
             option={currentOption}
-            onPlaying={load.markPlaying}
-            onError={load.markFailed}
+            onPlaying={() => {
+              load.markPlaying();
+              onPlaybackChange?.(selectedIndex, currentOption, true);
+            }}
+            onError={() => {
+              load.markFailed();
+              onPlaybackChange?.(selectedIndex, currentOption, false);
+            }}
           />
         )}
       </div>
 
       {!fillContainer && (
         <div className="channel-player__controls">
-          <button type="button" className="link-button" onClick={load.reload}>Reload</button>
+          {!lpfBlocked && <button type="button" className="link-button" onClick={load.reload}>Reload</button>}
           {hasAlternatives && (
             <button type="button" className="link-button" onClick={tryNextOption}>Next option</button>
           )}

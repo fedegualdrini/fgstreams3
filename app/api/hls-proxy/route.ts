@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { lookup } from 'dns/promises';
 import { isIP } from 'net';
 import { GENERATED_PROXY_HOSTS } from '@/lib/proxyHosts';
+import { isLpfCdnUrl } from '@/lib/lpfUrls';
 
 // Hand-maintained origins that predate the playlist importer.
 const STATIC_HOSTS = [
@@ -141,7 +142,7 @@ export async function GET(req: NextRequest) {
   }
 
   const signed = signatureMatches(rawUrl, req.nextUrl.searchParams.get('sig'));
-  if (!signed && !ALLOWED_HOSTS.has(parsed.hostname)) {
+  if (!signed && !ALLOWED_HOSTS.has(parsed.hostname) && !isLpfCdnUrl(rawUrl)) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 

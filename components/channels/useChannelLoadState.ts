@@ -7,11 +7,11 @@ const TICK_MS = 1000;
  * Connection state of the currently selected stream: loading (with an elapsed
  * seconds counter), playing, or failed (explicit error or load timeout).
  *
- * The state restarts whenever `resetKey` changes (option switched) or `reload`
+ * The state restarts whenever `resetKey` changes (option or source switched) or `reload`
  * is called; `reloadKey` is what the caller folds into the player's React key
  * to force a fresh mount.
  */
-export function useChannelLoadState(resetKey: number) {
+export function useChannelLoadState(resetKey: number | string) {
   const [isLoading, setIsLoading] = useState(true);
   const [timedOut, setTimedOut] = useState(false);
   const [loadingSeconds, setLoadingSeconds] = useState(0);

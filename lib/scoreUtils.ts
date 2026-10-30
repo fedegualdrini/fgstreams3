@@ -32,7 +32,7 @@ function jaccard(a: Set<string>, b: Set<string>): number {
   return union === 0 ? 0 : intersection / union;
 }
 
-// Find the best-matching FlashscoreEntry for a given pair of Streamed team names.
+// Find the best-matching FlashscoreEntry for a pair of provider team names.
 // Returns null if no entry scores above the similarity threshold.
 export function findMatchingEntry(
   team1: string,

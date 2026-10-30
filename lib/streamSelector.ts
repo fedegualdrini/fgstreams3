@@ -12,9 +12,8 @@ function qualityRank(stream: Stream): number {
 }
 
 /**
- * Pick the preferred stream: English first, then best quality, then original
- * order. Playback failures are handled by rotating to the next stream in
- * MatchDetailClient rather than by scoring streams up front.
+ * Pick the preferred stream: live first, then English, quality, and original
+ * order. Playback failures rotate to the next stream in MatchDetailClient.
  */
 export function selectBestStream(streams: Stream[]): Stream | null {
   if (!streams || streams.length === 0) return null;
@@ -22,6 +21,7 @@ export function selectBestStream(streams: Stream[]): Stream | null {
   const ranked = streams
     .map((stream, index) => ({ stream, index }))
     .sort((a, b) =>
+      Number(b.stream.isLive === true) - Number(a.stream.isLive === true) ||
       Number(isEnglish(b.stream)) - Number(isEnglish(a.stream)) ||
       qualityRank(a.stream) - qualityRank(b.stream) ||
       // Stable order for otherwise-equal streams.

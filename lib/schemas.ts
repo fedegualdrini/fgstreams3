@@ -5,57 +5,39 @@ import { z } from 'zod';
 // z.infer: `.passthrough()` (we keep unknown upstream fields) adds a string
 // index signature to the inferred type, which would leak into every consumer.
 
-const RawStreamSchema = z.object({
-  url: z.string().optional(),
-  embedUrl: z.string().optional(),
-  language: z.string().optional(),
-  hd: z.boolean().optional(),
-  quality: z.string().optional(),
-  source: z.string().optional(),
+const StreamFreeTeamSchema = z.object({
+  name: z.string().optional(),
+  logo: z.string().nullish(),
 }).passthrough();
 
-const RawMatchSourceSchema = z.object({
-  source: z.string(),
-  id: z.string(),
+const StreamFreeSourceListsSchema = z.object({
+  sources: z.array(z.string()),
+  live_sources: z.array(z.string()),
+}).passthrough();
+
+export const StreamFreeMatchSchema = StreamFreeSourceListsSchema.extend({
+  id: z.string().optional(),
+  name: z.string(),
+  category: z.string(),
+  league: z.string().nullish(),
+  stream_key: z.string(),
+  match_timestamp: z.number().nullish(),
+  thumbnail_url: z.string().nullish(),
+  team1: StreamFreeTeamSchema.nullish(),
+  team2: StreamFreeTeamSchema.nullish(),
 });
 
-const RawMatchTeamSchema = z.object({
-  name: z.string().optional(),
-  badge: z.string().optional(),
+export const StreamFreeStreamsResponseSchema = z.object({
+  count: z.number().int().nonnegative(),
+  streams: z.array(StreamFreeMatchSchema),
 }).passthrough();
 
-const RawMatchSchema = z.object({
-  id: z.string().optional(),
-  title: z.string().optional(),
-  category: z.string().optional(),
-  // The feed sends `teams: null` for non-team events (races, fight cards).
-  teams: z.object({
-    home: RawMatchTeamSchema.nullish(),
-    away: RawMatchTeamSchema.nullish(),
-  }).passthrough().nullish(),
-  date: z.union([z.number(), z.string()]).optional(),
-  time: z.string().optional(),
-  sources: z.array(RawMatchSourceSchema).optional(),
-  sport: z.string().optional(),
-  league: z.string().optional(),
-  tournament: z.string().optional(),
-  competition: z.string().optional(),
-  team1: z.string().optional(),
-  team2: z.string().optional(),
-  startTime: z.string().optional(),
-  start_time: z.string().optional(),
-  isLive: z.boolean().optional(),
-  is_live: z.boolean().optional(),
-  live: z.boolean().optional(),
-  image1: z.string().optional(),
-  image2: z.string().optional(),
-  homeImage: z.string().optional(),
-  awayImage: z.string().optional(),
-  team1Image: z.string().optional(),
-  team2Image: z.string().optional(),
-  poster: z.string().optional(),
-  posterImage: z.string().optional(),
-  posterUrl: z.string().optional(),
+export const StreamFreeSourcesResponseSchema = StreamFreeSourceListsSchema.extend({
+  stream_key: z.string(),
+});
+
+export const StreamFreeCategoriesResponseSchema = z.object({
+  categories: z.array(z.string()),
 }).passthrough();
 
 const ChannelOptionSchema = z.object({
@@ -63,19 +45,6 @@ const ChannelOptionSchema = z.object({
   iframe: z.string(),
 });
 
-const SportSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  slug: z.string().optional(),  // not always present in the API response
-}).passthrough();
-
-const RawStreamArraySchema = z.array(RawStreamSchema);
-export const RawMatchArraySchema = z.array(RawMatchSchema);
-export const SportArraySchema = z.array(SportSchema);
-
-// `/stream/{source}/{id}` answers with either a list of streams or a single
-// stream object. The array is tried first, so a list is never read as an object.
-export const RawStreamResponseSchema = z.union([RawStreamArraySchema, RawStreamSchema]);
 
 // ─── angulismotv feed ────────────────────────────────────────────────────────
 

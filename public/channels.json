@@ -1,5 +1,139 @@
 [
   {
+    "name": "LPF",
+    "logo": "",
+    "options": [
+      {
+        "name": "Option 1",
+        "iframe": "https://emitiendoenvivo.com/lpf/1.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/1.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 2",
+        "iframe": "https://emitiendoenvivo.com/lpf/2.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/2.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 3",
+        "iframe": "https://emitiendoenvivo.com/lpf/3.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/3.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 4",
+        "iframe": "https://emitiendoenvivo.com/lpf/4.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/4.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 5",
+        "iframe": "https://emitiendoenvivo.com/lpf/5.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/5.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 6",
+        "iframe": "https://emitiendoenvivo.com/lpf/6.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/6.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 7",
+        "iframe": "https://emitiendoenvivo.com/lpf/7.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/7.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 8",
+        "iframe": "https://emitiendoenvivo.com/lpf/8.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/8.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 9",
+        "iframe": "https://emitiendoenvivo.com/lpf/9.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/9.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 10",
+        "iframe": "https://emitiendoenvivo.com/lpf/10.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/10.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 11",
+        "iframe": "https://emitiendoenvivo.com/lpf/11.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/11.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 12",
+        "iframe": "https://emitiendoenvivo.com/lpf/12.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/12.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 13",
+        "iframe": "https://emitiendoenvivo.com/lpf/13.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/13.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 14",
+        "iframe": "https://emitiendoenvivo.com/lpf/14.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/14.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 15",
+        "iframe": "https://emitiendoenvivo.com/lpf/15.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/15.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 16",
+        "iframe": "https://emitiendoenvivo.com/lpf/16.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/16.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 17",
+        "iframe": "https://emitiendoenvivo.com/lpf/17.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/17.m3u8",
+        "status": "unknown",
+        "proxy": true
+      },
+      {
+        "name": "Option 18",
+        "iframe": "https://emitiendoenvivo.com/lpf/18.m3u8",
+        "sourceUrl": "https://emitiendoenvivo.com/lpf/18.m3u8",
+        "status": "unknown",
+        "proxy": true
+      }
+    ],
+    "show": true,
+    "source": "lpf"
+  },
+  {
     "name": "Amistosos",
     "logo": "/logos/03f24c944757.webp",
     "options": [

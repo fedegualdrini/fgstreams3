@@ -2,11 +2,11 @@ import { memo } from 'react';
 
 const SPORT_ICONS: Record<string, string> = {
   all: '🏆',
-  football: '⚽',
+  soccer: '⚽',
   basketball: '🏀',
   tennis: '🎾',
-  mma: '🥊',
-  'formula 1': '🏎️',
+  combat: '🥊',
+  racing: '🏎️',
 };
 
 interface MatchToolbarProps {
@@ -45,7 +45,7 @@ function MatchToolbar({ query, onQueryChange, sports, sport, onSportChange }: Ma
               onClick={() => onSportChange(label)}
             >
               {icon && <span>{icon}</span>}
-              <span>{label}</span>
+              <span>{label.toLowerCase() === 'football' ? 'American Football' : label}</span>
             </button>
           );
         })}

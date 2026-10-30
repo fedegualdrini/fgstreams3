@@ -23,8 +23,7 @@ export const REVALIDATE_FLASHSCORE_SCORES = 25;
 
 // ─── Upstream request behavior ──────────────────────────────────────────────
 
-// streamed.pk is flaky under load: two retries (5xx / network errors only)
-// recover most blips without noticeably delaying a render.
+// Retry transient upstream failures twice (5xx / network errors only).
 export const API_MAX_RETRIES = 2;
 // Base delay between retries; grows linearly with the attempt number.
 export const RETRY_BACKOFF_MS = 300;
@@ -40,22 +39,9 @@ export const DIAGNOSTICS_PROBE_TIMEOUT_MS = 10_000;
 
 // ─── Match catalog ──────────────────────────────────────────────────────────
 
-// Catalog build limits. 64 parallel requests resolve ~470 stream endpoints in
-// under 3s; the budget caps a slow upstream so a render can never hang.
-export const CATALOG_CONCURRENCY = 64;
-export const CATALOG_TIME_BUDGET_MS = 8_000;
-
-// Listing window (hours). Matches outside it are neither live nor usefully
-// scheduled, so they never reach the catalog.
+// Listing window for non-live streams. Live channels can have old kickoff times.
 export const CATALOG_PAST_HOURS = 4;
 export const CATALOG_FUTURE_HOURS = 30;
-
-// A match counts as live for this long after kickoff when the upstream live
-// feed does not list it.
-export const LIVE_WINDOW_HOURS = 3;
-// Upper bound for a match the upstream live feed still flags as live. Some
-// events (motorsport, test cricket, fight cards) genuinely run past 3 hours.
-export const EXTENDED_LIVE_WINDOW_HOURS = 8;
 
 // ─── Score API routes ───────────────────────────────────────────────────────
 

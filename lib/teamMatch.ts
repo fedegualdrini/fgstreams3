@@ -1,8 +1,8 @@
 /**
- * Fuzzy matching between Streamed match titles and an external fixture list.
+ * Fuzzy matching between catalog match titles and an external fixture list.
  *
- * Feeds name the same club differently: Streamed strips accents and particles
- * ("Talleres Cordoba", "Union Santa Fe") where others write them out ("Talleres
+ * Feeds name the same club differently: some strip accents and particles
+ * ("Talleres Cordoba", "Union Santa Fe") where others retain them ("Talleres
  * de Córdoba", "Unión de Santa Fe"). Comparing raw strings never matches, so
  * both sides are folded to accent-free token sets and scored by overlap, with
  * kickoff time used as a hard gate.
@@ -170,7 +170,7 @@ export interface FindFixtureOptions {
 }
 
 /**
- * Find the fixture matching a Streamed match. A wrong match attaches the wrong
+ * Find the fixture matching a catalog match. A wrong match attaches the wrong
  * TV channel, which is worse than attaching none, so the names must agree and —
  * when the feeds' clocks can be aligned — so must the kickoff.
  */

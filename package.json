@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lpf:relay": "node scripts/lpf-relay.mjs",
     "import:playlist": "node scripts/import-playlist.mjs",
     "optimize:logos": "node scripts/optimize-logos.mjs"
   },

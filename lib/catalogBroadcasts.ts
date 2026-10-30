@@ -5,7 +5,7 @@ import { estimateFeedOffsetMs, findFixture } from './teamMatch';
 import { broadcastsFromEvent, mergeBroadcasts, resolveBroadcastChannels } from './broadcasters';
 
 /**
- * Pairs a Streamed match with its entries in the two broadcast feeds and
+ * Pairs a catalog match with its entries in the two broadcast feeds and
  * resolves the channels that carry it.
  */
 

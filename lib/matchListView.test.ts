@@ -54,7 +54,6 @@ describe('toListedMatch', () => {
     sources: [{ source: 'alpha', id: '1' }],
     streams: [{ url: 'https://embed.example/1', embedUrl: 'https://embed.example/1' }],
     broadcasts: [{ network: 'ESPN', channel: 'ESPN Premium', logo: '/l.webp', options: [{ name: 'o', iframe: 'https://x/y' }] }],
-    liveHint: true,
   } as unknown as CatalogMatch;
 
   it('keeps what the cards render and the broadcaster names', () => {

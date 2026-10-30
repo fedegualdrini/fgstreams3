@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { embedStManifestPath } from '@/lib/embedSt';
-import EmbedStPlayer from './EmbedStPlayer';
+import { getDirectPlayback, type DirectPlaybackSource } from '@/lib/directPlayback';
+import DirectHlsPlayer from './DirectHlsPlayer';
 
-interface EmbedStPlaybackProps {
+interface DirectPlaybackProps {
   embedUrl: string;
   muted?: boolean;
   fillParent?: boolean;
@@ -14,9 +14,15 @@ interface EmbedStPlaybackProps {
 }
 
 /** Mount only the chosen engine; never load the provider iframe as an automatic fallback. */
-export default function EmbedStPlayback({
-  embedUrl, muted = false, fillParent = false, onPlaying, onNextStream, children,
-}: EmbedStPlaybackProps) {
+export default function DirectPlayback(props: DirectPlaybackProps) {
+  const playback = getDirectPlayback(props.embedUrl);
+  return <PlaybackChoice key={playback ? `${playback.provider}:${playback.src}` : props.embedUrl}
+    {...props} playback={playback} />;
+}
+
+function PlaybackChoice({
+  muted = false, fillParent = false, onPlaying, onNextStream, children, playback,
+}: DirectPlaybackProps & { playback: DirectPlaybackSource | null }) {
   const [mode, setMode] = useState<'direct' | 'embed'>('direct');
   const [phase, setPhase] = useState<'loading' | 'playing' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);
@@ -32,7 +38,7 @@ export default function EmbedStPlayback({
   return (
     <div className={`embed-st-playback${fillParent ? ' embed-st-playback--fill' : ''}`}>
       <div className="embed-st-playback__stage">
-        {mode === 'embed' ? children : phase === 'error' ? (
+        {mode === 'embed' ? children : phase === 'error' || !playback ? (
           <div role="alert" className="stream-player__state stream-player__state--error embed-st-playback__error">
             <p>Direct playback failed. Retry, choose another source, or switch to Original embed.</p>
             <div className="player-overlay__actions">
@@ -46,7 +52,7 @@ export default function EmbedStPlayback({
           </div>
         ) : (
           <>
-            <EmbedStPlayer key={attempt} src={embedStManifestPath(embedUrl)} muted={muted}
+            <DirectHlsPlayer key={attempt} src={playback.src} provider={playback.provider} muted={muted}
               onPlaying={() => {
                 setPhase('playing');
                 onPlaying?.();
@@ -66,7 +72,11 @@ export default function EmbedStPlayback({
       </div>
       <div role="group" aria-label="Playback mode" className="embed-st-playback__controls">
         <button type="button" className="btn" aria-pressed={mode === 'direct'} onClick={() => selectMode('direct')}
-          title="High quality only on supported CDNs; slow connections may buffer. No provider iframe, ads or popups.">Direct player (HQ)</button>
+          title={playback?.provider === 'embed-st'
+            ? 'Highest available quality on supported CDNs; slow connections may buffer. No provider iframe, ads or popups.'
+            : 'Plays the selected provider variant directly. No provider iframe, ads or popups.'}>
+          {playback?.provider === 'embed-st' ? 'Direct player (HQ)' : 'Direct player'}
+        </button>
         <button type="button" className="btn" aria-pressed={mode === 'embed'} onClick={() => selectMode('embed')}
           title="The provider’s original player may show ads or popups">Original embed</button>
       </div>

@@ -34,6 +34,12 @@ describe('selectBestStream', () => {
     expect(selectBestStream([sd, hd])).toBe(hd);
   });
 
+  it('prefers a live variant over a higher-quality standby source', () => {
+    const standby = makeStream({ quality: 'HD', isLive: false });
+    const live = makeStream({ quality: '720p', isLive: true, language: undefined });
+    expect(selectBestStream([standby, live])).toBe(live);
+  });
+
   it('prefers a stream with known quality over one with none', () => {
     const known = makeStream({ url: 'https://a.com/1', quality: '720p' });
     const unknown = makeStream({ url: 'https://b.com/2', quality: undefined });
@@ -46,8 +52,9 @@ describe('selectBestStream', () => {
     expect(selectBestStream([first, second])).toBe(first);
   });
 
-  it('handles missing language and quality without throwing', () => {
-    const s = makeStream({ source: undefined, language: undefined, quality: undefined });
-    expect(() => selectBestStream([s])).not.toThrow();
+  it('keeps an unspecified variant eligible when metadata is absent', () => {
+    const unspecified = makeStream({ source: undefined, language: undefined, quality: undefined });
+    const standby = makeStream({ language: undefined, quality: undefined, isLive: false });
+    expect(selectBestStream([unspecified, standby])).toBe(unspecified);
   });
 });

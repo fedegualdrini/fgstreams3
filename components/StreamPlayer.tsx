@@ -5,8 +5,8 @@ import type { Stream } from '@/types/api';
 import { STREAM_LOAD_TIMEOUT_MS } from '@/lib/constants';
 import Spinner from '@/components/Spinner';
 import { useAfterPageLoad } from '@/lib/useAfterPageLoad';
-import { isEmbedStUrl } from '@/lib/embedSt';
-import EmbedStPlayback from './players/EmbedStPlayback';
+import { getDirectPlayback } from '@/lib/directPlayback';
+import DirectPlayback from './players/DirectPlayback';
 
 interface StreamPlayerProps {
   stream: Stream | null;
@@ -27,13 +27,13 @@ function muteEmbeddedVideo(iframe: HTMLIFrameElement | null) {
 
 export default function StreamPlayer(props: StreamPlayerProps) {
   const embedUrl = props.stream?.embedUrl || props.stream?.url;
-  if (!embedUrl || !isEmbedStUrl(embedUrl)) return <IframeStreamPlayer {...props} />;
+  if (!embedUrl || !getDirectPlayback(embedUrl)) return <IframeStreamPlayer {...props} />;
 
   return (
-    <EmbedStPlayback key={embedUrl} embedUrl={embedUrl} muted={props.muted}
+    <DirectPlayback key={embedUrl} embedUrl={embedUrl} muted={props.muted}
       fillParent={props.fillParent} onNextStream={props.onError}>
       <IframeStreamPlayer {...props} fillParent />
-    </EmbedStPlayback>
+    </DirectPlayback>
   );
 }
 
