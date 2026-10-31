@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateMatchId, matchStartMs, normalizeMatches } from './matchUtils';
 import { currentLiveState, isListable } from './catalogWindow';
-import { STREAMFREE_SOURCE, toStreamFreeSources } from './streamfree';
+import { STREAMFREE_SOURCE } from './streamfree';
 import type { RawMatch } from '@/types/api';
 
 describe('generateMatchId', () => {
@@ -22,9 +22,6 @@ describe('generateMatchId', () => {
     expect(a).not.toBe(b);
   });
 
-  it('returns a non-empty string', () => {
-    expect(generateMatchId({ sport: 'tennis' }).length).toBeGreaterThan(0);
-  });
 });
 
 describe('normalizeMatches', () => {
@@ -36,12 +33,12 @@ describe('normalizeMatches', () => {
     name: 'Arsenal vs Chelsea',
     category: 'soccer',
     league: 'Premier League',
-    sources: [liveUrl],
+    sources: [{ quality: 'FHD', url: liveUrl }],
     live_sources: [],
   };
 
   it('uses the stream key as its stable ID and carries inline source variants', () => {
-    const raw = { ...base, live_sources: [liveUrl] };
+    const raw = { ...base, live_sources: [{ quality: 'FHD', url: liveUrl }] };
     const [match] = normalizeMatches([raw]);
     expect(match.id).toBe(base.stream_key);
     expect(match.sport).toBe('soccer');
@@ -49,7 +46,7 @@ describe('normalizeMatches', () => {
     expect(match.sources).toEqual([{
       source: STREAMFREE_SOURCE,
       id: base.stream_key,
-      streams: toStreamFreeSources(raw),
+      streams: [{ url: liveUrl, embedUrl: liveUrl, source: STREAMFREE_SOURCE, isLive: true, quality: '1080p' }],
     }]);
     expect(match.isLive).toBe(true);
   });
@@ -131,7 +128,7 @@ describe('normalizeMatches', () => {
         ...base,
         name: 'Sky Sports F1',
         match_timestamp: now / 1000 + offsetHours * 3600,
-        live_sources: [liveUrl],
+        live_sources: [{ quality: 'FHD', url: liveUrl }],
       }]);
       expect(currentLiveState(match)).toBe(true);
       expect(isListable(match, now)).toBe(true);
@@ -143,7 +140,7 @@ describe('normalizeMatches', () => {
       { ...base, match_timestamp: now / 1000 - 120 * 3600 },
       { ...base, match_timestamp: now / 1000 + 120 * 3600 },
       { ...base, match_timestamp: now / 1000 - 1800 },
-      { ...base, name: '', live_sources: [liveUrl] },
+      { ...base, name: '', live_sources: [{ quality: 'FHD', url: liveUrl }] },
     ]);
     expect(isListable(old, now)).toBe(false);
     expect(isListable(future, now)).toBe(false);

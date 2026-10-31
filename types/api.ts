@@ -1,5 +1,10 @@
 import type { Channel } from './channels';
 
+export interface RawStreamFreeSource {
+  quality: string;
+  url: string;
+}
+
 // Raw StreamFree stream (validated by lib/schemas.ts), normalized before use.
 export interface RawMatch {
   id?: string;
@@ -9,8 +14,8 @@ export interface RawMatch {
   stream_key: string;
   /** Unix seconds, not milliseconds. */
   match_timestamp?: number | null;
-  sources: string[];
-  live_sources: string[];
+  sources: RawStreamFreeSource[];
+  live_sources: RawStreamFreeSource[];
   thumbnail_url?: string | null;
   team1?: { name?: string; logo?: string | null } | null;
   team2?: { name?: string; logo?: string | null } | null;

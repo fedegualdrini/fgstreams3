@@ -32,7 +32,7 @@ const match = (id: string): RawMatch => ({
   name: 'Home Team vs Away Team',
   category: 'soccer',
   match_timestamp: Math.floor((Date.now() + 30 * 60 * 1000) / 1000),
-  sources: [`https://strmfree.st/embed/soccer/${id}1080p`],
+  sources: [{ quality: 'FHD', url: `https://strmfree.st/embed/soccer/${id}1080p` }],
   live_sources: [],
 });
 
@@ -97,12 +97,12 @@ describe('getCatalog', () => {
       ...match('redzone'),
       name: 'RedZone',
       match_timestamp: Math.floor(Date.now() / 1000) - 60 * 24 * 60 * 60,
-      live_sources: ['https://strmfree.st/embed/football/redzone1080p'],
+      live_sources: [{ quality: 'FHD', url: 'https://strmfree.st/embed/football/redzone1080p' }],
     };
     fetchAllMatches.mockResolvedValue([channel]);
     const catalog = await getCatalog();
     expect(catalog.map(m => [m.id, m.isLive])).toEqual([['redzone', true]]);
-    expect(catalog[0].streams.map(s => s.url)).toContain(channel.live_sources[0]);
+    expect(catalog[0].streams.map(s => s.url)).toContain(channel.live_sources[0].url);
   });
 
   it('uses one fresh feed snapshot for fixture and channel viewing options', async () => {

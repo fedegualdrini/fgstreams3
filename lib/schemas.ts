@@ -10,9 +10,14 @@ const StreamFreeTeamSchema = z.object({
   logo: z.string().nullish(),
 }).passthrough();
 
+const StreamFreeSourceSchema = z.object({
+  quality: z.string(),
+  url: z.string(),
+}).passthrough();
+
 const StreamFreeSourceListsSchema = z.object({
-  sources: z.array(z.string()),
-  live_sources: z.array(z.string()),
+  sources: z.array(StreamFreeSourceSchema),
+  live_sources: z.array(StreamFreeSourceSchema),
 }).passthrough();
 
 export const StreamFreeMatchSchema = StreamFreeSourceListsSchema.extend({

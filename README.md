@@ -92,11 +92,11 @@ Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy sign
 
 Sports use `https://strmfree.st/api/v1` without an account or API key:
 
-- `/streams` lists events and channel-like streams, with inline `sources` and `live_sources`. The app uses `stream_key` as the match ID and converts `match_timestamp` from Unix seconds.
+- `/streams` lists events and channel-like streams, with inline `sources` and `live_sources` arrays of `{ quality, url }` objects. The app uses `stream_key` as the match ID and converts `match_timestamp` from Unix seconds.
 - `/categories` lists sports. `soccer` is association football; `football` is American football.
 - `/sources/{stream_key}` refreshes variants through the app's `/api/streams/strmfree/{stream_key}` route when playback is retried.
 
-Live status comes from `live_sources`, not kickoff time. Live variants are preferred over standby sources; the existing language/quality preference then applies. Standby variants remain selectable because the provider starts them when an event goes live. The catalog is cached for 60 seconds and API responses for 30–60 seconds rather than fetched for every visitor.
+Live status comes from `live_sources`, not kickoff time. Source objects are deduplicated by URL, with the first live entry taking precedence over standby entries for the same URL; the existing language/quality preference then applies. Quality comes from the URL's rendition suffix, falling back to the provider label when no suffix is present. Standby variants remain selectable because the provider starts them when an event goes live. The catalog is cached for 60 seconds and API responses for 30–60 seconds rather than fetched for every visitor.
 
 Supported StreamFree embeds now start in **Direct player** mode without loading the provider iframe or its scripts. **Original embed** remains an explicit alternative; its unsandboxed iframe follows the [provider documentation](https://strmfree.st/api) and may display ads/popups. A source marked live can still fail to play.
 

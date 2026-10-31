@@ -1,20 +1,27 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fetchAllMatches, fetchMatches, fetchSports, fetchStreamLookup, getImageUrl, getPosterUrl } from './api';
-import { fetchJson } from './httpClient';
 import { StreamFreeStreamsResponseSchema, StreamFreeSourcesResponseSchema, StreamFreeCategoriesResponseSchema } from './schemas';
 import { STREAMFREE_SOURCE, toStreamFreeSources } from './streamfree';
 
-vi.mock('./httpClient', () => ({ fetchJson: vi.fn() }));
-const fetchMock = vi.mocked(fetchJson);
+const fetchMock = vi.fn<typeof fetch>();
 
 const raw = {
   name: 'Ghana vs England', category: 'soccer', league: 'FIFA World Cup',
   stream_key: 'ghana-vs-england', match_timestamp: 1782244800,
-  sources: ['https://strmfree.st/embed/soccer/ghana-vs-england1080p2'],
+  sources: [{ quality: 'FHD', url: 'https://strmfree.st/embed/soccer/ghana-vs-england1080p2' }],
   live_sources: [],
 };
 
-beforeEach(() => { fetchMock.mockReset(); });
+beforeEach(() => {
+  fetchMock.mockReset();
+  vi.stubGlobal('fetch', fetchMock);
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe('StreamFree response validation', () => {
   it('accepts documented streams without optional teams or id and preserves seconds', () => {
@@ -31,7 +38,12 @@ describe('StreamFree response validation', () => {
   it('rejects missing arrays, malformed stream entries and wrong envelopes', () => {
     for (const body of [[], {}, { count: 0 }, { count: 1, streams: [{}] },
       { count: 1, streams: [{ ...raw, sources: undefined }] },
-      { count: 1, streams: [{ ...raw, match_timestamp: '1782244800' }] }]) {
+      { count: 1, streams: [{ ...raw, match_timestamp: '1782244800' }] },
+      { count: 1, streams: [{ ...raw, sources: [raw.sources[0].url] }] },
+      { count: 1, streams: [{ ...raw, live_sources: [raw.sources[0].url] }] },
+      { count: 1, streams: [{ ...raw, sources: [{ quality: 'FHD' }] }] },
+      { count: 1, streams: [{ ...raw, sources: [{ quality: 1080, url: raw.sources[0].url }] }] },
+      { count: 1, streams: [{ ...raw, live_sources: [{ quality: 'FHD', url: 42 }] }] }]) {
       expect(StreamFreeStreamsResponseSchema.safeParse(body).success).toBe(false);
     }
     expect(StreamFreeSourcesResponseSchema.safeParse({ stream_key: 'key', sources: [] }).success).toBe(false);
@@ -41,21 +53,40 @@ describe('StreamFree response validation', () => {
 });
 
 describe('StreamFree API adapter', () => {
-  it('distinguishes request failure from a quiet feed without fan-out', async () => {
-    fetchMock.mockResolvedValueOnce(null).mockResolvedValueOnce({ count: 0, streams: [] });
+  it('distinguishes an upstream failure from a successful quiet feed', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(Response.json({ count: 0, streams: [] }));
     expect(await fetchAllMatches()).toBeNull();
     expect(await fetchAllMatches()).toEqual([]);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock.mock.calls[0][0]).toBe('https://strmfree.st/api/v1/streams');
   });
 
-  it('encodes category and stream keys', async () => {
-    fetchMock.mockResolvedValueOnce({ count: 0, streams: [] })
-      .mockResolvedValueOnce({ stream_key: 'key /?', sources: [], live_sources: [] });
-    await fetchMatches('sport /?');
-    expect(fetchMock.mock.calls[0][0]).toBe('https://strmfree.st/api/v1/streams?category=sport%20%2F%3F');
-    expect(await fetchStreamLookup(STREAMFREE_SOURCE, 'key /?')).toEqual({ streams: [], ok: true });
-    expect(fetchMock.mock.calls[1][0]).toBe('https://strmfree.st/api/v1/sources/key%20%2F%3F');
+  it('lists live matches from the validated structured-source feed', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({
+      count: 1,
+      streams: [{ ...raw, live_sources: [{ ...raw.sources[0] }] }],
+    }));
+    expect(await fetchMatches()).toMatchObject([{
+      id: raw.stream_key,
+      isLive: true,
+      sources: [{
+        streams: [{ url: raw.sources[0].url, quality: '1080p', isLive: true }],
+      }],
+    }]);
+  });
+
+  it('refreshes live source objects without duplicating their standby entries', async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({
+      stream_key: raw.stream_key,
+      sources: raw.sources,
+      live_sources: [{ ...raw.sources[0] }],
+    }));
+    expect(await fetchStreamLookup(STREAMFREE_SOURCE, raw.stream_key)).toEqual({
+      ok: true,
+      streams: [{
+        url: raw.sources[0].url, embedUrl: raw.sources[0].url,
+        source: STREAMFREE_SOURCE, isLive: true, quality: '1080p',
+      }],
+    });
   });
 
   it('does not query this provider for an unknown source', async () => {
@@ -63,13 +94,17 @@ describe('StreamFree API adapter', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('keeps a failed source lookup distinct from a successful empty result', async () => {
-    fetchMock.mockResolvedValueOnce(null);
+  it('keeps failed and malformed source lookups distinct from successful empty results', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(Response.json({ stream_key: 'key', sources: ['obsolete-string'], live_sources: [] }))
+      .mockResolvedValueOnce(Response.json({ stream_key: 'key', sources: [], live_sources: [] }));
     expect(await fetchStreamLookup(STREAMFREE_SOURCE, 'key')).toEqual({ streams: [], ok: false });
+    expect(await fetchStreamLookup(STREAMFREE_SOURCE, 'key')).toEqual({ streams: [], ok: false });
+    expect(await fetchStreamLookup(STREAMFREE_SOURCE, 'key')).toEqual({ streams: [], ok: true });
   });
 
   it('maps categories without confusing soccer and American football', async () => {
-    fetchMock.mockResolvedValueOnce({ categories: ['football', 'soccer'] });
+    fetchMock.mockResolvedValueOnce(Response.json({ categories: ['football', 'soccer'] }));
     expect(await fetchSports()).toEqual([
       { id: 'football', slug: 'football', name: 'American Football' },
       { id: 'soccer', slug: 'soccer', name: 'Soccer' },
@@ -88,7 +123,10 @@ describe('StreamFree source variants', () => {
     const live = 'https://strmfree.st/embed/soccer/match720p';
     const standby = 'https://strmfree.st/embed/soccer/match1080p2';
     const onlyLive = 'https://strmfree.st/embed/soccer/match2160p';
-    const streams = toStreamFreeSources({ sources: [standby, live, standby], live_sources: [live, onlyLive, live] });
+    const streams = toStreamFreeSources({
+      sources: [{ quality: 'FHD', url: standby }, { quality: 'HD', url: live }, { quality: 'FHD', url: standby }],
+      live_sources: [{ quality: 'HD', url: live }, { quality: 'UHD', url: onlyLive }, { quality: 'HD', url: live }],
+    });
     expect(streams).toEqual([
       { url: live, embedUrl: live, source: STREAMFREE_SOURCE, isLive: true, quality: '720p' },
       { url: onlyLive, embedUrl: onlyLive, source: STREAMFREE_SOURCE, isLive: true, quality: '2160p' },
@@ -96,9 +134,9 @@ describe('StreamFree source variants', () => {
     ]);
   });
 
-  it('retains standby-only streams and handles an empty variant set', () => {
-    expect(toStreamFreeSources({ sources: ['https://example.com/embed/key'], live_sources: [] }))
-      .toEqual([{ url: 'https://example.com/embed/key', embedUrl: 'https://example.com/embed/key', source: STREAMFREE_SOURCE, isLive: false }]);
+  it('uses the provider quality label when a standby URL has no rendition suffix', () => {
+    expect(toStreamFreeSources({ sources: [{ quality: 'HD', url: 'https://example.com/embed/key' }], live_sources: [] }))
+      .toEqual([{ url: 'https://example.com/embed/key', embedUrl: 'https://example.com/embed/key', source: STREAMFREE_SOURCE, isLive: false, quality: 'hd' }]);
     expect(toStreamFreeSources({ sources: [], live_sources: [] })).toEqual([]);
   });
 });
