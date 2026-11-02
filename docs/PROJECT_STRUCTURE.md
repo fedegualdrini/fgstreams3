@@ -12,7 +12,7 @@ app/
   stream-test/                     Manual embed.st URL diagnostic using the shared player
   match/[id]/                      Match detail page, metadata and error boundary
   api/
-    hls-proxy/route.ts             HTTP HLS proxy for selected channel streams
+    hls-proxy/route.ts             Signed media redirects on Vercel; private PC origin adapter
     channels/lpf/route.ts          Current numbered LPF destinations and broadcast availability
     media/search/route.ts          TMDB movie/TV search endpoint
     media/tv/[id]/route.ts         TMDB TV season metadata endpoint
@@ -48,6 +48,7 @@ lib/
   streamfree.ts                    Live-first variant normalization and quality metadata
   streamfreeDirect.ts              Strict public embed URL boundary and local manifest path
   streamfreeServer.ts              Literal signing parser, bounded resolver and manifest rewriting
+  hlsProxy.ts                      Redirect-only control plane and guarded streaming PC origin
   directPlayback.ts                Supported-provider dispatch for the shared direct player
   promiedos.ts                     Promiedos fixtures + TV networks (__NEXT_DATA__)
   angulismo.ts                     angulismotv feed: live channels and fixture broadcasters

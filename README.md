@@ -67,14 +67,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Environment
 
-Sports matches and channels need no configuration. Create `.env.local` for the rest:
+Sports matches and browser-direct channels need no configuration. Create `.env.local` for movie search and proxy-only channels:
 
-```bash
+```dotenv
 TMDB_API_KEY=your_tmdb_api_key          # movie and TV search
-HLS_PROXY_SECRET=any_long_random_string # signs the URLs /api/hls-proxy hands back
+HLS_PROXY_SECRET=<64 random hex characters shared with the PC relay>
+HLS_PROXY_RELAY_URL=https://<tunnel-host>/hls-proxy
 ```
 
-Set `HLS_PROXY_SECRET` in production so nobody else can produce valid proxy signatures.
+Vercel only returns signed redirects for `/api/hls-proxy`; video bodies travel through the PC media relay, not Vercel Functions. The private PC app additionally needs `HLS_PROXY_MODE=origin`. Missing relay configuration fails closed rather than falling back to Vercel video transfer. See [channel media relay setup](docs/CHANNEL_IMPORT.md#channel-media-relay).
 
 ### Commands
 
@@ -104,8 +105,10 @@ Supported StreamFree embeds now start in **Direct player** mode without loading 
 
 LPF can persist verified per-option CDN links in private Vercel Blob storage.
 When its PC relay or provider lookup fails, saved playlists are checked directly;
-verified live links remain playable, while inconclusive checks are labeled
-**Unknown · Saved link**. Confirmed empty, finished, or replaced broadcasts retire
+verified live URLs remain available, while inconclusive checks are labeled
+**Unknown · Saved link**. Proxy-only playback still requires the PC media relay
+to be online; saved URLs do not replace that media transport.
+Confirmed empty, finished, or replaced broadcasts retire
 the old destination instead of reviving yesterday's game. Saved links have a
 24-hour provider-lookup lifetime; they are not a video archive or an expiry bypass.
 Storage setup, namespace isolation and the producer-first rollout are documented

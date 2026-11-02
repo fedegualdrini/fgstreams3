@@ -35,6 +35,49 @@ A stream is only imported when it can actually be played:
   only buys the manifest and the segments stay behind the provider's paywall, so
   those entries are skipped.
 
+## Channel media relay
+
+HTTP and no-CORS HLS channels need a media proxy. On Vercel,
+`/api/hls-proxy` now returns a small signed `307` redirect; it never downloads
+the video body. The browser fetches rewritten playlists, AES keys, initialization
+data and segments directly from the PC tunnel's `/hls-proxy` endpoint.
+Browser-direct StreamFree/embed.st playback is unchanged.
+
+Configure Vercel Production and Preview with:
+
+- `HLS_PROXY_SECRET`: a private 64-hex key, shared with the PC media relay.
+- `HLS_PROXY_RELAY_URL`: the full HTTPS tunnel URL ending in `/hls-proxy`.
+
+Generate the key once with
+`node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`
+and save it privately. The public default signing key has been removed.
+Media URLs carry only a URL-bound HMAC, never the key or `LPF_RELAY_TOKEN`.
+Missing configuration returns `503`; it does not silently restore video
+transfer through Vercel.
+
+The private PC Next app runs with `HLS_PROXY_MODE=origin`, the same
+`HLS_PROXY_SECRET`, and `HLS_PROXY_RELAY_URL` set to the public media endpoint.
+On Vercel, origin mode is refused even if configured accidentally.
+The PC validates public DNS/IP addresses on every redirect and pins new
+connections to a validated address, including protections for IPv4-mapped IPv6.
+It bounds playlist reads, rewrites nested resources, preserves byte ranges,
+decodes supported upstream compression and cancels upstream work when the
+viewer disconnects. Media bodies are streamed with backpressure, not buffered.
+
+`scripts/lpf-relay.mjs` exposes only authenticated `/lpf` discovery and signed
+`/hls-proxy` media on the existing loopback listener. Media is forwarded only
+to the fixed local Next endpoint, without browser cookies or authorization.
+No new PC port or tunnel process is required.
+
+Proxy-only playback requires the PC app, relay and tunnel to stay online.
+Saved LPF destinations preserve discovery state, not a replacement media server.
+Stopping this PC can therefore interrupt proxy-only playback even when the
+saved CDN playlist is still live. Direct-browser streams remain independent.
+
+Offloading prevents future video-body Fast Origin Transfer; it does not erase
+usage already counted or guarantee that Vercel cancels a pending Hobby pause.
+See [Vercel's Hobby usage policy](https://vercel.com/docs/plans/hobby#hobby-billing-cycle).
+
 ## LPF live link resolution
 
 The shipped **LPF** channel stores
@@ -184,11 +227,12 @@ same method only to the fixed local `http://127.0.0.1:3100/api/channels/lpf`
 endpoint. It is not a general proxy, does not forward credentials upstream,
 and does not expose the app or PC files.
 Vercel refuses relay redirects and validates all 18 canonical options before
-returning their URLs and statuses to the browser. Video stays on the existing
-HLS playback path; only link/status snapshots pass through this PC.
+returning their URLs and statuses to the browser. The same PC also serves
+proxy-only video through the separately signed media endpoint above.
 
-The private `.vercel/lpf-relay.json` contains `token`, `appPort`, and `relayPort`.
-The configured token is 32 random bytes encoded as 64 hexadecimal characters.
+The private `.vercel/lpf-relay.json` contains `token`, `appPort`, `relayPort`,
+`hlsProxySecret`, and `hlsProxyUrl`. The discovery token and independent media
+key are each 32 random bytes encoded as 64 hexadecimal characters.
 This file and the downloaded `.vercel/cloudflared.exe` are gitignored.
 Keep `LPF_RELAY_URL` **unset in the local app** so it resolves the provider
 directly instead of calling itself through the tunnel.
@@ -197,6 +241,11 @@ To restart on this PC, run these commands from the repository root in three
 terminals, leaving all three running:
 
 ```powershell
+$config = Get-Content .vercel/lpf-relay.json | ConvertFrom-Json
+$env:HLS_PROXY_MODE = 'origin'
+$env:HLS_PROXY_SECRET = $config.hlsProxySecret
+$env:HLS_PROXY_RELAY_URL = $config.hlsProxyUrl
+Remove-Item Env:LPF_RELAY_URL, Env:LPF_RELAY_TOKEN -ErrorAction SilentlyContinue
 npm run dev -- --hostname 127.0.0.1 --port 3100
 ```
 
@@ -208,17 +257,19 @@ npm run lpf:relay
 .\.vercel\cloudflared.exe tunnel --url http://127.0.0.1:3101
 ```
 
-Cloudflare prints a new HTTPS hostname on each tunnel start. Update
-`LPF_RELAY_URL` in Vercel to that hostname plus `/lpf`, then deploy with
-`npx --yes vercel@latest deploy --prod --yes` to update the public deployment.
-The token remains the one in the private config; never put it in browser code or
-a URL.
+Cloudflare prints a new HTTPS hostname on each tunnel start. Update both
+`LPF_RELAY_URL` (`/lpf`) and `HLS_PROXY_RELAY_URL` (`/hls-proxy`) in Vercel,
+and `hlsProxyUrl` in the private PC config. Restart the PC app so rewritten
+playlists use the new media hostname, then redeploy Vercel.
+The keys remain private and unchanged; never put either key in a browser
+bundle or URL. Build replacement PC apps separately from the live `.next`.
 
 [Cloudflare Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/)
 are free, require no account, and have no uptime guarantee. Discovering new
 destinations requires this PC to stay awake and all three processes to keep
-running. Previously saved destinations can survive a stopped relay while their
-CDN playlists remain usable and the saved-link lifetime has not elapsed.
+running. Saved destinations can survive discovery failures while their CDN
+playlists remain usable and their lifetime has not elapsed, but proxy-only
+playback also requires the media relay described above.
 Provider-side blocking can still occur on the PC connection; neither retries nor
 the cache bypass CAPTCHA or a permanent rejection. An already playing browser
 session may also continue with **Unknown** status, but no failed check claims it
