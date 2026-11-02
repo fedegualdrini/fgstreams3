@@ -3,6 +3,11 @@ import type { AddressInfo } from 'node:net';
 import type { LpfChannelSnapshot } from '@/types/channels';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Isolate the authenticated producer protocol; fallback behavior has its own suite.
+vi.mock('./lpfFallback', () => ({
+  resolveLpfWithFallback: (resolvePrimary: () => Promise<LpfChannelSnapshot>) => resolvePrimary(),
+}));
+
 // All dynamic imports deliberately reload the module-level cache; static imports cannot isolate these cases.
 const endpoint = 'https://pc-relay.example/lpf';
 const token = 'private-relay-test-secret';
@@ -19,6 +24,9 @@ function remoteSnapshot(destination = oldGame): LpfChannelSnapshot {
         name: `Option ${index + 1}`, sourceUrl: source(index + 1), proxy: true,
         iframe: index < 2 ? destination : source(index + 1),
         status: index === 0 ? 'live' : index === 1 ? 'ended' : 'unavailable',
+        lpf: index < 2
+          ? { resolution: 'resolved', origin: 'provider', resolvedAt: Date.now(), verifiedAt: Date.now() }
+          : { resolution: 'empty', origin: 'provider' },
       })),
     },
     checkedAt: Date.now(),
@@ -32,6 +40,7 @@ function expectUnavailable(snapshot: LpfChannelSnapshot) {
     expect(option).toEqual({
       name: `Option ${index + 1}`, sourceUrl: source(index + 1), iframe: source(index + 1),
       proxy: true, status: 'unavailable',
+      lpf: { resolution: 'failed', origin: 'provider' },
     });
   });
   expect(JSON.stringify(snapshot)).not.toContain(token);
@@ -99,7 +108,7 @@ describe('LPF PC relay snapshots', () => {
     expect(fetcher).toHaveBeenCalledTimes(3);
   });
 
-  it('does not retain old playback on failure or cache remote future timestamps and failures beyond a minute', async () => {
+  it('bounds raw relay failures to one minute without trusting a future remote clock', async () => {
     const future = remoteSnapshot();
     future.checkedAt = now + 86_400_000;
     const fetcher = vi.fn()
@@ -163,6 +172,11 @@ describe('LPF PC relay snapshots', () => {
     ['proxy flag', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].proxy = false; }],
     ['status', (snapshot: LpfChannelSnapshot) => { Object.assign(snapshot.channel.options[0], { status: 'playing' }); }],
     ['unresolved live option', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].iframe = source(1); }],
+    ['missing lookup outcome', (snapshot: LpfChannelSnapshot) => { delete snapshot.channel.options[0].lpf; }],
+    ['saved provenance from producer', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].lpf!.origin = 'saved'; }],
+    ['empty outcome with a CDN destination', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].lpf!.resolution = 'empty'; }],
+    ['failed outcome claiming live', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].lpf!.resolution = 'failed'; }],
+    ['invalid verification time', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].lpf!.verifiedAt = Number.NaN; }],
     ['timestamp', (snapshot: LpfChannelSnapshot) => { Object.assign(snapshot, { checkedAt: 'today' }); }],
     ['nonfinite timestamp', (snapshot: LpfChannelSnapshot) => { snapshot.checkedAt = Number.POSITIVE_INFINITY; }],
     ['reflected secret', (snapshot: LpfChannelSnapshot) => { snapshot.channel.options[0].iframe = `${oldGame}?secret=${token}`; }],

@@ -48,6 +48,9 @@ channels.json ────► lib/channelCatalog ┘      2. reuse inline live/s
 - `scores/[sport]` adds an in-memory dedup window on top of `unstable_cache` so a burst of cold-start requests produces one Flashscore fetch.
 - `diagnostics/broadcasts` is a thin route over `lib/diagnosticsBroadcasts.ts`; `?q=<team>` traces matching fixtures through each catalog stage.
 - `hls-proxy` and `media/*` are independent of the catalog (channel playback and TMDB search).
+- `channels/lpf` distinguishes per-option provider outcomes (`resolved`, `empty`, `failed`) from playback status. Its raw PC producer resolves numbered links; only a relay consumer uses the shared saved-link cache.
+- `lib/lpfFallback.ts` reads private Blob state alongside the relay lookup. Failed slots revalidate saved, allowlisted CDN playlists directly, never media segments. Confirmed empty/ended/replaced/expired slots are retired; saved links have a 24-hour provider-resolution lifetime and carry explicit origin/verification metadata. Inconclusive checks are unknown, not live.
+- `lib/lpfCacheStore.ts` persists bounded versioned snapshots with environment and preview-branch isolation. Updates pair an uncached body with stable authoritative metadata ETags, merge per-option lookup ordering and expected-record guards, and use conditional writes. Older writers cannot undo retirement or replacement. Storage failures are explicit `cacheError` values rather than pretend persistence; raw SDK exceptions and credentials stay server-side.
 
 ## Client side
 

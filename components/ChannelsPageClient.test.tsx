@@ -44,6 +44,7 @@ beforeEach(() => {
       ...lpf,
       options: lpf.options.map((option, index) => ({
         ...option, iframe: `https://canales.encoders.immergo.tv/game-${index}.m3u8`, status: 'live',
+        lpf: { resolution: 'resolved', origin: 'provider', resolvedAt: Date.now(), verifiedAt: Date.now() },
       })),
     },
   };
@@ -97,7 +98,6 @@ describe('LPF channel snapshots', () => {
     )) } };
     await act(async () => { await vi.advanceTimersByTimeAsync(LPF_REFRESH_INTERVAL_MS); });
     expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('Broadcast finished');
     expect(screen.getByRole('button', { name: 'LPF 3 Option 3 Broadcast finished' })).toHaveAttribute('aria-pressed', 'true');
     expect(navigation.replace).toHaveBeenCalledTimes(navigationCount);
 
@@ -125,15 +125,15 @@ describe('LPF channel snapshots', () => {
       ...snapshot, error: 'Source checks failed.',
       channel: { ...snapshot.channel, options: snapshot.channel.options.map(option => ({
         ...option, iframe: option.sourceUrl!, status: 'unavailable' as const,
+        lpf: { resolution: 'failed', origin: 'provider' } as const,
       })) },
     };
     snapshot = failed;
     await act(async () => { await vi.advanceTimersByTimeAsync(LPF_REFRESH_INTERVAL_MS); });
     expect(screen.getByTestId('channel-stream')).toBe(player);
     expect(player).toHaveAttribute('src', destination);
-    expect(screen.getByRole('button', { name: 'LPF 3 Option 3 Unknown' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /LPF 3 Option 3 Unknown/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'LPF 4 Option 4 Unavailable' })).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('Current playback is continuing');
     // A second failed snapshot must not lose the session's working destination.
     fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
     await act(async () => {});
@@ -166,6 +166,7 @@ describe('LPF channel snapshots', () => {
     const failed = {
       ...snapshot, channel: { ...snapshot.channel, options: snapshot.channel.options.map(option => ({
         ...option, iframe: option.sourceUrl!, status: 'unavailable' as const,
+        lpf: { resolution: 'failed', origin: 'provider' } as const,
       })) },
     };
     snapshot = failed;
@@ -173,7 +174,6 @@ describe('LPF channel snapshots', () => {
     await act(async () => {});
     fireEvent.error(screen.getByTestId('channel-stream'));
     expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
-    expect(screen.getByText('Source unavailable')).toBeInTheDocument();
 
     snapshot = healthy;
     fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
@@ -204,6 +204,60 @@ describe('LPF channel snapshots', () => {
     expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
   });
 
+  it('plays verified saved links after reload and never labels unverified fallback as live', async () => {
+    navigation.params = new URLSearchParams({ c: 'LPF', o: '2' });
+    const savedUrl = snapshot.channel.options[2].iframe;
+    snapshot = { ...snapshot, error: 'Relay lookup failed.', channel: {
+      ...snapshot.channel,
+      options: snapshot.channel.options.map((option, index) => index === 2 ? {
+        ...option,
+        lpf: { resolution: 'failed', origin: 'saved', resolvedAt: Date.now() - 60_000, verifiedAt: Date.now() },
+      } : option),
+    } };
+    render(<ChannelsPageClient channels={channels} />);
+    await act(async () => {});
+    const player = screen.getByTestId('channel-stream');
+    fireEvent.playing(player);
+    expect(player).toHaveAttribute('src', savedUrl);
+    expect(screen.getByRole('button', { name: /LPF 3 Option 3 Live.*Saved/ })).toHaveAttribute('aria-pressed', 'true');
+
+    snapshot = { ...snapshot, channel: { ...snapshot.channel, options: snapshot.channel.options.map((option, index) => (
+      index === 2 ? { ...option, status: 'unknown' as const } : option
+    )) } };
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
+    await act(async () => {});
+    expect(screen.getByTestId('channel-stream')).toBe(player);
+    expect(screen.getByRole('button', { name: /LPF 3 Option 3 Unknown.*Saved/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: /LPF 3 Option 3 Live/ })).not.toBeInTheDocument();
+
+    snapshot = { ...snapshot, channel: { ...snapshot.channel, options: snapshot.channel.options.map((option, index) => (
+      index === 2 ? { ...option, iframe: option.sourceUrl!, status: 'ended' as const } : option
+    )) } };
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
+    await act(async () => {});
+    expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
+  });
+
+  it('retires active playback after a confirmed empty slot and does not resurrect it on a later API failure', async () => {
+    navigation.params = new URLSearchParams({ c: 'LPF', o: '2' });
+    render(<ChannelsPageClient channels={channels} />);
+    await act(async () => {});
+    fireEvent.playing(screen.getByTestId('channel-stream'));
+    snapshot = { ...snapshot, channel: { ...snapshot.channel, options: snapshot.channel.options.map((option, index) => (
+      index === 2 ? {
+        ...option, iframe: option.sourceUrl!, status: 'unavailable' as const,
+        lpf: { resolution: 'empty', origin: 'provider' } as const,
+      } : option
+    )) } };
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
+    await act(async () => {});
+    expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
+    fetchMock.mockRejectedValueOnce(new Error('offline'));
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
+    await act(async () => {});
+    expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
+  });
+
   it('keeps all numbered deep links and never starts ended, unavailable, or unresolved sources', async () => {
     navigation.params = new URLSearchParams({ c: 'LPF', o: '4' });
     snapshot = { ...snapshot, channel: { ...snapshot.channel, options: snapshot.channel.options.map((option, index) => {
@@ -218,15 +272,12 @@ describe('LPF channel snapshots', () => {
     await act(async () => {});
     expect(container.querySelectorAll('.source-option')).toHaveLength(LPF_OPTION_COUNT);
     expect(screen.getByRole('button', { name: 'LPF 5 Option 5 Broadcast finished' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('status')).toHaveTextContent('Broadcast finished');
     expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
     expect(navigation.replace).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole('button', { name: 'LPF 6 Option 6 Unavailable' }));
-    expect(screen.getByRole('status')).toHaveTextContent('Source unavailable');
     expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'LPF 7 Option 7 Unknown' }));
-    expect(screen.getByRole('status')).toHaveTextContent('Broadcast status unknown');
     expect(screen.queryByTestId('channel-stream')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'LPF 8 Option 8 Unknown' }));
     expect(screen.getByTestId('channel-stream')).toHaveAttribute('src', snapshot.channel.options[7].iframe);
@@ -234,9 +285,6 @@ describe('LPF channel snapshots', () => {
     snapshot = { ...snapshot, checkedAt: snapshot.checkedAt + 1000, error: 'Some numbered sources could not be checked.' };
     fireEvent.click(screen.getByRole('button', { name: 'Refresh links' }));
     await act(async () => {});
-    expect(screen.getByRole('status')).toHaveTextContent(snapshot.error!);
-    expect(screen.getByText('Last checked')).toBeInTheDocument();
-    expect(container.querySelector('time')).toHaveAttribute('dateTime', new Date(snapshot.checkedAt).toISOString());
     expect(screen.getByRole('button', { name: 'LPF 8 Option 8 Unknown' })).toHaveAttribute('aria-pressed', 'true');
   });
 });

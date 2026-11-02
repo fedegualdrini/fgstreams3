@@ -46,7 +46,10 @@ describe('LPF source refresh', () => {
     // Each case imports a fresh module because its per-instance cache is part of the behavior.
     const { getLpfChannelSnapshot } = await import('./lpf');
     const first = await getLpfChannelSnapshot();
-    expect(first.channel.options[0]).toMatchObject({ iframe: oldGame, sourceUrl: source(1), status: 'live' });
+    expect(first.channel.options[0]).toMatchObject({
+      iframe: oldGame, sourceUrl: source(1), status: 'live',
+      lpf: { resolution: 'resolved', origin: 'provider' },
+    });
 
     destination = nextGame;
     vi.setSystemTime(now + 60_001);
@@ -56,7 +59,9 @@ describe('LPF source refresh', () => {
     destination = null;
     vi.setSystemTime(now + 120_002);
     const third = await getLpfChannelSnapshot();
-    expect(third.channel.options[0]).toMatchObject({ iframe: source(1), status: 'unavailable' });
+    expect(third.channel.options[0]).toMatchObject({
+      iframe: source(1), status: 'unavailable', lpf: { resolution: 'empty', origin: 'provider' },
+    });
     expect(third.channel.options.map(option => option.name)).toEqual(
       Array.from({ length: 18 }, (_, index) => `Option ${index + 1}`),
     );
@@ -98,7 +103,9 @@ describe('LPF source refresh', () => {
 
     destination = null;
     const failed = await getLpfChannelSnapshot(true);
-    expect(failed.channel.options[0]).toMatchObject({ iframe: source(1), status: 'unavailable' });
+    expect(failed.channel.options[0]).toMatchObject({
+      iframe: source(1), status: 'unavailable', lpf: { resolution: 'failed', origin: 'provider' },
+    });
     expect(await getLpfChannelSnapshot()).toBe(failed);
     destination = nextGame;
     expect((await getLpfChannelSnapshot(true)).channel.options[0]).toMatchObject({ iframe: nextGame, status: 'live' });

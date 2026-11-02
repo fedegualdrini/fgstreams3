@@ -67,17 +67,17 @@ Statuses describe the media timeline, not the match score:
 - **Live**: the final media segment's timestamp is recent.
 - **Broadcast finished**: `EXT-X-ENDLIST`, or the final segment timeline is older
   than the greater of 120 seconds and three target durations.
-- **Unavailable**: an empty redirect, failed request, missing playlist, or invalid
-  HLS response.
-- **Unknown**: a resolved playlist lacks a trustworthy clock, or an already
-  playing source could not be rechecked. It is not presented as confirmed live.
+- **Unavailable**: no current or eligible saved destination is available.
+- **Unknown**: a resolved playlist lacks a trustworthy clock, a saved playlist
+  could not be checked, or an already playing source could not be rechecked.
+  It is not presented as confirmed live.
 
 Newly selected finished, unavailable, and unresolved numbered sources do not
-start a player. If the selected LPF player has already reported playback, a
-later unavailable snapshot keeps that session's CDN URL and media element.
-Only that selected option becomes **Unknown**, with a warning that its link
-could not be rechecked; failed checks do not claim it is still confirmed live.
-Other unavailable options do not gain stale fallback URLs.
+start a player. A verified saved destination can start a new session after a
+page reload or for a new visitor; an unverified saved destination remains
+**Unknown** and is explicitly labeled **Saved link**. If an existing player has
+reported playback, a failed lookup or inconclusive check of that same CDN URL
+keeps its media element. A confirmed empty slot never retains that session.
 
 A real media error, changing the selection, a confirmed finished broadcast, or
 a replacement destination clears the retained session. Later failed checks
@@ -85,6 +85,69 @@ cannot resurrect a finished or previously abandoned player. A changed CDN
 destination replaces the current game's player at the same option index;
 unchanged destinations and successful rechecks do not interrupt playback.
 Hiding the tab pauses refresh requests, and returning refreshes immediately.
+
+### Durable saved links
+
+When `LPF_RELAY_URL` is configured, the consumer persists verified live
+destinations per numbered option in a **private Vercel Blob** snapshot. The PC
+producer itself does not use this cache: keep its `LPF_RELAY_URL` unset.
+The snapshot contains only CDN URLs, lookup/verification timestamps, and
+retirement records; it does not contain video, relay credentials, or Blob
+credentials.
+
+- Failed provider lookups do not replace a verified saved URL.
+- During failure, the consumer checks the saved CDN playlist directly, without
+  contacting the numbered provider URL or downloading segments. Identical
+  URLs share a check, with up to six checks in flight and an eight-second budget.
+- A recent timeline is **Live · Saved link**. A failed/inconclusive CDN check
+  is **Unknown · Saved link**, preserving the previous verification time rather
+  than advertising stale live status.
+- A confirmed empty slot, finished playlist, or newly assigned different
+  destination retires the previous game. An unverified replacement never falls
+  back to the previous broadcast.
+- Saved URLs expire 24 hours after their last successful live provider lookup.
+  Direct CDN checks do not extend that provider-lookup lifetime.
+- Retirement records and conditional writes stop older requests or saved-link
+  checks from restoring a superseded game. Failed storage operations are
+  reported separately as `cacheError`; fresh provider results remain usable.
+
+The cache starts empty. It only protects links successfully saved after setup;
+it cannot recover destinations that were never persisted, renew expired
+provider URLs, or turn a finished broadcast back into a live one.
+
+Create a private store once, or connect an existing store through its Vercel
+project connection settings:
+
+```powershell
+vercel blob create-store fgstreams3-lpf-cache --access private --environment development --environment preview --yes
+```
+
+The CLI can update the ignored `.env.local` file. The official SDK uses
+`BLOB_STORE_ID` with managed `VERCEL_OIDC_TOKEN` when available, or the server-only
+`BLOB_READ_WRITE_TOKEN`. Never expose these through `NEXT_PUBLIC_*` or client
+responses. Add **Production** to the existing store's project connection before
+deploying the consumer to production; do not recreate the store.
+
+Snapshots are isolated by `VERCEL_ENV`; local execution defaults to development,
+even under `next start`. Preview branches also have separate hashed namespaces.
+`LPF_CACHE_NAMESPACE` optionally selects a bounded alphanumeric/underscore/hyphen
+name, useful for isolated verification, without removing environment or preview
+branch isolation.
+
+Updates use authoritative Blob metadata ETags around an uncached body read, then
+an ETag-conditional write. Download responses can have weak ETags and a zero
+reported size, so they are not used as write validators. Reads are bounded to
+64 KiB; storage operations share a six-second budget and up to three CAS
+attempts. The whole consumer refresh is bounded to 55 seconds within the
+route's 60-second limit.
+
+**Rollout order:** upgrade the PC producer first so each option reports explicit
+`resolved`, `empty`, or `failed` lookup metadata, then connect production storage
+and deploy the consumer. The previous consumer ignores the added metadata; the
+new consumer intentionally rejects ambiguous old producer snapshots. Build the
+replacement PC app separately rather than overwriting a running app's `.next`
+directory.
+
 
 ### Upstream access requirement
 
@@ -110,9 +173,10 @@ cannot resolve the links; this setting does not solve or bypass reCAPTCHA.
 The live resolver can use this PC instead of Vercel's network. Set server-only
 `LPF_RELAY_URL` to the full HTTPS tunnel URL ending in `/lpf`, and
 `LPF_RELAY_TOKEN` to the relay's secret, in Vercel Production and Preview.
-Deploy again after changing either setting. When configured, the relay is the
-exclusive source: failed authentication, transport, or snapshot validation
-returns unavailable options rather than falling back to old game URLs.
+Deploy again after changing either setting. The relay is the exclusive source
+of new destinations. Authentication, transport, validation, and provider failures
+use eligible saved links as described above; without one, the option remains
+unavailable. Vercel does not bypass the relay by resolving numbered sources itself.
 
 `scripts/lpf-relay.mjs` binds only `127.0.0.1:3101`. It accepts authenticated
 `GET /lpf` for cached reads and `POST /lpf` for manual refreshes, forwarding the
@@ -151,11 +215,12 @@ The token remains the one in the private config; never put it in browser code or
 a URL.
 
 [Cloudflare Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/)
-are free, require no account, and have no uptime guarantee. Automatic updates
-require this PC to stay awake and all three processes to keep running.
-Provider-side blocking can still occur on the PC connection; retries do not
-bypass CAPTCHA or a permanent rejection. A stopped/unreachable relay is reported
-as unavailable after the current snapshot expires. An already playing browser
-session may continue with **Unknown** status as described above; the server does
-not invent a replacement URL or report that session as confirmed live.
+are free, require no account, and have no uptime guarantee. Discovering new
+destinations requires this PC to stay awake and all three processes to keep
+running. Previously saved destinations can survive a stopped relay while their
+CDN playlists remain usable and the saved-link lifetime has not elapsed.
+Provider-side blocking can still occur on the PC connection; neither retries nor
+the cache bypass CAPTCHA or a permanent rejection. An already playing browser
+session may also continue with **Unknown** status, but no failed check claims it
+is confirmed live.
 

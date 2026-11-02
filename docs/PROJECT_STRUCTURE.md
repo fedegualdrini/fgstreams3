@@ -61,6 +61,10 @@ lib/
   lpfRelay.ts                      Authenticated PC snapshot transport and trusted-option validation
   lpfPlaylist.ts                   Master traversal and media-timeline freshness classification
   lpfUrls.ts                       Stable numbered sources and trusted encoder-CDN URL boundary
+  lpfTransport.ts                  Shared guarded CDN playlist transport and request headers
+  lpfFallback.ts                   Per-option saved-link revalidation, retirement and race reconciliation
+  lpfCacheStore.ts                 Private Blob snapshot validation and conditional-write merging
+  lpfCacheTypes.ts                 Durable record/update contracts and saved-link lifetime
   broadcasters.ts                  Broadcaster name -> local channel resolution
   teamMatch.ts                     Fuzzy fixture matching and feed clock alignment
   diagnosticsBroadcasts.ts         Report builders for the diagnostics route

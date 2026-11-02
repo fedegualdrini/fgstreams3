@@ -9,7 +9,10 @@ function unavailable(error: string): LpfChannelSnapshot {
       name: 'LPF', logo: '', show: true, source: 'lpf',
       options: Array.from({ length: LPF_OPTION_COUNT }, (_, index) => {
         const sourceUrl = getLpfSourceUrl(index + 1);
-        return { name: `Option ${index + 1}`, sourceUrl, iframe: sourceUrl, proxy: true, status: 'unavailable' };
+        return {
+          name: `Option ${index + 1}`, sourceUrl, iframe: sourceUrl, proxy: true, status: 'unavailable',
+          lpf: { resolution: 'failed', origin: 'provider' },
+        };
       }),
     },
     checkedAt: Date.now(),
@@ -39,9 +42,23 @@ function validateSnapshot(value: unknown, token: string): LpfChannelSnapshot | u
       || option.iframe.includes(token)
       || (option.iframe !== sourceUrl && !isLpfCdnUrl(option.iframe))
       || (option.iframe === sourceUrl && option.status !== 'unavailable' && option.status !== 'unknown')) return;
+    const state = option.lpf;
+    if (!record(state) || state.origin !== 'provider'
+      || !['resolved', 'empty', 'failed'].includes(String(state.resolution))
+      || (state.resolvedAt !== undefined && (!Number.isSafeInteger(state.resolvedAt) || Number(state.resolvedAt) <= 0))
+      || (state.verifiedAt !== undefined && (!Number.isSafeInteger(state.verifiedAt) || Number(state.verifiedAt) <= 0))
+      || (state.resolution === 'empty' && (option.iframe !== sourceUrl || option.status !== 'unavailable'))
+      || (state.resolution === 'failed' && (option.iframe !== sourceUrl || option.status !== 'unavailable'))
+      || (state.resolution === 'resolved' && !isLpfCdnUrl(option.iframe))) return;
     options.push({
       name: `Option ${index + 1}`, sourceUrl, iframe: option.iframe, proxy: true,
       status: option.status as ChannelOptionStatus,
+      lpf: {
+        resolution: state.resolution as 'resolved' | 'empty' | 'failed',
+        origin: 'provider',
+        ...(state.resolvedAt !== undefined ? { resolvedAt: Number(state.resolvedAt) } : {}),
+        ...(state.verifiedAt !== undefined ? { verifiedAt: Number(state.verifiedAt) } : {}),
+      },
     });
   }
   return {
@@ -52,7 +69,7 @@ function validateSnapshot(value: unknown, token: string): LpfChannelSnapshot | u
 }
 
 /** The endpoint comes exclusively from server configuration, never from a client request. */
-export async function getRelayLpfSnapshot(endpoint: string, force = false): Promise<LpfChannelSnapshot> {
+export async function getRelayLpfSnapshot(endpoint: string, force = false, signal?: AbortSignal): Promise<LpfChannelSnapshot> {
   const token = process.env.LPF_RELAY_TOKEN;
   if (!token?.trim()) return unavailable('LPF relay is unavailable: server authentication is not configured.');
   let url: URL;
@@ -69,7 +86,8 @@ export async function getRelayLpfSnapshot(endpoint: string, force = false): Prom
   try {
     const response = await fetch(url.href, {
       method: force ? 'POST' : 'GET', headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store', redirect: 'manual', signal: AbortSignal.timeout(40_000),
+      cache: 'no-store', redirect: 'manual',
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(40_000)]) : AbortSignal.timeout(40_000),
     });
     if (response.status !== 200) {
       await response.body?.cancel();

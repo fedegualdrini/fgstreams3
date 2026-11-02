@@ -33,22 +33,30 @@ export default function ChannelViewer({
   const current = sourceOptions[optionIndex];
   const [playback, setPlayback] = useState<{ channel: string; index: number; option: ChannelOption }>();
   const sameSelection = playback?.channel === channel.name && playback.index === optionIndex;
-  const retainingPlayback = isLpf && sameSelection && current?.status === 'unavailable';
+  const lookupFailed = current?.lpf?.resolution === 'failed';
+  const sameDestinationFailed = current?.lpf?.resolution === 'resolved'
+    && current.iframe === playback?.option.iframe;
+  const retainingPlayback = isLpf && sameSelection && current?.status === 'unavailable'
+    && (lookupFailed || sameDestinationFailed);
   const options = retainingPlayback
     ? sourceOptions.map((option, index) => index === optionIndex
-      ? { ...playback.option, status: 'unknown' as const }
+      ? { ...playback.option, status: 'unknown' as const,
+        lpf: { ...playback.option.lpf, resolution: 'failed' as const, origin: 'saved' as const } }
       : option)
     : sourceOptions;
   const playerChannel = retainingPlayback ? { ...channel, options } : channel;
+  const selected = options[optionIndex];
+  const usingSavedLink = selected?.lpf?.origin === 'saved';
 
   useEffect(() => {
     // A finished broadcast, explicit selection, or replacement URL ends this
     // playback session. A later failed check must not resurrect its old player.
     if (playback && (!isLpf || !sameSelection || current?.status === 'ended'
-      || (current?.status !== 'unavailable' && current?.iframe !== playback.option.iframe))) {
+      || current?.lpf?.resolution === 'empty'
+      || (!retainingPlayback && current?.iframe !== playback.option.iframe))) {
       setPlayback(undefined);
     }
-  }, [isLpf, sameSelection, current?.status, current?.iframe, playback]);
+  }, [isLpf, sameSelection, current?.status, current?.iframe, current?.lpf?.resolution, retainingPlayback, playback]);
 
   return (
     <>
@@ -105,6 +113,15 @@ export default function ChannelViewer({
                   ? <>Last checked <time dateTime={new Date(lpfCheckedAt).toISOString()}>{new Date(lpfCheckedAt).toLocaleTimeString()}</time></>
                   : lpfRefreshing ? 'Checking broadcasts…' : 'Broadcasts not checked yet'}
               </div>
+              {usingSavedLink && (
+                <p className="channel-sidebar__checked" role="status">
+                  Using a saved link. {selected.status === 'live'
+                    ? 'Its playlist was verified live directly.'
+                    : selected.status === 'ended' ? 'This broadcast has finished.'
+                      : 'Live status could not be confirmed.'}
+                  {selected.lpf?.verifiedAt && <> Last verified <time dateTime={new Date(selected.lpf.verifiedAt).toISOString()}>{new Date(selected.lpf.verifiedAt).toLocaleString()}</time>.</>}
+                </p>
+              )}
               {(lpfError || retainingPlayback) && (
                 <p className="channel-sidebar__error" role="status">
                   {lpfError}
@@ -122,6 +139,7 @@ export default function ChannelViewer({
                 const statusLabel = status === 'unknown' && lpfRefreshing
                   ? 'Checking…'
                   : LPF_STATUS_LABELS[status];
+                const label = option.lpf?.origin === 'saved' ? `${statusLabel} · Saved link` : statusLabel;
                 return (
                   <button
                     key={`${channel.name}-${option.name}-${index}`}
@@ -132,7 +150,7 @@ export default function ChannelViewer({
                   >
                     <div className="source-option__name">{option.name}</div>
                     <div className="source-option__index">Option {index + 1}</div>
-                    {isLpf && <div className="source-option__status" data-status={status}>{statusLabel}</div>}
+                    {isLpf && <div className="source-option__status" data-status={status}>{label}</div>}
                   </button>
                 );
               })}

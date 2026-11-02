@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LpfChannelSnapshot } from '@/types/channels';
-import { LPF_REFRESH_INTERVAL_MS } from '@/lib/lpfUrls';
+import { isLpfCdnUrl, LPF_REFRESH_INTERVAL_MS } from '@/lib/lpfUrls';
 
 /** Refresh the numbered LPF sources without changing the user's channel or option. */
 export function useLpfChannel(enabled: boolean) {
@@ -29,7 +29,7 @@ export function useLpfChannel(enabled: boolean) {
         const next = await response.json() as LpfChannelSnapshot;
         if (controller.signal.aborted) return;
         setSnapshot(next);
-        setError(next.error);
+        setError([next.error, next.cacheError].filter(Boolean).join(' ') || undefined);
       } catch {
         if (controller.signal.aborted) return;
         setError('Could not refresh LPF links. Please try again.');
@@ -38,8 +38,10 @@ export function useLpfChannel(enabled: boolean) {
           ...previous,
           channel: {
             ...previous.channel,
-            options: previous.channel.options.map(option => option.status === 'live'
-              ? { ...option, status: 'unknown' }
+            options: previous.channel.options.map(option => isLpfCdnUrl(option.iframe)
+              && (option.status === 'live' || option.status === 'unknown')
+              ? { ...option, status: 'unknown',
+                lpf: { ...option.lpf, resolution: 'failed', origin: 'saved' } }
               : option),
           },
         }));

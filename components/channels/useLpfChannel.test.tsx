@@ -9,8 +9,10 @@ const snapshot: LpfChannelSnapshot = {
   channel: {
     name: 'LPF', logo: '', show: true, source: 'lpf',
     options: [
-      { name: 'LPF 1', iframe: 'https://canales.encoders.immergo.tv/live.m3u8', status: 'live' },
-      { name: 'LPF 2', iframe: 'https://canales.encoders.immergo.tv/finished.m3u8', status: 'ended' },
+      { name: 'LPF 1', iframe: 'https://canales.encoders.immergo.tv/live.m3u8', status: 'live',
+        lpf: { resolution: 'resolved', origin: 'provider', resolvedAt: 1_700_000_000_000, verifiedAt: 1_700_000_000_000 } },
+      { name: 'LPF 2', iframe: 'https://canales.encoders.immergo.tv/finished.m3u8', status: 'ended',
+        lpf: { resolution: 'resolved', origin: 'provider', resolvedAt: 1_700_000_000_000, verifiedAt: 1_700_000_000_000 } },
     ],
   },
 };
@@ -73,7 +75,8 @@ describe('useLpfChannel', () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(LPF_REFRESH_INTERVAL_MS); });
     expect(result.current.snapshot?.checkedAt).toBe(snapshot.checkedAt);
     expect(result.current.snapshot?.channel.options.map(option => option.status)).toEqual(['unknown', 'ended']);
-    expect(result.current.error).toContain('Could not refresh LPF links');
+    expect(result.current.snapshot?.channel.options[0].lpf).toMatchObject({ resolution: 'failed', origin: 'saved' });
+    expect(result.current.snapshot?.channel.options[1].lpf).toEqual(snapshot.channel.options[1].lpf);
     expect(result.current.isRefreshing).toBe(false);
   });
 });

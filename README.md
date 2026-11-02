@@ -100,6 +100,17 @@ Live status comes from `live_sources`, not kickoff time. Source objects are dedu
 
 Supported StreamFree embeds now start in **Direct player** mode without loading the provider iframe or its scripts. **Original embed** remains an explicit alternative; its unsandboxed iframe follows the [provider documentation](https://strmfree.st/api) and may display ads/popups. A source marked live can still fail to play.
 
+### LPF saved-link fallback
+
+LPF can persist verified per-option CDN links in private Vercel Blob storage.
+When its PC relay or provider lookup fails, saved playlists are checked directly;
+verified live links remain playable, while inconclusive checks are labeled
+**Unknown · Saved link**. Confirmed empty, finished, or replaced broadcasts retire
+the old destination instead of reviving yesterday's game. Saved links have a
+24-hour provider-lookup lifetime; they are not a video archive or an expiry bypass.
+Storage setup, namespace isolation and the producer-first rollout are documented
+in [LPF live link resolution](docs/CHANNEL_IMPORT.md#durable-saved-links).
+
 ### Direct playback
 
 StreamFree `/embed/{category}/{stream_key}` URLs on `strmfree.st` or `streamfree.top`, and supported `https://embed.st/embed/<source>/<id>/<stream-number>` URLs, start directly on match pages, multi-match cards and channel options. Use **Original embed** to switch to the provider player. Eligibility follows the actual URL, not its source label; ordinary HLS/DASH channels and movies retain their existing players.

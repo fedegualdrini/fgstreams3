@@ -1,5 +1,13 @@
 export type ChannelOptionStatus = 'live' | 'ended' | 'unavailable' | 'unknown';
 
+/** A failed lookup is not authoritative evidence that a numbered slot is empty. */
+export interface LpfOptionState {
+  resolution: 'resolved' | 'empty' | 'failed';
+  origin: 'provider' | 'saved';
+  resolvedAt?: number;
+  verifiedAt?: number;
+}
+
 export interface ChannelOption {
   name: string;
   iframe: string;
@@ -11,6 +19,8 @@ export interface ChannelOption {
   sourceUrl?: string;
   /** Current playlist availability; omitted for channels that are not probed. */
   status?: ChannelOptionStatus;
+  /** LPF-only lookup outcome and saved-link provenance. */
+  lpf?: LpfOptionState;
 }
 
 export interface Channel {
@@ -25,4 +35,5 @@ export interface LpfChannelSnapshot {
   channel: Channel;
   checkedAt: number;
   error?: string;
+  cacheError?: string;
 }

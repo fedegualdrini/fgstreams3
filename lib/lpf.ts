@@ -4,17 +4,15 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { Impit } from 'impit';
 import { inspectLpfPlaylist } from './lpfPlaylist';
 import { getRelayLpfSnapshot } from './lpfRelay';
+import { resolveLpfWithFallback } from './lpfFallback';
+import { fetchLpfPlaylist, LPF_REQUEST_HEADERS, LPF_REQUEST_TIMEOUT_MS } from './lpfTransport';
 import { getLpfSourceUrl, isLpfCdnUrl, LPF_OPTION_COUNT, LPF_REFRESH_INTERVAL_MS } from './lpfUrls';
 import { createLogger } from './logger';
 
 const log = createLogger('lpf');
-const REQUEST_TIMEOUT_MS = 10_000;
-const REQUEST_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-};
 // Credentials stay in the server environment; only provider entry points use this egress.
 const proxyClient = process.env.LPF_PROXY_URL
-  ? new Impit({ browser: 'chrome', proxyUrl: process.env.LPF_PROXY_URL, timeout: REQUEST_TIMEOUT_MS })
+  ? new Impit({ browser: 'chrome', proxyUrl: process.env.LPF_PROXY_URL, timeout: LPF_REQUEST_TIMEOUT_MS })
   : null;
 
 interface ResolvedLpfPlaylist {
@@ -26,6 +24,7 @@ let cached: LpfChannelSnapshot | undefined;
 let cachedAt = 0;
 let pending: Promise<LpfChannelSnapshot> | undefined;
 let pendingForced = false;
+let lastLookupStartedAt = 0;
 
 function isConnectionReset(error: unknown): boolean {
   for (let depth = 0; depth < 5 && error instanceof Error; depth++) {
@@ -38,10 +37,10 @@ function isConnectionReset(error: unknown): boolean {
 async function fetchSource(url: string, deadline: AbortSignal): Promise<Response | ImpitResponse> {
   for (let attempt = 0; ; attempt++) {
     deadline.throwIfAborted();
-    const signal = AbortSignal.any([deadline, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]);
+    const signal = AbortSignal.any([deadline, AbortSignal.timeout(LPF_REQUEST_TIMEOUT_MS)]);
     try {
       const requestOptions = {
-        redirect: 'manual' as const, headers: REQUEST_HEADERS,
+        redirect: 'manual' as const, headers: LPF_REQUEST_HEADERS,
         signal,
       };
       return proxyClient
@@ -55,25 +54,9 @@ async function fetchSource(url: string, deadline: AbortSignal): Promise<Response
   }
 }
 
-/** Validate each redirect before fetching: a provider response cannot select an arbitrary host. */
-async function fetchPlaylist(url: string, deadline: AbortSignal): Promise<Response> {
-  for (let redirect = 0; redirect < 4; redirect++) {
-    if (!isLpfCdnUrl(url)) throw new Error('Unsupported LPF CDN destination');
-    const response = await fetch(url, {
-      redirect: 'manual', cache: 'no-store', headers: REQUEST_HEADERS,
-      signal: AbortSignal.any([deadline, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]),
-    });
-    if (response.status < 300 || response.status >= 400) return response;
-    const location = response.headers.get('location');
-    await response.body?.cancel();
-    if (!location) throw new Error('LPF CDN redirect has no destination');
-    url = new URL(location, url).href;
-  }
-  throw new Error('Too many LPF CDN redirects');
-}
 
-async function refreshLpfChannel(): Promise<LpfChannelSnapshot> {
-  const deadline = AbortSignal.timeout(25_000);
+async function refreshLpfChannel(signal: AbortSignal): Promise<LpfChannelSnapshot> {
+  const deadline = AbortSignal.any([signal, AbortSignal.timeout(25_000)]);
   const options: ChannelOption[] = new Array(LPF_OPTION_COUNT);
   const failures: number[] = [];
   const inspections = new Map<string, Promise<ResolvedLpfPlaylist>>();
@@ -85,6 +68,7 @@ async function refreshLpfChannel(): Promise<LpfChannelSnapshot> {
       const sourceUrl = getLpfSourceUrl(number);
       const option: ChannelOption = {
         name: `Option ${number}`, iframe: sourceUrl, sourceUrl, proxy: true, status: 'unavailable',
+        lpf: { resolution: 'failed', origin: 'provider' },
       };
       options[number - 1] = option;
       try {
@@ -93,15 +77,19 @@ async function refreshLpfChannel(): Promise<LpfChannelSnapshot> {
         if (response.status >= 300 && response.status < 400) {
           await response.body?.cancel();
           // The provider uses an empty 302 Location when a numbered slot has no stream.
-          if (!location) continue;
+          if (!location) {
+            option.lpf = { resolution: 'empty', origin: 'provider' };
+            continue;
+          }
           const destination = new URL(location, sourceUrl).href;
           if (!isLpfCdnUrl(destination)) throw new Error('Unsupported LPF destination');
           option.iframe = destination;
+          option.lpf = { resolution: 'resolved', origin: 'provider', resolvedAt: Date.now() };
           let inspection = inspections.get(destination);
           if (!inspection) {
             let finalUrl = destination;
             inspection = inspectLpfPlaylist(destination, async url => {
-              const playlist = await fetchPlaylist(url, deadline);
+              const playlist = await fetchLpfPlaylist(url, deadline);
               if (url === destination) finalUrl = playlist.url || destination;
               return playlist;
             }).then(status => ({ url: finalUrl, status }));
@@ -110,6 +98,7 @@ async function refreshLpfChannel(): Promise<LpfChannelSnapshot> {
           const resolved = await inspection;
           option.iframe = resolved.url;
           option.status = resolved.status;
+          if (resolved.status === 'live' || resolved.status === 'ended') option.lpf.verifiedAt = Date.now();
         } else {
           await response.body?.cancel();
           log.warn('numbered source rejected resolution', { option: number, status: response.status });
@@ -140,9 +129,17 @@ export async function getLpfChannelSnapshot(force = false): Promise<LpfChannelSn
   // where concurrent requests still share the actual provider lookup.
   if (pending && (!force || pendingForced || relay === undefined)) return pending;
   if (!force && cached && Date.now() - cachedAt < LPF_REFRESH_INTERVAL_MS) return cached;
+  // Order forced lookups even when two requests start in the same millisecond.
+  const observedAt = Math.max(Date.now(), lastLookupStartedAt + 1);
+  lastLookupStartedAt = observedAt;
+  const deadline = AbortSignal.timeout(55_000);
   const refresh = relay !== undefined
-    ? getRelayLpfSnapshot(relay, force)
-    : refreshLpfChannel();
+    ? resolveLpfWithFallback(
+      () => getRelayLpfSnapshot(relay, force, deadline),
+      observedAt,
+      deadline,
+    )
+    : refreshLpfChannel(deadline);
   pending = refresh;
   pendingForced = force;
   try {
