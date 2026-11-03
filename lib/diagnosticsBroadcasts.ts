@@ -123,7 +123,7 @@ export function summarizeInputs(inputs: BroadcastInputs) {
   const { pageProbes, channels, staticChannels, angulismo, promiedos, promiedosError } = inputs;
 
   return {
-    region: process.env.VERCEL_REGION ?? 'local',
+    region: process.env.AWS_REGION ?? 'local',
     channelCatalog: {
       shipped: staticChannels.length,
       afterLiveRefresh: channels.length,

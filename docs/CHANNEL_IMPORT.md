@@ -37,13 +37,13 @@ A stream is only imported when it can actually be played:
 
 ## Channel media relay
 
-HTTP and no-CORS HLS channels need a media proxy. On Vercel,
+HTTP and no-CORS HLS channels need a media proxy. On Netlify,
 `/api/hls-proxy` now returns a small signed `307` redirect; it never downloads
 the video body. The browser fetches rewritten playlists, AES keys, initialization
 data and segments directly from the PC tunnel's `/hls-proxy` endpoint.
 Browser-direct StreamFree/embed.st playback is unchanged.
 
-Configure Vercel Production and Preview with:
+Configure Netlify production and preview runtime environments through its UI, CLI or API (not build-only `netlify.toml` variables) with:
 
 - `HLS_PROXY_SECRET`: a private 64-hex key, shared with the PC media relay.
 - `HLS_PROXY_RELAY_URL`: the full HTTPS tunnel URL ending in `/hls-proxy`.
@@ -53,11 +53,11 @@ Generate the key once with
 and save it privately. The public default signing key has been removed.
 Media URLs carry only a URL-bound HMAC, never the key or `LPF_RELAY_TOKEN`.
 Missing configuration returns `503`; it does not silently restore video
-transfer through Vercel.
+transfer through cloud Functions.
 
 The private PC Next app runs with `HLS_PROXY_MODE=origin`, the same
 `HLS_PROXY_SECRET`, and `HLS_PROXY_RELAY_URL` set to the public media endpoint.
-On Vercel, origin mode is refused even if configured accidentally.
+On Netlify and Vercel, origin mode is refused even if configured accidentally.
 The PC validates public DNS/IP addresses on every redirect and pins new
 connections to a validated address, including protections for IPv4-mapped IPv6.
 It bounds playlist reads, rewrites nested resources, preserves byte ranges,
@@ -74,9 +74,9 @@ Saved LPF destinations preserve discovery state, not a replacement media server.
 Stopping this PC can therefore interrupt proxy-only playback even when the
 saved CDN playlist is still live. Direct-browser streams remain independent.
 
-Offloading prevents future video-body Fast Origin Transfer; it does not erase
-usage already counted or guarantee that Vercel cancels a pending Hobby pause.
-See [Vercel's Hobby usage policy](https://vercel.com/docs/plans/hobby#hobby-billing-cycle).
+Offloading keeps video bodies off the web host; it does not erase usage already
+counted or reverse an account-level suspension. Netlify Free also has a hard
+monthly credit limit; keep media off its Functions and monitor the shared budget.
 
 ## LPF live link resolution
 
@@ -84,7 +84,7 @@ The shipped **LPF** channel stores
 `https://emitiendoenvivo.com/lpf/1.m3u8` through `18.m3u8`, not game-specific CDN
 destinations. While Channels is visible, it loads `GET /api/channels/lpf` initially
 and every 60 seconds. **Refresh links** sends `POST /api/channels/lpf` to bypass
-both the Vercel and PC snapshot caches without changing the selected channel,
+both the cloud and PC snapshot caches without changing the selected channel,
 option number, or search query.
 
 `lib/lpf.ts` resolves the provider redirects, follows only HTTPS playlist URLs on
@@ -132,7 +132,7 @@ Hiding the tab pauses refresh requests, and returning refreshes immediately.
 ### Durable saved links
 
 When `LPF_RELAY_URL` is configured, the consumer persists verified live
-destinations per numbered option in a **private Vercel Blob** snapshot. The PC
+destinations per numbered option in a **private Netlify Blobs** snapshot. The PC
 producer itself does not use this cache: keep its `LPF_RELAY_URL` unset.
 The snapshot contains only CDN URLs, lookup/verification timestamps, and
 retirement records; it does not contain video, relay credentials, or Blob
@@ -158,30 +158,24 @@ The cache starts empty. It only protects links successfully saved after setup;
 it cannot recover destinations that were never persisted, renew expired
 provider URLs, or turn a finished broadcast back into a live one.
 
-Create a private store once, or connect an existing store through its Vercel
-project connection settings:
+The site-wide Netlify Blobs store `lpf-cache` is provisioned automatically on use,
+persists across deployments, and requires no separately connected Vercel store.
+Netlify supplies site-scoped credentials to its Next.js runtime. Never put a
+Netlify account token or storage credentials in deployed environment variables,
+`NEXT_PUBLIC_*` fields or client responses.
 
-```powershell
-vercel blob create-store fgstreams3-lpf-cache --access private --environment development --environment preview --yes
-```
+`next.config.mjs` captures Netlify's build-time `CONTEXT` and `BRANCH` as the
+non-secret `LPF_CACHE_CONTEXT` and `LPF_CACHE_BRANCH` fields. Keys use
+`v1/<context>/<namespace>/snapshot.json`. Production, deploy-preview,
+branch-deploy and dev contexts are separate; both nonproduction deploy contexts
+hash the branch into the namespace. Local execution defaults to dev even under
+`next start`. `LPF_CACHE_NAMESPACE` optionally selects a bounded
+alphanumeric/underscore/hyphen name without removing context or branch isolation.
 
-The CLI can update the ignored `.env.local` file. The official SDK uses
-`BLOB_STORE_ID` with managed `VERCEL_OIDC_TOKEN` when available, or the server-only
-`BLOB_READ_WRITE_TOKEN`. Never expose these through `NEXT_PUBLIC_*` or client
-responses. Add **Production** to the existing store's project connection before
-deploying the consumer to production; do not recreate the store.
-
-Snapshots are isolated by `VERCEL_ENV`; local execution defaults to development,
-even under `next start`. Preview branches also have separate hashed namespaces.
-`LPF_CACHE_NAMESPACE` optionally selects a bounded alphanumeric/underscore/hyphen
-name, useful for isolated verification, without removing environment or preview
-branch isolation.
-
-Updates use authoritative Blob metadata ETags around an uncached body read, then
-an ETag-conditional write. Download responses can have weak ETags and a zero
-reported size, so they are not used as write validators. Reads are bounded to
-64 KiB; storage operations share a six-second budget and up to three CAS
-attempts. The whole consumer refresh is bounded to 55 seconds within the
+Strong streamed reads pair the body and ETag in one response. Conditional
+creation and ETag-conditional updates prevent lost concurrent writes. Reads are
+bounded to 64 KiB; storage operations share a six-second budget and up to three
+CAS attempts. The whole consumer refresh is bounded to 55 seconds within the
 route's 60-second limit.
 
 **Rollout order:** upgrade the PC producer first so each option reports explicit
@@ -203,7 +197,7 @@ back to hardcoded game URLs or mark an old broadcast as live.
 
 Set the server-only `LPF_PROXY_URL` environment variable to a provider-permitted
 HTTP, HTTPS, SOCKS4, or SOCKS5 forward proxy URL, including credentials if required.
-Set it in Vercel's **Production** environment before deploying the resolver.
+Set it in Netlify's production runtime environment before deploying the resolver.
 The existing `impit` client uses this proxy only for the numbered provider URLs;
 CDN playlist checks and media remain on the existing direct/proxy playback path.
 Proxy credentials are never included in API responses or browser bundles.
@@ -213,20 +207,20 @@ cannot resolve the links; this setting does not solve or bypass reCAPTCHA.
 
 ### Free PC relay
 
-The live resolver can use this PC instead of Vercel's network. Set server-only
+The live resolver can use this PC instead of the cloud host's network. Set server-only
 `LPF_RELAY_URL` to the full HTTPS tunnel URL ending in `/lpf`, and
-`LPF_RELAY_TOKEN` to the relay's secret, in Vercel Production and Preview.
+`LPF_RELAY_TOKEN` to the relay's secret, in Netlify production and preview environments.
 Deploy again after changing either setting. The relay is the exclusive source
 of new destinations. Authentication, transport, validation, and provider failures
 use eligible saved links as described above; without one, the option remains
-unavailable. Vercel does not bypass the relay by resolving numbered sources itself.
+unavailable. The cloud app does not bypass the relay by resolving numbered sources itself.
 
 `scripts/lpf-relay.mjs` binds only `127.0.0.1:3101`. It accepts authenticated
 `GET /lpf` for cached reads and `POST /lpf` for manual refreshes, forwarding the
 same method only to the fixed local `http://127.0.0.1:3100/api/channels/lpf`
 endpoint. It is not a general proxy, does not forward credentials upstream,
 and does not expose the app or PC files.
-Vercel refuses relay redirects and validates all 18 canonical options before
+The cloud consumer refuses relay redirects and validates all 18 canonical options before
 returning their URLs and statuses to the browser. The same PC also serves
 proxy-only video through the separately signed media endpoint above.
 
@@ -258,9 +252,9 @@ npm run lpf:relay
 ```
 
 Cloudflare prints a new HTTPS hostname on each tunnel start. Update both
-`LPF_RELAY_URL` (`/lpf`) and `HLS_PROXY_RELAY_URL` (`/hls-proxy`) in Vercel,
+`LPF_RELAY_URL` (`/lpf`) and `HLS_PROXY_RELAY_URL` (`/hls-proxy`) in Netlify,
 and `hlsProxyUrl` in the private PC config. Restart the PC app so rewritten
-playlists use the new media hostname, then redeploy Vercel.
+playlists use the new media hostname, then redeploy Netlify.
 The keys remain private and unchanged; never put either key in a browser
 bundle or URL. Build replacement PC apps separately from the live `.next`.
 

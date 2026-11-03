@@ -10,7 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-**[Live demo](https://fgstreams3.vercel.app)** · [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Contributing](.github/CONTRIBUTING.md)
+**[Live demo](https://fgstreams3.netlify.app)** · [Architecture](docs/ARCHITECTURE.md) · [Project structure](docs/PROJECT_STRUCTURE.md) · [Contributing](.github/CONTRIBUTING.md)
 
 </div>
 
@@ -54,7 +54,7 @@ FGStreams lists what is live right now, finds a playable source for it, and keep
 
 ## Quick start
 
-Requires Node.js 20.19+ (22 recommended).
+Requires Node.js 22.12+.
 
 ```bash
 git clone https://github.com/fedegualdrini/fgstreams3.git
@@ -75,7 +75,7 @@ HLS_PROXY_SECRET=<64 random hex characters shared with the PC relay>
 HLS_PROXY_RELAY_URL=https://<tunnel-host>/hls-proxy
 ```
 
-Vercel only returns signed redirects for `/api/hls-proxy`; video bodies travel through the PC media relay, not Vercel Functions. The private PC app additionally needs `HLS_PROXY_MODE=origin`. Missing relay configuration fails closed rather than falling back to Vercel video transfer. See [channel media relay setup](docs/CHANNEL_IMPORT.md#channel-media-relay).
+Netlify only returns signed redirects for `/api/hls-proxy`; video bodies travel through the PC media relay, not cloud Functions. The private PC app additionally needs `HLS_PROXY_MODE=origin`. Missing relay configuration fails closed rather than falling back to cloud video transfer. See [channel media relay setup](docs/CHANNEL_IMPORT.md#channel-media-relay).
 
 ### Commands
 
@@ -88,6 +88,17 @@ Vercel only returns signed redirects for `/api/hls-proxy`; video bodies travel t
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run import:playlist -- <playlist.json>` | Merge an external channel playlist ([guide](docs/CHANNEL_IMPORT.md)) |
 | `npm run optimize:logos` | Download and shrink channel logos into `public/logos/` ([guide](docs/CHANNEL_IMPORT.md)) |
+
+### Deployment (Netlify)
+
+The production site is `https://fgstreams3.netlify.app`. Connect this GitHub repository with `main` as the production branch. `netlify.toml` selects Node 22, `npm run build` and `.next`; Netlify automatically supplies its Next.js adapter. Build on Netlify's Linux builders so `impit` includes the correct optional native binary; do not upload a Windows server build.
+
+Set `TMDB_API_KEY`, `LPF_RELAY_URL`, `LPF_RELAY_TOKEN`, `HLS_PROXY_SECRET`, `HLS_PROXY_RELAY_URL` and `HLS_PROXY_MODE=redirect` through Netlify's environment-variable UI, CLI or API. Variables in `netlify.toml` are build-only and cannot supply runtime secrets. Netlify Blobs credentials are supplied automatically; do not copy Vercel credentials or put a Netlify account token in the deployed runtime. The read-only `URL` variable supplies canonical metadata and sitemap URLs.
+
+Fonts and their OFL licenses are bundled in `app/fonts`, so builds do not depend on Google Fonts responding. Vercel analytics and Speed Insights are no longer loaded.
+
+Netlify Free has a hard monthly credit limit, not unlimited hosting. Production deploys, requests, function compute and bandwidth share that budget; see [current credit rates](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/). Video remains browser-direct or on the existing PC relay. Moving hosts does not transfer the old `vercel.app` address or clear its account quota.
+
 
 ### StreamFree sports API
 
@@ -105,7 +116,7 @@ Supported StreamFree embeds now start in **Direct player** mode without loading 
 
 ### LPF saved-link fallback
 
-LPF can persist verified per-option CDN links in private Vercel Blob storage.
+LPF can persist verified per-option CDN links in private Netlify Blobs storage.
 When its PC relay or provider lookup fails, saved playlists are checked directly;
 verified live URLs remain available, while inconclusive checks are labeled
 **Unknown · Saved link**. Proxy-only playback still requires the PC media relay
@@ -140,7 +151,7 @@ Browser smoke verification covered 1080p playback on a match page, two simultane
 
 #### embed.st Direct HQ
 
-Direct HQ exposes only the rendition with the highest advertised `BANDWIDTH`; hls.js and native HLS cannot automatically downgrade to a lower rendition. Slow connections may buffer instead. Direct media resources must end on the verified HTTPS origins `p16-common-sign.tiktokcdn.com` and `p19-common-sign.tiktokcdn.com`. Media is not proxied through Vercel.
+Direct HQ exposes only the rendition with the highest advertised `BANDWIDTH`; hls.js and native HLS cannot automatically downgrade to a lower rendition. Slow connections may buffer instead. Direct media resources must end on the verified HTTPS origins `p16-common-sign.tiktokcdn.com` and `p19-common-sign.tiktokcdn.com`. Media is not proxied through the web host.
 
 The hls.js Direct player tolerates approved CDN host/path/signature rotation for the same segment when its media sequence, discontinuity, duration, gap flag and program timestamp still match (up to 50 ms timestamp rounding). Stable playback identities are separate from the latest signed download URLs, so a rotation does not restart the player or re-download buffered segments. This is metadata matching, not a content hash; other playlist, demux and decoder checks remain enabled. Only the current playlist windows are retained, not a media cache or URL history. Untimestamped, encrypted, byte-range and low-latency playlists retain strict URL consistency; native HLS is unchanged.
 

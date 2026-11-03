@@ -4,7 +4,7 @@ Thanks for taking the time to improve FGStreams. Bug reports, fixes and ideas ar
 
 ## Setup
 
-Requires Node.js 20.19+ (22 recommended).
+Requires Node.js 22.12+.
 
 ```bash
 npm install
