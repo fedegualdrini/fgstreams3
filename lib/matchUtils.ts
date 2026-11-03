@@ -84,7 +84,7 @@ function normalizeMatch(raw: RawMatch): Match {
     team1,
     team2,
     startTime: resolveStartTime(raw),
-    isLive: raw.live_sources.length > 0,
+    isLive: raw.sources.some(source => source.live),
     sources: [{
       source: STREAMFREE_SOURCE,
       id: raw.stream_key,

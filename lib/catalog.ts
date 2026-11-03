@@ -77,7 +77,7 @@ async function buildCatalog(): Promise<CatalogMatch[]> {
   return catalog;
 }
 
-const getCachedCatalog = unstable_cache(buildCatalog, ['strmfree-match-catalog'], {
+const getCachedCatalog = unstable_cache(buildCatalog, ['strmfree-match-catalog-source-live'], {
   revalidate: REVALIDATE_CATALOG,
   tags: ['match-catalog'],
 });

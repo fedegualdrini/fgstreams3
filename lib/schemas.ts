@@ -13,14 +13,14 @@ const StreamFreeTeamSchema = z.object({
 const StreamFreeSourceSchema = z.object({
   quality: z.string(),
   url: z.string(),
+  live: z.boolean(),
 }).passthrough();
 
-const StreamFreeSourceListsSchema = z.object({
+const StreamFreeSourcesSchema = z.object({
   sources: z.array(StreamFreeSourceSchema),
-  live_sources: z.array(StreamFreeSourceSchema),
 }).passthrough();
 
-export const StreamFreeMatchSchema = StreamFreeSourceListsSchema.extend({
+export const StreamFreeMatchSchema = StreamFreeSourcesSchema.extend({
   id: z.string().optional(),
   name: z.string(),
   category: z.string(),
@@ -37,7 +37,7 @@ export const StreamFreeStreamsResponseSchema = z.object({
   streams: z.array(StreamFreeMatchSchema),
 }).passthrough();
 
-export const StreamFreeSourcesResponseSchema = StreamFreeSourceListsSchema.extend({
+export const StreamFreeSourcesResponseSchema = StreamFreeSourcesSchema.extend({
   stream_key: z.string(),
 });
 

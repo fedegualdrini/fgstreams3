@@ -33,12 +33,11 @@ describe('normalizeMatches', () => {
     name: 'Arsenal vs Chelsea',
     category: 'soccer',
     league: 'Premier League',
-    sources: [{ quality: 'FHD', url: liveUrl }],
-    live_sources: [],
+    sources: [{ quality: 'FHD', url: liveUrl, live: false }],
   };
 
   it('uses the stream key as its stable ID and carries inline source variants', () => {
-    const raw = { ...base, live_sources: [{ quality: 'FHD', url: liveUrl }] };
+    const raw = { ...base, sources: [{ quality: 'FHD', url: liveUrl, live: true }] };
     const [match] = normalizeMatches([raw]);
     expect(match.id).toBe(base.stream_key);
     expect(match.sport).toBe('soccer');
@@ -49,6 +48,19 @@ describe('normalizeMatches', () => {
       streams: [{ url: liveUrl, embedUrl: liveUrl, source: STREAMFREE_SOURCE, isLive: true, quality: '1080p' }],
     }]);
     expect(match.isLive).toBe(true);
+  });
+
+  it('keeps a match live when only an alternate rendition is live', () => {
+    const alternate = 'https://strmfree.st/embed/soccer/arsenal-chelsea540p';
+    const [match] = normalizeMatches([{
+      ...base,
+      sources: [...base.sources, { quality: 'SD', url: alternate, live: true }],
+    }]);
+    expect(match.isLive).toBe(true);
+    expect(match.sources[0].streams?.map(stream => [stream.url, stream.isLive])).toEqual([
+      [alternate, true],
+      [liveUrl, false],
+    ]);
   });
 
   it('prefers structured team names and preserves exact image URLs', () => {
@@ -128,7 +140,7 @@ describe('normalizeMatches', () => {
         ...base,
         name: 'Sky Sports F1',
         match_timestamp: now / 1000 + offsetHours * 3600,
-        live_sources: [{ quality: 'FHD', url: liveUrl }],
+        sources: [{ quality: 'FHD', url: liveUrl, live: true }],
       }]);
       expect(currentLiveState(match)).toBe(true);
       expect(isListable(match, now)).toBe(true);
@@ -140,7 +152,7 @@ describe('normalizeMatches', () => {
       { ...base, match_timestamp: now / 1000 - 120 * 3600 },
       { ...base, match_timestamp: now / 1000 + 120 * 3600 },
       { ...base, match_timestamp: now / 1000 - 1800 },
-      { ...base, name: '', live_sources: [{ quality: 'FHD', url: liveUrl }] },
+      { ...base, name: '', sources: [{ quality: 'FHD', url: liveUrl, live: true }] },
     ]);
     expect(isListable(old, now)).toBe(false);
     expect(isListable(future, now)).toBe(false);
