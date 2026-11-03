@@ -28,6 +28,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# netlify (local `netlify build` / `netlify dev` output)
+.netlify
+
 # claude code (machine-specific permissions)
 .claude/settings.local.json
 

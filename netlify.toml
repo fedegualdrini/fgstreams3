@@ -1,3 +1,12 @@
+# Netlify runs `next build`, then the Next.js adapter below turns the `.next`
+# output into the server functions, redirects and headers the app needs.
+# Without the adapter Netlify publishes `.next` as a plain static folder, which
+# serves no SSR, no API routes and no `next.config.mjs` headers — every dynamic
+# route 404s. Framework auto-detection has never fired on this project, so the
+# adapter is declared explicitly rather than left implicit.
 [build]
   command = "npm run build"
   publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
