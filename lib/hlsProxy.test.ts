@@ -33,6 +33,7 @@ beforeEach(async () => {
   vi.stubEnv('HLS_PROXY_RELAY_URL', relay);
   vi.stubEnv('HLS_PROXY_MODE', '');
   vi.stubEnv('VERCEL', '');
+  vi.stubEnv('SITE_ID', '');
   network.lookup.mockReset().mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
   network.request.mockReset();
   serve = (_request, response) => response.end('media');
@@ -77,9 +78,12 @@ describe('HLS redirect control plane', () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it('forces the control plane on Vercel even with origin explicitly enabled', async () => {
+  it.each([
+    ['Vercel', 'VERCEL', '1'],
+    ['Netlify', 'SITE_ID', 'site-id'],
+  ])('forces the control plane on %s even with origin explicitly enabled', async (_host, key, value) => {
     vi.stubEnv('HLS_PROXY_MODE', 'origin');
-    vi.stubEnv('VERCEL', '1');
+    vi.stubEnv(key, value);
     expect((await handle(request())).status).toBe(307);
     expect(network.lookup).not.toHaveBeenCalled();
     expect(network.request).not.toHaveBeenCalled();

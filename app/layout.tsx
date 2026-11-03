@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import { Bebas_Neue, Space_Grotesk } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import localFont from 'next/font/local';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import AdBlockBanner from '@/components/AdBlockBanner';
 import { ADBLOCK_BANNER_BOOT_SCRIPT } from '@/lib/adBlockBanner';
@@ -18,18 +16,18 @@ import './styles/movies.css';
 import './styles/match-detail.css';
 import './styles/stream-test.css';
 
-// Self-hosted by next/font so the fonts are not a render-blocking third-party
-// request. The CSS variables feed --font-display / --font-body in globals.css.
-const bebasNeue = Bebas_Neue({
-  subsets: ['latin'],
+// Bundled font files keep builds independent of Google Fonts availability.
+// The CSS variables feed --font-display / --font-body in globals.css.
+const bebasNeue = localFont({
+  src: './fonts/BebasNeue-Regular.ttf',
   weight: '400',
   display: 'swap',
   variable: '--font-display-src',
 });
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const spaceGrotesk = localFont({
+  src: './fonts/SpaceGrotesk-Variable.ttf',
+  weight: '400 600',
   display: 'swap',
   variable: '--font-body-src',
 });
@@ -40,7 +38,7 @@ export const metadata: Metadata = {
     template: '%s | FGStreams',
   },
   description: 'Clean, reliable live sports streaming — football, basketball, tennis and more.',
-  metadataBase: new URL('https://fgstreams3.vercel.app'),
+  metadataBase: new URL(process.env.URL || 'http://localhost:3000'),
   openGraph: {
     siteName: 'FGStreams',
     type: 'website',
@@ -65,8 +63,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <div className="site-container">
           <ErrorBoundary>{children}</ErrorBoundary>
         </div>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

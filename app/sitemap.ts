@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getCatalog } from '@/lib/catalog';
 
-const SITE_URL = 'https://fgstreams3.vercel.app';
+const SITE_URL = process.env.URL || 'http://localhost:3000';
 
 // Without this the sitemap is baked at build time and lists matches that
 // finished long ago.
