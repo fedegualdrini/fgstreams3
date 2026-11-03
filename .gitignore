@@ -42,3 +42,6 @@ next-env.d.ts
 *.har
 *.m3u8
 *.zip
+
+# Local Netlify folder
+.netlify

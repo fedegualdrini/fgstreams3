@@ -198,13 +198,14 @@ function reply(message: string, status: number, head = false): Response {
   return new Response(head ? null : message, { status, headers: CORS_HEADERS });
 }
 
-/** Default is a control-plane redirect; only an explicit non-Vercel origin fetches. */
+/** Managed hosts are redirect-only; an explicit private PC origin fetches media. */
 export function createHlsProxyHandler(isBootstrap: (url: URL) => boolean) {
   return async (request: Request): Promise<Response> => {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS_HEADERS });
     const head = request.method === 'HEAD';
     const secret = process.env.HLS_PROXY_SECRET;
-    const mode = process.env.VERCEL === '1' ? 'redirect' : (process.env.HLS_PROXY_MODE || 'redirect');
+    const mode = process.env.VERCEL === '1' || process.env.SITE_ID
+      ? 'redirect' : (process.env.HLS_PROXY_MODE || 'redirect');
     let relay = process.env.HLS_PROXY_RELAY_URL || '';
     try {
       if (!secret || !/^[a-f0-9]{64}$/i.test(secret) || !['origin', 'redirect'].includes(mode)) throw new Error();

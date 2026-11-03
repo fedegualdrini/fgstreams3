@@ -4,6 +4,7 @@
 app/
   page.tsx                         Home page with match list/search
   layout.tsx                       Root layout and metadata
+  fonts/                           Bundled Bebas Neue/Space Grotesk fonts and OFL licenses
   error.tsx                        Root error boundary
   sitemap.ts                       Sitemap generation
   globals.css                      Design tokens and shared UI primitives
@@ -12,7 +13,7 @@ app/
   stream-test/                     Manual embed.st URL diagnostic using the shared player
   match/[id]/                      Match detail page, metadata and error boundary
   api/
-    hls-proxy/route.ts             Signed media redirects on Vercel; private PC origin adapter
+    hls-proxy/route.ts             Signed media redirects on Netlify; private PC origin adapter
     channels/lpf/route.ts          Current numbered LPF destinations and broadcast availability
     media/search/route.ts          TMDB movie/TV search endpoint
     media/tv/[id]/route.ts         TMDB TV season metadata endpoint
@@ -146,11 +147,11 @@ Tokens live in `app/globals.css`, shared primitives in `app/styles/primitives.cs
 
 ### Performance
 
-Rules that keep the Core Web Vitals where they are (measured with Lighthouse; Vercel Speed Insights reports real-user numbers):
+Performance rules (verify with browser tooling or Lighthouse):
 
 - **No layout shifts after hydration.** Anything that appears late (banners, badges) is rendered in the server HTML and hidden with CSS, or reserves its space. The ad-block banner works this way (`lib/adBlockBanner.ts`).
 - **Images are sized and lazy.** Give every `<img>` a width and height and `loading="lazy"` unless it is above the fold; above-the-fold posters use `priority`. Channel logos are shrunk once into `public/logos/` by `npm run optimize:logos` rather than loaded from third-party hosts.
-- **No Vercel image optimization.** `images.unoptimized` is on in `next.config.mjs`: the changing catalog exhausted the Hobby plan's image-transformation allowance. StreamFree thumbnails, team logos and channel images are served directly. Keep new images small at the source rather than turning the optimizer back on.
+- **No hosted image optimization.** `images.unoptimized` is on in `next.config.mjs`: the changing catalog exhausted the former host's image-transformation allowance. StreamFree thumbnails, team logos and channel images are served directly. Keep new images small at the source rather than turning the optimizer back on.
 - **Third-party embeds wait for the page.** Unsupported stream iframes, and supported streams explicitly switched to Original embed, mount after the window `load` event (`lib/useAfterPageLoad.ts`). Direct StreamFree and embed.st sources do not fetch provider HTML, scripts or iframes in the browser; their server resolvers read provider metadata without executing it.
 - **Send the list only what it renders.** The home page maps catalog matches to `ListedMatch` (`toListedMatch`) so stream URLs and broadcast options stay on the server, and the upcoming grid renders 24 cards at a time.
 - **Cache what can be cached.** `/channels` is ISR (10 minutes, matching its upstream feed). The home and match pages stay dynamic on purpose, but send `no-cache` rather than `no-store` so browsers can restore them on Back.

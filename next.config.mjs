@@ -2,14 +2,19 @@
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
+  env: {
+    // Netlify provides deploy context at build time, not in serverless runtimes.
+    // Only these non-secret namespace fields are baked into the Next.js build.
+    LPF_CACHE_CONTEXT: process.env.CONTEXT || 'dev',
+    LPF_CACHE_BRANCH: process.env.BRANCH || '',
+  },
   experimental: {
     // Keep impit's platform-specific native HTTP client out of webpack bundles.
     serverComponentsExternalPackages: ['impit'],
   },
   images: {
     // Serve provider thumbnails, team logos and channel artwork directly.
-    // A changing catalog exhausted the Hobby image-transformation allowance;
-    // keep new images small at the source rather than optimizing on Vercel.
+    // Avoid hosted image-transformation quotas for the changing catalog.
     unoptimized: true,
   },
   async headers() {
@@ -29,12 +34,12 @@ const nextConfig = {
               "default-src 'self'",
               // 'unsafe-eval' is required by Next.js webpack HMR in dev mode only.
               // Production builds never use eval(), so we omit it there.
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://va.vercel-scripts.com https://vercel.live`,
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
               // hls.js fetches HLS segments via XHR — must be in connect-src, not media-src.
-              "connect-src 'self' https://va.vercel-scripts.com https:",
+              "connect-src 'self' https:",
               // https: covers all sports stream embeds + VidSrc (vidsrcme.ru)
               "frame-src https:",
               // blob: is required for HLS.js Media Source Extensions

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { BlobError, BlobNotFoundError, BlobPreconditionFailedError, get, head, put } from '@vercel/blob';
-import type { HeadBlobResult } from '@vercel/blob';
+import { getStore } from '@netlify/blobs';
+import type { Store } from '@netlify/blobs';
 import type { LpfCacheRecord, LpfCacheSnapshot, LpfCacheUpdate } from './lpfCacheTypes';
 import { isLpfCdnUrl, LPF_OPTION_COUNT } from './lpfUrls';
 
@@ -78,12 +78,8 @@ function validateUpdates(updates: readonly LpfCacheUpdate[]): LpfCacheUpdate[] {
 }
 
 function pathname(): string {
-  // The SDK resolves and refreshes credentials itself; there is no local persistence fallback.
-  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
-    throw new Error('LPF saved-link storage is not configured.');
-  }
-  const environment = process.env.VERCEL_ENV || 'development';
-  if (!['production', 'preview', 'development'].includes(environment)) {
+  const environment = process.env.LPF_CACHE_CONTEXT || 'dev';
+  if (!['production', 'deploy-preview', 'branch-deploy', 'dev'].includes(environment)) {
     throw new Error('LPF saved-link storage namespace is invalid.');
   }
   const override = process.env.LPF_CACHE_NAMESPACE;
@@ -91,12 +87,12 @@ function pathname(): string {
     throw new Error('LPF saved-link storage namespace is invalid.');
   }
   let namespace = override ?? 'default';
-  if (environment === 'preview') {
-    const branch = process.env.VERCEL_GIT_COMMIT_REF;
-    if (!branch || branch.length > 1024) throw new Error('LPF saved-link storage namespace is invalid.');
+  if (environment === 'deploy-preview' || environment === 'branch-deploy') {
+    const branch = process.env.LPF_CACHE_BRANCH;
+    if (!branch || !branch.trim() || branch.length > 1024) throw new Error('LPF saved-link storage namespace is invalid.');
     namespace += `-${createHash('sha256').update(branch).digest('hex')}`;
   }
-  return `lpf-cache/v1/${environment}/${namespace}/snapshot.json`;
+  return `v1/${environment}/${namespace}/snapshot.json`;
 }
 
 async function operation<T>(signal: AbortSignal | undefined, work: (signal: AbortSignal) => Promise<T>): Promise<T> {
@@ -106,53 +102,55 @@ async function operation<T>(signal: AbortSignal | undefined, work: (signal: Abor
   if (signal?.aborted) abort();
   const timer = setTimeout(abort, OPERATION_TIMEOUT_MS);
   let onAbort!: () => void;
-  // Node 20 is supported; Promise.withResolvers is not available there.
   const interrupted = new Promise<never>((_, reject) => {
     onAbort = () => reject(new Error(UNAVAILABLE));
     controller.signal.addEventListener('abort', onAbort, { once: true });
     if (controller.signal.aborted) onAbort();
   });
   try {
+    if (controller.signal.aborted) return await interrupted;
     return await Promise.race([work(controller.signal), interrupted]);
   } catch {
-    // No SDK messages, credentials, Blob URLs, abort reasons, or raw causes cross this boundary.
+    // No SDK messages, credentials, storage URLs, abort reasons, or raw causes cross this boundary.
     throw new Error(UNAVAILABLE);
   } finally {
     clearTimeout(timer);
+    controller.abort();
     signal?.removeEventListener('abort', abort);
     controller.signal.removeEventListener('abort', onAbort);
   }
 }
 
-async function readLatest(path: string, signal: AbortSignal, forWrite = false): Promise<VersionedCacheSnapshot> {
+function operationStore(signal: AbortSignal): Store {
+  // The runtime supplies site-scoped credentials. Bind every SDK request (including retries
+  // and signed-URL acquisition) to this operation; the SDK has no per-method signal option.
+  return getStore({
+    name: 'lpf-cache',
+    consistency: 'strong',
+    fetch: async (input, init) => {
+      signal.throwIfAborted();
+      const response = await globalThis.fetch(input, { ...init, signal });
+      if (signal.aborted) {
+        void response.body?.cancel().catch(() => {});
+        signal.throwIfAborted();
+      }
+      return response;
+    },
+  });
+}
+
+async function readLatest(store: Store, path: string, signal: AbortSignal): Promise<VersionedCacheSnapshot> {
   signal.throwIfAborted();
-  let metadata: HeadBlobResult | undefined;
-  if (forWrite) {
-    // Download validators can describe a transformed response; only metadata validators authorize writes.
-    // Pair the bounded consistent body with identical authoritative versions before and after its read.
-    try {
-      metadata = await head(path, { abortSignal: signal });
-    } catch (error) {
-      if (error instanceof BlobNotFoundError) return { snapshot: { version: 1, options: {} } };
-      throw error;
-    }
-    signal.throwIfAborted();
-    if (!metadata.etag || /^W\//i.test(metadata.etag) || metadata.etag.length > 1024 || /[\r\n]/.test(metadata.etag)
-      || !Number.isSafeInteger(metadata.size) || metadata.size < 0 || metadata.size > MAX_BYTES) invalid();
-  }
-  const result = await get(path, { access: 'private', useCache: false, abortSignal: signal });
+  // The body and ETag come from one strong response, never independently read metadata.
+  const result = await store.getWithMetadata(path, { type: 'stream' });
   signal.throwIfAborted();
-  if (result === null) {
-    if (metadata) throw new BlobPreconditionFailedError();
-    return { snapshot: { version: 1, options: {} } };
-  }
-  if (result.statusCode !== 200) invalid();
-  const reader = result.stream.getReader();
+  if (result === null) return { snapshot: { version: 1, options: {} } };
+  if (!result.data) invalid();
+  const reader = result.data.getReader();
   const cancel = () => { void reader.cancel().catch(() => {}); };
   signal.addEventListener('abort', cancel, { once: true });
   try {
-    if (!result.blob.etag || result.blob.etag.length > 1024 || /[\r\n]/.test(result.blob.etag)
-      || !Number.isSafeInteger(result.blob.size) || result.blob.size < 0 || result.blob.size > MAX_BYTES) invalid();
+    if (!result.etag || /^W\//i.test(result.etag) || result.etag.length > 1024 || /[\r\n]/.test(result.etag)) invalid();
     const decoder = new TextDecoder('utf-8', { fatal: true });
     let bytes = 0;
     let text = '';
@@ -166,23 +164,10 @@ async function readLatest(path: string, signal: AbortSignal, forWrite = false): 
       text += decoder.decode(value, { stream: true });
     }
     text += decoder.decode();
-    const snapshot = validateSnapshot(JSON.parse(text));
-    if (metadata) {
-      let after: HeadBlobResult;
-      try {
-        after = await head(path, { abortSignal: signal });
-      } catch (error) {
-        if (error instanceof BlobNotFoundError) throw new BlobPreconditionFailedError();
-        throw error;
-      }
-      signal.throwIfAborted();
-      if (after.etag !== metadata.etag || after.size !== metadata.size) throw new BlobPreconditionFailedError();
-      if (bytes !== metadata.size) invalid();
-    }
-    return { snapshot, etag: metadata?.etag ?? result.blob.etag };
+    return { snapshot: validateSnapshot(JSON.parse(text)), etag: result.etag };
   } finally {
     signal.removeEventListener('abort', cancel);
-    // Also stop oversized or malformed streams; cancellation must not extend the operation deadline.
+    // Cancellation is deliberately not awaited: a hostile stream must not extend the deadline.
     cancel();
     reader.releaseLock();
   }
@@ -220,21 +205,16 @@ function sameRecord(left: LpfCacheRecord | undefined, right: LpfCacheRecord | un
 
 export async function readLpfCache(signal?: AbortSignal): Promise<LpfCacheSnapshot> {
   const path = pathname();
-  return operation(signal, async deadline => (await readLatest(path, deadline)).snapshot);
+  return operation(signal, async deadline => (await readLatest(operationStore(deadline), path, deadline)).snapshot);
 }
 
 export async function updateLpfCache(updates: readonly LpfCacheUpdate[], signal?: AbortSignal): Promise<LpfCacheSnapshot> {
   const path = pathname();
   const validated = validateUpdates(updates);
   return operation(signal, async deadline => {
+    const store = operationStore(deadline);
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      let latest: VersionedCacheSnapshot;
-      try {
-        latest = await readLatest(path, deadline, true);
-      } catch (error) {
-        if (!deadline.aborted && error instanceof BlobPreconditionFailedError) continue;
-        throw error;
-      }
+      const latest = await readLatest(store, path, deadline);
       const { snapshot, etag } = latest;
       const options = { ...snapshot.options };
       for (const update of validated) {
@@ -247,20 +227,9 @@ export async function updateLpfCache(updates: readonly LpfCacheUpdate[], signal?
       const body = JSON.stringify(merged);
       if (Buffer.byteLength(body, 'utf8') > MAX_BYTES) invalid();
       deadline.throwIfAborted();
-      try {
-        await put(path, body, {
-          access: 'private', addRandomSuffix: false, contentType: 'application/json',
-          cacheControlMaxAge: 60, abortSignal: deadline,
-          ...(etag ? { allowOverwrite: true, ifMatch: etag } : { allowOverwrite: false }),
-        });
-        deadline.throwIfAborted();
-        return merged;
-      } catch (error) {
-        // Existing-file creation has no dedicated SDK error class.
-        const conflict = error instanceof BlobPreconditionFailedError || (!etag && error instanceof BlobError
-          && error.constructor === BlobError && /\b(?:blob|file) already exists\b/i.test(error.message));
-        if (deadline.aborted || !conflict) throw error;
-      }
+      const result = await store.set(path, body, etag ? { onlyIfMatch: etag } : { onlyIfNew: true });
+      deadline.throwIfAborted();
+      if (result.modified) return merged;
     }
     throw new Error(UNAVAILABLE);
   });
