@@ -1,4 +1,4 @@
-import { parseStreamFreeEmbedUrl, streamFreeManifestPath } from './streamfreeDirect';
+import { decodeStreamFreeSlug, parseStreamFreeEmbedUrl, streamFreeManifestPath } from './streamfreeDirect';
 
 const MAX_HTML_BYTES = 512 * 1024;
 const MAX_METADATA_BYTES = 16 * 1024;
@@ -46,9 +46,9 @@ export function parseStreamFreeEmbed(html: string, embedUrl: string, now = Date.
   if (html.length > MAX_HTML_BYTES) throw new Error('StreamFree embed exceeds the size limit.');
   const quality = oneMatch(html, /\bconst\s+QUALITY\s*=\s*(['"])(540p|720p|1080p|2160p)\1\s*;/g)[2];
   const suffix = oneMatch(html, /\bconst\s+SOURCE_SUFFIX\s*=\s*(['"])([1-9][0-9]?)?\1\s*;/g)[2] ?? '';
-  const key = oneMatch(html, /\bconst\s+VARIANT\s*=\s*(['"])([a-z0-9]+(?:-[a-z0-9]+)*)\1\s*\+\s*QUALITY\s*\+\s*SOURCE_SUFFIX\s*;/g)[2];
+  const key = decodeStreamFreeSlug(oneMatch(html, /\bconst\s+VARIANT\s*=\s*(['"])([^'"\r\n]+)\1\s*\+\s*QUALITY\s*\+\s*SOURCE_SUFFIX\s*;/g)[2]);
   const variant = key + quality + suffix;
-  const requested = embed.pathname.replace(/\/$/, '').split('/').pop();
+  const requested = decodeStreamFreeSlug(embed.pathname.replace(/\/$/, '').split('/').pop()!);
   // Bare API embeds select the provider's default source, not an arbitrary alternate.
   if (requested !== variant && !(requested === key && suffix === '')) {
     throw new Error('StreamFree embed constants do not match the requested stream.');
@@ -122,9 +122,10 @@ export function validateStreamFreeVariant(variant: string | null): string | null
 function parseRoot(rootUrl: string): URL {
   const root = new URL(rootUrl);
   if (!PROVIDER_ORIGINS[root.origin] || root.username || root.password || root.hash ||
-      !/^\/(?:live|live-cdn|live-externalcdn)\/[a-z0-9-]+\/index\.m3u8$/.test(root.pathname)) {
+      !/^\/(?:live|live-cdn|live-externalcdn)\/[^/]+\/index\.m3u8$/.test(root.pathname)) {
     throw new Error('Unsupported StreamFree manifest origin.');
   }
+  decodeStreamFreeSlug(root.pathname.split('/')[2]);
   return root;
 }
 
@@ -142,7 +143,7 @@ function safeResource(input: string, base: URL): URL {
     throw new Error('Unsupported StreamFree resource URL.');
   }
   const url = new URL(input, base);
-  if (url.protocol !== 'https:' || url.username || url.password || url.port || url.hash) {
+  if (url.protocol !== 'https:' || url.username || url.password || url.port) {
     throw new Error('Unsupported StreamFree resource URL.');
   }
   return url;
@@ -160,19 +161,21 @@ export async function rewriteStreamFreeManifest(
   const directory = new URL('.', root).pathname;
   const mediaDirectory = `/live/${root.pathname.split('/')[2]}/`;
   const base = safeResource(baseUrl, root);
-  if (base.origin !== root.origin || !base.pathname.startsWith(directory)) {
+  if (base.hash || base.origin !== root.origin || !base.pathname.startsWith(directory)) {
     throw new Error('StreamFree playlist is outside the resolved stream.');
   }
   const checkedMedia = new Set<string>();
   const resolve = async (input: string): Promise<string> => {
     const url = safeResource(input, base);
     if (url.pathname.endsWith('.m3u8')) {
-      if (url.origin !== root.origin || !url.pathname.startsWith(directory) || /%/.test(url.pathname)) {
+      if (url.hash || url.origin !== root.origin || !url.pathname.startsWith(directory) || /%/.test(url.pathname.slice(directory.length))) {
         throw new Error('StreamFree playlist is outside the resolved stream.');
       }
       const relative = validateStreamFreeVariant(url.pathname.slice(directory.length) + url.search)!;
       return streamFreeManifestPath(embedUrl, relative);
     }
+    // Media fragments are browser-only metadata, never part of an HTTP resource.
+    url.hash = '';
     if (url.origin === MEDIA_ORIGIN && /^\/obj\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)+$/.test(url.pathname) &&
         !url.pathname.split('/').some(part => part === '.' || part === '..')) {
       return url.href;

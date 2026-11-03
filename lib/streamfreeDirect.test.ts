@@ -7,6 +7,8 @@ describe('StreamFree Direct URL eligibility', () => {
     'https://strmfree.st/embed/basketball/game1080p2',
     'https://streamfree.top/embed/tv/skyf1720p',
     'https://streamfree.top:443/embed/tv/skyf12160p/',
+    'https://strmfree.st/embed/soccer/bayern-munich-vs-atlético-madrid1080p',
+    'https://strmfree.st/embed/soccer/bayern-munich-vs-atl%C3%A9tico-madrid1080p',
   ])('accepts a public provider embed: %s', input => {
     expect(parseStreamFreeEmbedUrl(input).protocol).toBe('https:');
     expect(isStreamFreeEmbedUrl(input)).toBe(true);
@@ -22,6 +24,10 @@ describe('StreamFree Direct URL eligibility', () => {
     'https://strmfree.st/a/../embed/tv/game1080p',
     'https://strmfree.st/embed/tv/%2e%2e/game1080p',
     'https://strmfree.st/embed/tv/game%311080p',
+    'https://strmfree.st/embed/soccer/atl%C3-madrid1080p',
+    'https://strmfree.st/embed/soccer/atl%C3%A9tico%2fmadrid1080p',
+    'https://strmfree.st/embed/soccer/atl%25C3%25A9tico-madrid1080p',
+    'https://strmfree.st/embed/soccer/atl%C3%A9tico%5cmadrid1080p',
     'https://strmfree.st/embed//game1080p',
     'https://strmfree.st/embed/tv/game1080p/extra',
     'https://strmfree.st\\embed\\tv\\game1080p',

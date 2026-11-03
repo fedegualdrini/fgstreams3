@@ -99,6 +99,8 @@ Sports use `https://strmfree.st/api/v1` without an account or API key:
 
 Live status comes from `sources[].live`, not kickoff time: a match is live when any rendition is live. Source objects are deduplicated by URL, with the first live entry taking precedence over standby entries for the same URL; the existing language/quality preference then applies. Quality comes from the URL's rendition suffix, falling back to the provider label when no suffix is present. Standby variants remain selectable because the provider starts them when an event goes live. The catalog is cached for 60 seconds and API responses for 30–60 seconds rather than fetched for every visitor.
 
+Match links, watch history and sitemap URLs encode each provider ID as one URL segment. The match page decodes that segment once before catalog lookup, preserving accented keys rather than inventing an ASCII alias.
+
 Supported StreamFree embeds now start in **Direct player** mode without loading the provider iframe or its scripts. **Original embed** remains an explicit alternative; its unsandboxed iframe follows the [provider documentation](https://strmfree.st/api) and may display ads/popups. A source marked live can still fail to play.
 
 ### LPF saved-link fallback
@@ -128,7 +130,9 @@ Non-network fatal errors or exhausted recovery offer **Retry direct playback** a
 
 `/api/streamfree/manifest` reads the selected embed's literal signing metadata and `/get-stream-key/{stream_key}` routing metadata, then fetches the signed HLS playlist with the selected embed as its Referer. It does not execute provider JavaScript. Each manifest request resolves a fresh signature; nested playlists stay confined to that source's directory. Signed playlist URLs remain server-side, and responses are uncached with bounded reads and a 15-second total deadline.
 
-StreamFree plays the selected source/quality variant rather than forcing the highest rendition. Media stays browser-direct: existing `p16-oec-general-useast5.ttcdn-us.com/obj/` resources remain unchanged. For restricted `cdn1.strmfree.st/live/<selected-variant>/<sequence>.js` resources, the server verifies the matching public `/live/` path on the selected provider origin (`strmfree.st` or `streamfree.top`) and rewrites the playlist to that destination. These public paths are also published by the provider's alternate playlist route; they do not change the source or quality.
+Direct playback accepts Unicode stream keys in literal or UTF-8 URL-encoded form. Encoded ASCII aliases, separators, traversal and malformed escapes remain unsupported; nested playlists stay inside the validated stream directory.
+
+StreamFree plays the selected source/quality variant rather than forcing the highest rendition. Media stays browser-direct: verified `p16-oec-general-useast5.ttcdn-us.com/obj/` resources keep their HTTP destination; browser-only URI fragments are discarded. For restricted `cdn1.strmfree.st/live/<selected-variant>/<sequence>.js` resources, the server verifies the matching public `/live/` path on the selected provider origin (`strmfree.st` or `streamfree.top`) and rewrites the playlist to that destination. These public paths are also published by the provider's alternate playlist route; they do not change the source or quality.
 
 Public media destinations require a successful header-only `HEAD` response with a supported media type and positive content length. Redirects, cross-variant paths and unknown hosts are rejected. Checks are sequential, deduplicated and capped at 32 per manifest within the same total deadline; the server never downloads a segment body. Standard hls.js handles both the observed PNG-prefixed CDN segments and public MPEG-TS segments, without a custom decoder or P2P SDK. Unsupported media, external streams and provider-rejected sources fail locally for manual Retry, another source, or Original embed—not video proxying or automatic iframe fallback.
 

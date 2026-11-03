@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Only matches that are actually watchable belong in the sitemap.
   const matches = await getCatalog();
   const matchEntries: MetadataRoute.Sitemap = matches.map((match) => ({
-    url: `${SITE_URL}/match/${match.id}`,
+    url: `${SITE_URL}/match/${encodeURIComponent(match.id)}`,
     lastModified,
     changeFrequency: 'hourly',
     priority: 0.8,

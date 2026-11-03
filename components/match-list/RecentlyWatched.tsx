@@ -27,7 +27,7 @@ function RecentlyWatched({ entries, onOpen }: RecentlyWatchedProps) {
 
 function HistoryCard({ entry, onOpen }: { entry: HistoryEntry; onOpen: (entry: HistoryEntry) => void }) {
   return (
-    <Link href={`/match/${entry.id}`} onClick={() => onOpen(entry)} className="history-card">
+    <Link href={`/match/${encodeURIComponent(entry.id)}`} onClick={() => onOpen(entry)} className="history-card">
       {entry.poster && (
         <div className="history-card__poster">
           <PosterImage

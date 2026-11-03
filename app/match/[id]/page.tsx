@@ -15,9 +15,20 @@ interface MatchDetailPageProps {
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-export async function generateMetadata({ params }: MatchDetailPageProps): Promise<Metadata> {
+async function getRouteMatch(params: MatchDetailPageProps['params']) {
   const { id } = await params;
-  const match = await getCatalogMatch(id);
+  let matchId: string;
+  try {
+    // Page params retain URI escapes; catalog IDs are the provider's Unicode keys.
+    matchId = decodeURIComponent(id);
+  } catch {
+    return null;
+  }
+  return getCatalogMatch(matchId);
+}
+
+export async function generateMetadata({ params }: MatchDetailPageProps): Promise<Metadata> {
+  const match = await getRouteMatch(params);
   if (!match) return { title: 'Match Not Found' };
 
   const title = `${match.team1} vs ${match.team2} - Live Stream`;
@@ -43,8 +54,7 @@ export async function generateMetadata({ params }: MatchDetailPageProps): Promis
 }
 
 export default async function MatchDetailPage({ params }: MatchDetailPageProps) {
-  const { id } = await params;
-  const match = await getCatalogMatch(id);
+  const match = await getRouteMatch(params);
 
   if (!match) {
     notFound();

@@ -21,7 +21,7 @@ interface MatchLinkProps {
 function MatchLink({ match, onOpen, live = false, score, scoreMinute, priorityPoster = false }: MatchLinkProps) {
   return (
     <Link
-      href={`/match/${match.id}`}
+      href={`/match/${encodeURIComponent(match.id)}`}
       onClick={() => onOpen(match)}
       className={`match-link${live ? ' match-link--live' : ''}`}
     >

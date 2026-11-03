@@ -306,6 +306,29 @@ describe('StreamFree manifest route', () => {
     expect(calls).toHaveLength(6);
   });
 
+  it('plays an accented stream through encoded root and nested URLs without exposing media to the server', async () => {
+    const key = 'bayern-munich-vs-atlético-madrid';
+    const unicodeEmbed = `https://strmfree.st/embed/soccer/${key}1080p`;
+    const unicodeMetadata = { ...metadata, stream_key: key };
+    const fetcher = upstreamResponses(
+      new Response(html(key, '1080p', '')), Response.json(unicodeMetadata), new Response('#EXTM3U\nhigh/main.m3u8\n'),
+      new Response(html(key, '1080p', '')), Response.json(unicodeMetadata), new Response(manifest.replace(media, `${media}#${key}1080p`)),
+    );
+    const first = await GET(request(unicodeEmbed));
+    expect(first.status).toBe(200);
+    const nested = (await first.text()).split('\n')[1];
+    const second = await GET(new Request(new URL(nested, 'https://app.example')));
+    expect(second.status).toBe(200);
+    expect(await second.text()).toBe(manifest);
+    const calls = fetcher.mock.calls as unknown[][];
+    expect(new URL(calls[1][0] as string).pathname).toBe(`/get-stream-key/${encodeURIComponent(key)}`);
+    expect(new URL(calls[5][0] as string).pathname).toBe(`/live-externalcdn/${encodeURIComponent(key)}1080p/high/main.m3u8`);
+    expect(calls.some(([url]) => url === media)).toBe(false);
+    const unicodeRoot = streamFreeRootManifest(unicodeEmbed, parseStreamFreeEmbed(html(key, '1080p', ''), unicodeEmbed, now), unicodeMetadata);
+    await expect(rewriteStreamFreeManifest('#EXTM3U\nhigh/%2fother.m3u8', unicodeRoot, unicodeRoot, unicodeEmbed)).rejects.toThrow();
+    await expect(rewriteStreamFreeManifest('#EXTM3U\nhigh/main.m3u8#fragment', unicodeRoot, unicodeRoot, unicodeEmbed)).rejects.toThrow();
+  });
+
   it('returns uncached 400 for invalid embed or variant without contacting any upstream', async () => {
     const fetcher = upstreamResponses();
     const invalid = new Request('https://app.example/api/streamfree/manifest?embed=https%3A%2F%2F127.0.0.1%2Fprivate');
