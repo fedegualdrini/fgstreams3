@@ -91,7 +91,7 @@ Netlify only returns signed redirects for `/api/hls-proxy`; video bodies travel 
 
 ### Deployment (Netlify)
 
-The production site is `https://fgstreams3.netlify.app`. Connect this GitHub repository with `main` as the production branch. `netlify.toml` selects Node 22, `npm run build` and `.next`; Netlify automatically supplies its Next.js adapter. Build on Netlify's Linux builders so `impit` includes the correct optional native binary; do not upload a Windows server build.
+The production site is `https://fgstreams3.netlify.app`. Connect this GitHub repository with `main` as the production branch. `netlify.toml` selects Node 22, `npm run build` and `.next`, and explicitly enables the managed Next.js adapter without pinning its version. Publishing raw `.next` without that adapter does not provide pages or API routes. Build on Netlify's Linux builders so `impit` includes the correct optional native binary; do not upload a Windows server build.
 
 Set `TMDB_API_KEY`, `LPF_RELAY_URL`, `LPF_RELAY_TOKEN`, `HLS_PROXY_SECRET`, `HLS_PROXY_RELAY_URL` and `HLS_PROXY_MODE=redirect` through Netlify's environment-variable UI, CLI or API. Variables in `netlify.toml` are build-only and cannot supply runtime secrets. Netlify Blobs credentials are supplied automatically; do not copy Vercel credentials or put a Netlify account token in the deployed runtime. The read-only `URL` variable supplies canonical metadata and sitemap URLs.
 
